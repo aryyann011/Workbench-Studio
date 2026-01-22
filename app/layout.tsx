@@ -3,6 +3,8 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/sidebar";
+import { ThemeProvider } from "@/components/Mode/themeProvider";
+import { ModeToggle } from "@/components/Mode/modeToggle";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -25,26 +27,34 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className="dark">
+    <html lang="en" className="dark" suppressHydrationWarning>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased bg-background text-foreground`}
       >
-        <SidebarProvider>
-          <AppSidebar />
-          
-          <main className="w-full h-screen flex flex-col overflow-hidden">
-            
-            <div className="p-2 border-b border-border flex items-center gap-2">
-              <SidebarTrigger /> 
-              <span className="text-sm font-medium text-muted-foreground">Workbench Studio / Untitled Project</span>
-            </div>
+        <ThemeProvider
+            attribute="class"
+            defaultTheme="system"
+            enableSystem
+            disableTransitionOnChange
+          >
+            <SidebarProvider>
+              <AppSidebar />
+              
+              <main className="w-full h-screen flex flex-col overflow-hidden">
+                
+                <div className="p-2 border-b border-border flex items-center gap-2">
+                  <SidebarTrigger /> 
+                  <span className="text-lg font-medium text-muted-foreground"></span>
+                  <ModeToggle/>
+                </div>
 
-            <div className="flex-1 overflow-hidden">
-              {children}
-            </div>
-            
-          </main>
-        </SidebarProvider>
+                <div className="flex-1 overflow-hidden">
+                  {children}
+                </div>
+                
+              </main>
+            </SidebarProvider>
+          </ThemeProvider>
       </body>
     </html>
   );
