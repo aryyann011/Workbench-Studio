@@ -42,7 +42,7 @@ export function AppSidebar() {
     <Sidebar>
       <SidebarContent>
         <SidebarGroup className="p-4">
-          <SidebarGroupLabel className="text-lg">Workbench Studio</SidebarGroupLabel>
+          <SidebarGroupLabel className="text-[22px] dark:text-white font-bold">Workbench Studio</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu className="p-4">
               {items.map((item) => (
