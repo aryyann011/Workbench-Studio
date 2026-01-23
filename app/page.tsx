@@ -1,3 +1,7 @@
+"use client"
+
+import { useState } from "react"
+import { CodeEditor } from "@/components/editor/codeEditor"
 import {
   ResizablePanelGroup,
   ResizablePanel,
@@ -5,6 +9,7 @@ import {
 } from "@/components/ui/resizable"
 
 export default function ResizableDemo() {
+  const [code, setCode] = useState("")
   return (
     <ResizablePanelGroup
       orientation="horizontal"
@@ -12,7 +17,8 @@ export default function ResizableDemo() {
     >
       <ResizablePanel defaultSize={50}>
         <div className="flex h-full items-center justify-center p-6">
-          <span className="font-semibold">One</span>
+          {/* <span className="font-semibold">One</span> */}
+          <CodeEditor code={code} setCode={setCode}/>
         </div>
       </ResizablePanel>
 

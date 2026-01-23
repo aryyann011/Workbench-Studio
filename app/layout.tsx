@@ -3,9 +3,11 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/sidebar";
+import { LogOut } from "lucide-react";
 import { ThemeProvider } from "@/components/Mode/themeProvider";
 import { ModeToggle } from "@/components/Mode/modeToggle";
 import { ClerkProvider } from "@clerk/nextjs";
+import { SignOutButton } from "@clerk/nextjs";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -49,6 +51,17 @@ export default function RootLayout({
                   <SidebarTrigger /> 
                   <span className="text-lg font-medium text-muted-foreground"></span>
                   <ModeToggle/>
+                  <div className="fixed flex items-center gap-8 right-0">
+                    <SignOutButton>
+                      <div className="flex items-center justify-center mr-2 cursor-pointer">
+                        <LogOut/>
+                        <button className="px-2 py-2 rounded text-white cursor-pointer">
+                          Logout
+                        </button>
+                      </div>
+                    </SignOutButton>
+                  </div>
+
                 </div>
 
                 <div className="flex-1 overflow-hidden">
