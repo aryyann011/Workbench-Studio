@@ -7,6 +7,7 @@ import {
   ResizablePanel,
   ResizableHandle,
 } from "@/components/ui/resizable"
+import BaseEditor from "@/components/reactFlow/base"
 
 export default function ResizableDemo() {
   const [code, setCode] = useState("")
@@ -28,7 +29,8 @@ export default function ResizableDemo() {
         <ResizablePanelGroup orientation="vertical">
           <ResizablePanel defaultSize={50}>
             <div className="flex h-full items-center justify-center p-6">
-              <span className="font-semibold">Two</span>
+              {/* <span className="font-semibold">Two</span> */}
+              <BaseEditor/>
             </div>
           </ResizablePanel>
 
