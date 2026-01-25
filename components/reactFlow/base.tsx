@@ -1,86 +1,106 @@
-"use client";
+"use client"
 
-import { ReactFlow, Background, Controls, Connection, Panel } from '@xyflow/react';
-import { useState, useCallback } from 'react';
-import {
-  applyEdgeChanges,
-  applyNodeChanges,
-  addEdge,
-  type Node,
-  type Edge,
-  type NodeChange,
-  type EdgeChange, BackgroundVariant
-} from '@xyflow/react';
+import ReactFlow, { 
+  Background, 
+  Controls, 
+  MiniMap, 
+  useNodesState, 
+  useEdgesState,
+  ConnectionMode,
+  MarkerType
+} from 'reactflow';
+import 'reactflow/dist/style.css';
+import { SystemNode } from './systemNode';
 
-import '@xyflow/react/dist/style.css';
+// 1. REGISTER CUSTOM NODES
+const nodeTypes = {
+  system: SystemNode,
+};
 
-const initialNodes: Node[] = [
-  {
-    id: 'n1',
-    position: { x: 0, y: 0 },
-    data: { label: 'Node 1' },
-    type: 'input',
+// 2. TEST DATA: NODES (3 distinct types to test icons)
+const initialNodes = [
+  { 
+    id: '1', 
+    type: 'system', 
+    position: { x: 250, y: 0 }, 
+    data: { label: 'User Client', nodeType: 'client' } 
   },
-  {
-    id: 'n2',
-    position: { x: 100, y: 100 },
-    data: { label: 'Node 2' },
+  { 
+    id: '2', 
+    type: 'system', 
+    position: { x: 250, y: 200 }, 
+    data: { label: 'API Gateway', nodeType: 'server' } 
+  },
+  { 
+    id: '3', 
+    type: 'system', 
+    position: { x: 250, y: 400 }, 
+    data: { label: 'Primary DB', nodeType: 'database' } 
+  },
+  { 
+    id: '4', 
+    type: 'system', 
+    position: { x: 500, y: 400 }, 
+    data: { label: 'Redis Cache', nodeType: 'database' } 
   },
 ];
 
-const initialEdges: Edge[] = [
-  {
-    id: 'n1-n2',
-    source: 'n1',
-    target: 'n2',
-    label: 'connects with',
+// 3. TEST DATA: EDGES (Connecting them)
+const initialEdges = [
+  { 
+    id: 'e1-2', 
+    source: '1', 
+    target: '2', 
+    animated: true, // Animates the flow
+    label: 'Request' 
+  },
+  { 
+    id: 'e2-3', 
+    source: '2', 
+    target: '3', 
+    type: 'smoothstep', // Makes the line square-ish like a circuit
+  },
+  { 
+    id: 'e2-4', 
+    source: '2', 
+    target: '4', 
+    type: 'smoothstep',
+    markerEnd: { type: MarkerType.ArrowClosed }, // Adds an arrow head
   },
 ];
 
-export default function BaseEditor() {
-  const [nodes, setNodes] = useState(initialNodes);
-  const [edges, setEdges] = useState(initialEdges);
-  const [variant, setVariant] = useState<BackgroundVariant>(BackgroundVariant.Dots);
-
-  const onNodesChange = useCallback(
-    (changes: NodeChange[]) =>
-      setNodes((nodesSnapshot) =>
-        applyNodeChanges(changes, nodesSnapshot)
-      ),
-    []
-  );
-
-  const onConnect = useCallback(
-    (params : Connection) => setEdges((edgesSnapshot) => addEdge(params, edgesSnapshot)),
-    [],
-  );
-
-  const onEdgesChange = useCallback(
-    (changes: EdgeChange[]) =>
-      setEdges((edgesSnapshot) =>
-        applyEdgeChanges(changes, edgesSnapshot)
-      ),
-    []
-  );
+export const BaseEditor = () => {
+  // We use hooks so the graph is interactive (draggable/selectable)
+  const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
+  const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
 
   return (
-    <div style={{ height: '100%', width: '100%' }}>
+    <div className="h-[100%] w-full bg-slate-50 dark:bg-slate-900">
       <ReactFlow
         nodes={nodes}
         edges={edges}
         onNodesChange={onNodesChange}
         onEdgesChange={onEdgesChange}
-        onConnect={onConnect}
+        
+        // Critical: Registers our custom component
+        nodeTypes={nodeTypes}
+        
+        // Aesthetics: Makes edges look professional by default
+        defaultEdgeOptions={{
+          type: 'smoothstep',
+          markerEnd: { type: MarkerType.ArrowClosed },
+          style: { strokeWidth: 2, stroke: '#64748b' }
+        }}
+        
+        connectionMode={ConnectionMode.Loose}
         fitView
       >
-        <Background color="skyblue" variant={variant} />
-        <Panel className='border'>
-          <div>variant:</div>
-          <button className="border-1" onClick={() => setVariant(BackgroundVariant.Dots)}>dots</button>
-          <button onClick={() => setVariant(BackgroundVariant.Lines)}>lines</button>
-          <button onClick={() => setVariant(BackgroundVariant.Cross)}>cross</button>
-        </Panel>
-        <Controls />
+        <Background color="#94a3b8" gap={20} size={1} />
+        <Controls className="bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700" />
+        <MiniMap 
+          className="bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700" 
+          maskColor="rgba(0,0,0, 0.1)"
+        />
       </ReactFlow>
     </div>
   );
