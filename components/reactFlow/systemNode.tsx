@@ -8,7 +8,8 @@ import {
   Laptop, 
   Cloud, 
   Smartphone, 
-  Globe 
+  Globe,
+  Shield
 } from 'lucide-react'; 
 
 // 1. The Icon Dictionary
@@ -25,6 +26,7 @@ const iconMap: Record<string, any> = {
   mobile: Smartphone,
   cloud: Cloud,
   aws: Cloud,
+  firewall : Shield,
   // Fallback: If we don't recognize the type, assume it's a generic Server
   default: Server 
 };
@@ -34,10 +36,11 @@ export function SystemNode({ data }: NodeProps) {
   // We check if the 'nodeType' exists in our map. 
   // If not, we fall back to the 'default' icon.
   const Icon = iconMap[data.nodeType?.toLowerCase()] || iconMap.default;
+  const check = data.flag === 'offline' ? false: true;
 
   return (
     // The "Card" Container
-    <div className="shadow-xl rounded-lg border border-slate-200 bg-white dark:border-slate-800 dark:bg-slate-950 min-w-[140px] transition-all hover:ring-2 hover:ring-blue-500/50">
+    <div className={`shadow-xl rounded-lg border border-slate-200 ${check ? "bg-red-800" : "bg-white dark:bg-slate-950"} dark:border-slate-800 min-w-[140px] transition-all hover:ring-2 hover:ring-blue-500/50`}>
       
       {/* Input Handle (Top) */}
       {/* This is the magnetic point where lines connect TO */}

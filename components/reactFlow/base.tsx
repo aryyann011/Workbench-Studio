@@ -23,26 +23,32 @@ const initialNodes = [
     id: '1', 
     type: 'system', 
     position: { x: 250, y: 0 }, 
-    data: { label: 'User Client', nodeType: 'client' } 
+    data: { label: 'User Client', nodeType: 'client', flag : 'offline' } 
   },
   { 
     id: '2', 
     type: 'system', 
     position: { x: 250, y: 200 }, 
-    data: { label: 'API Gateway', nodeType: 'server' } 
+    data: { label: 'API Gateway', nodeType: 'server', flag : 'offline' } 
   },
   { 
     id: '3', 
     type: 'system', 
     position: { x: 250, y: 400 }, 
-    data: { label: 'Primary DB', nodeType: 'database' } 
+    data: { label: 'Primary DB', nodeType: 'database', flag : 'online' } 
   },
   { 
     id: '4', 
     type: 'system', 
     position: { x: 500, y: 400 }, 
-    data: { label: 'Redis Cache', nodeType: 'database' } 
+    data: { label: 'Redis Cache', nodeType: 'database', flag : 'offline' } 
   },
+  {
+    id : '5',
+    type : 'system',
+    position : {x : 100, y : 200},
+    data : {label : 'Firewall', nodeType : 'firewall', flag : 'offline'}
+  }
 ];
 
 // 3. TEST DATA: EDGES (Connecting them)
@@ -65,7 +71,8 @@ const initialEdges = [
     source: '2', 
     target: '4', 
     type: 'smoothstep',
-    markerEnd: { type: MarkerType.ArrowClosed }, // Adds an arrow head
+    markerEnd: { type: MarkerType.ArrowClosed }, // Adds an arrow head,
+    markerStart : {type : MarkerType.ArrowClosed }
   },
 ];
 
