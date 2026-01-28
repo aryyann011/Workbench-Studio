@@ -3,20 +3,19 @@ import { Node, Edge } from 'reactflow';
 export const parseCode = (input: string) => {
   const nodes: Node[] = [];
   const edges: Edge[] = [];
-  const existingIds = new Set<string>();
+  const existingIds = new Set<string>(); 
 
-  const lines = input.split('\n');
+  const lines = input.split('\n'); 
 
-  lines.forEach((line, index) => {
+  lines.forEach((line, index) => { 
     const trimmedLine = line.trim();
-    if (!trimmedLine) return;
+    if (!trimmedLine) return; 
 
-    // --- THE LOGIC (Regex) ---
-    const nodeRegex = /\[(.*?)\]/;
-    const match = trimmedLine.match(nodeRegex);
+    const nodeRegex = /\[(.*?)\]/; 
+    const match = trimmedLine.match(nodeRegex); 
 
     if (match) {
-      const label = match[1];
+      const label = match[1]; 
       const id = label.toLowerCase();
 
       if (existingIds.has(id)) return;
@@ -28,13 +27,13 @@ export const parseCode = (input: string) => {
         position: { x: 0, y: index * 100 },
         data: { 
           label: label, 
-          nodeType: label // We pass the raw label; the Visual Component handles the icon logic
+          nodeType: label 
         }
       };
 
-      nodes.push(newNode);
+      nodes.push(newNode); 
     }
   });
 
-  return { nodes, edges };
+  return { nodes, edges }; 
 };

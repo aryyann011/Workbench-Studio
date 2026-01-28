@@ -14,7 +14,6 @@ const categoryRules = [
 ];
 
 export function SystemNode({ data }: NodeProps) {
-  // Logic: Find the icon based on the 'nodeType' string
   const lowerType = data.nodeType?.toLowerCase() || '';
   const matchedRule = categoryRules.find(r => 
     r.keywords.some(k => lowerType.includes(k))
