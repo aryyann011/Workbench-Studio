@@ -5,7 +5,6 @@ import {
   Database, Server, Laptop, Cloud, Shield, Globe, Smartphone 
 } from 'lucide-react'; 
 
-// --- THE LOGIC (Standard JS) ---
 const categoryRules = [
   { keywords: ["db", "sql", "postgres", "mysql", "mongo", "redis"], icon: Database },
   { keywords: ["client", "user", "browser", "mobile", "app"], icon: Laptop },

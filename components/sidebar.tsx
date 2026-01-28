@@ -13,7 +13,6 @@ import {
   SidebarMenuItem,
 } from "@/components/ui/sidebar"
 
-// Menu items. (We will replace this with real Database data later)
 const items = [
   {
     title: "Home",
