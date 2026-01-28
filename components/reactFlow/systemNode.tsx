@@ -1,74 +1,44 @@
 "use client"
 
 import { Handle, Position, NodeProps } from 'reactflow';
-// Lucide icons: Standard SVG icons for React
 import { 
-  Database, 
-  Server, 
-  Laptop, 
-  Cloud, 
-  Smartphone, 
-  Globe,
-  Shield
+  Database, Server, Laptop, Cloud, Shield, Globe, Smartphone 
 } from 'lucide-react'; 
 
-// 1. The Icon Dictionary
-// This maps a string (from our parser later) to a React Component (Icon)
-const iconMap: Record<string, any> = {
-  database: Database,
-  db: Database,
-  postgres: Database,
-  server: Server,
-  backend: Server,
-  client: Laptop,
-  frontend: Laptop,
-  browser: Globe,
-  mobile: Smartphone,
-  cloud: Cloud,
-  aws: Cloud,
-  firewall : Shield,
-  // Fallback: If we don't recognize the type, assume it's a generic Server
-  default: Server 
-};
+const categoryRules = [
+  { keywords: ["db", "sql", "postgres", "mysql", "mongo", "redis"], icon: Database },
+  { keywords: ["client", "user", "browser", "mobile", "app"], icon: Laptop },
+  { keywords: ["server", "api", "backend", "host", "lambda"], icon: Server },
+  { keywords: ["cloud", "aws", "azure", "gcp", "network"], icon: Cloud },
+  { keywords: ["firewall", "waf", "shield", "auth"], icon: Shield },
+];
 
 export function SystemNode({ data }: NodeProps) {
-  // 2. Logic: Resolve the Icon
-  // We check if the 'nodeType' exists in our map. 
-  // If not, we fall back to the 'default' icon.
-  const Icon = iconMap[data.nodeType?.toLowerCase()] || iconMap.default;
-  const check = data.flag === 'offline' ? false: true;
+  // Logic: Find the icon based on the 'nodeType' string
+  const lowerType = data.nodeType?.toLowerCase() || '';
+  const matchedRule = categoryRules.find(r => 
+    r.keywords.some(k => lowerType.includes(k))
+  );
+  const Icon = matchedRule ? matchedRule.icon : Server;
+  
+  const isOffline = data.flag === 'offline';
 
   return (
-    // The "Card" Container
-    <div className={`shadow-xl rounded-lg border border-slate-200 ${check ? "bg-red-800" : "bg-white dark:bg-slate-950"} dark:border-slate-800 min-w-[140px] transition-all hover:ring-2 hover:ring-blue-500/50`}>
+    <div className={`shadow-xl rounded-lg border bg-white dark:bg-slate-950 min-w-[140px] 
+      ${isOffline ? "border-red-500 border-2" : "border-slate-200 dark:border-slate-800"}`}>
       
-      {/* Input Handle (Top) */}
-      {/* This is the magnetic point where lines connect TO */}
-      <Handle 
-        type="target" 
-        position={Position.Top} 
-        className="!w-3 !h-3 !bg-slate-400 !border-2 !border-white dark:!border-slate-950" 
-      />
+      <Handle type="target" position={Position.Top} className="!w-3 !h-3 !bg-slate-400" />
 
       <div className="flex flex-col items-center p-4 gap-3">
-        {/* The Icon Container */}
-        <div className="p-2.5 bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-900 dark:to-slate-800 rounded-lg border border-slate-100 dark:border-slate-800">
+        <div className="p-2.5 bg-slate-100 dark:bg-slate-800 rounded-lg">
           <Icon className="w-6 h-6 text-slate-600 dark:text-slate-400" />
         </div>
-        
-        {/* The Label Text */}
-        <span className="font-mono text-sm font-medium text-slate-900 dark:text-slate-100 tracking-tight">
+        <span className="font-mono text-sm font-medium">
           {data.label}
         </span>
       </div>
 
-      {/* Output Handle (Bottom) */}
-      {/* This is the magnetic point where lines connect FROM */}
-      <Handle 
-        type="source" 
-        position={Position.Bottom} 
-        className="!w-3 !h-3 !bg-slate-400 !border-2 !border-white dark:!border-slate-950" 
-      />
+      <Handle type="source" position={Position.Bottom} className="!w-3 !h-3 !bg-slate-400" />
     </div>
   );
 }

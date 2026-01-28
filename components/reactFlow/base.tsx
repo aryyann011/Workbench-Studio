@@ -12,12 +12,10 @@ import ReactFlow, {
 import 'reactflow/dist/style.css';
 import { SystemNode } from './systemNode';
 
-// 1. REGISTER CUSTOM NODES
 const nodeTypes = {
   system: SystemNode,
 };
 
-// 2. TEST DATA: NODES (3 distinct types to test icons)
 const initialNodes = [
   { 
     id: '1', 
@@ -51,33 +49,31 @@ const initialNodes = [
   }
 ];
 
-// 3. TEST DATA: EDGES (Connecting them)
 const initialEdges = [
   { 
     id: 'e1-2', 
     source: '1', 
     target: '2', 
-    animated: true, // Animates the flow
+    animated: true, 
     label: 'Request' 
   },
   { 
     id: 'e2-3', 
     source: '2', 
     target: '3', 
-    type: 'smoothstep', // Makes the line square-ish like a circuit
+    type: 'smoothstep',
   },
   { 
     id: 'e2-4', 
     source: '2', 
     target: '4', 
     type: 'smoothstep',
-    markerEnd: { type: MarkerType.ArrowClosed }, // Adds an arrow head,
+    markerEnd: { type: MarkerType.ArrowClosed }, 
     markerStart : {type : MarkerType.ArrowClosed }
   },
 ];
 
 export const BaseEditor = () => {
-  // We use hooks so the graph is interactive (draggable/selectable)
   const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
   const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
 
@@ -89,10 +85,8 @@ export const BaseEditor = () => {
         onNodesChange={onNodesChange}
         onEdgesChange={onEdgesChange}
         
-        // Critical: Registers our custom component
         nodeTypes={nodeTypes}
         
-        // Aesthetics: Makes edges look professional by default
         defaultEdgeOptions={{
           type: 'smoothstep',
           markerEnd: { type: MarkerType.ArrowClosed },
