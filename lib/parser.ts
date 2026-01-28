@@ -1,36 +1,34 @@
-import { Node, Edge, MarkerType } from 'reactflow';
+import { Node, Edge } from 'reactflow';
 
 export const parseCode = (input: string) => {
   const nodes: Node[] = [];
   const edges: Edge[] = [];
-  const parsedLines = input.split('\n');
+  const existingIds = new Set<string>();
 
-  parsedLines.forEach((line, index) => {
-    // 1. Clean the line (remove extra spaces)
+  const lines = input.split('\n');
+
+  lines.forEach((line, index) => {
     const trimmedLine = line.trim();
-    if (!trimmedLine) return; // Skip empty lines
+    if (!trimmedLine) return;
 
-    // 🛑 LOGIC CHALLENGE FOR YOU:
-    // We need a Regex that finds anything inside brackets [ ... ]
-    // Try to figure this out on Regex101.com
-    // Pattern: Literal '[', followed by Capturing Group (anything not a ']'), followed by Literal ']'
-    const regex = \[(.*?)\]; 
-    
-    // Check if the line matches
-    const match = trimmedLine.match(regex);
+    // --- THE LOGIC (Regex) ---
+    const nodeRegex = /\[(.*?)\]/;
+    const match = trimmedLine.match(nodeRegex);
 
     if (match) {
-      // match[1] will be the text INSIDE the brackets (e.g., "Client")
-      const label = match[1]; 
-      
-      // Create the Node Object
+      const label = match[1];
+      const id = label.toLowerCase();
+
+      if (existingIds.has(id)) return;
+      existingIds.add(id);
+
       const newNode: Node = {
-        id: label, // Use label as ID for now (simple)
+        id: id,
         type: 'system',
-        position: { x: 0, y: index * 100 }, // Temporary: Stack them vertically
+        position: { x: 0, y: index * 100 },
         data: { 
           label: label, 
-          nodeType: label.toLowerCase() // This triggers our IconMap!
+          nodeType: label // We pass the raw label; the Visual Component handles the icon logic
         }
       };
 
