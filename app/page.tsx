@@ -7,7 +7,7 @@ import {
   ResizablePanel,
   ResizableHandle,
 } from "@/components/ui/resizable"
-import { BaseEditor } from "@/components/reactFlow/base"
+import { BaseEditor } from "@/components/reactFlow/diagramCanvas"
 
 export default function ResizableDemo() {
   const [code, setCode] = useState("")
