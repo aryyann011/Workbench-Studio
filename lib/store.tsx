@@ -4,6 +4,8 @@ import { Node, Edge, OnNodesChange, OnEdgesChange, applyEdgeChanges, applyNodeCh
 interface AppState {
   nodes: Node[];
   edges: Edge[];
+
+  updateNodeData : (id : string, data : any) => void;
   setGraph: (nodes: Node[], edges: Edge[]) => void;
   onNodesChange : OnNodesChange;
   onEdgesChange : OnEdgesChange;
@@ -14,6 +16,17 @@ export const useAppStore = create<AppState>((set, get) => ({
   nodes: [],
   edges: [],
 
+  updateNodeData : (nodeId, newData) => {
+    set({
+      nodes : get().nodes.map((node) => {
+        if(node.id === nodeId){
+          return {...node, data : {...node.data, ...newData}}
+        }
+
+        return node;
+      })
+    })
+  },
   setGraph: (newNodes, newEdges) => {
     const currentNodes = get().nodes;
 
