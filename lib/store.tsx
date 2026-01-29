@@ -31,7 +31,7 @@ export const useAppStore = create<AppState>((set, get) => ({
     });
 
     set({nodes : mergedNodes, edges : newEdges})
-  };
+  },
 
   onNodesChange : (changes) => {
     set({

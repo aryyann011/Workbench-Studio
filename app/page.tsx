@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { CodeEditor } from "@/components/editor/codeEditor"
 import {
   ResizablePanelGroup,
@@ -8,9 +8,20 @@ import {
   ResizableHandle,
 } from "@/components/ui/resizable"
 import { BaseEditor } from "@/components/reactFlow/diagramCanvas"
+import { parseCode } from "@/lib/parser"
+import { useAppStore } from "@/lib/store"
 
 export default function ResizableDemo() {
-  const [code, setCode] = useState("")
+  const [code, setCode] = useState<string>("")
+  const setGraph = useAppStore((state) => state.setGraph)
+
+  useEffect(() => {
+    if(code){
+      const result = parseCode(code)
+
+      setGraph(result.nodes, result.edges)
+    }
+  }, [code, setGraph])
   return (
     <ResizablePanelGroup
       orientation="horizontal"

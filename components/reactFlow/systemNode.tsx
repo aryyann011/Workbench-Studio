@@ -23,10 +23,10 @@ export function SystemNode({ data }: NodeProps) {
   const isOffline = data.flag === 'offline';
 
   return (
-    <div className={`shadow-xl rounded-lg border bg-white dark:bg-slate-950 min-w-[140px] 
+    <div className={`shadow-xl rounded-lg border bg-white dark:bg-slate-950 min-w-35 
       ${isOffline ? "border-red-500 border-2" : "border-slate-200 dark:border-slate-800"}`}>
       
-      <Handle type="target" position={Position.Top} className="!w-3 !h-3 !bg-slate-400" />
+      <Handle type="target" position={Position.Top} className="w-3! h-3! bg-slate-400!" />
 
       <div className="flex flex-col items-center p-4 gap-3">
         <div className="p-2.5 bg-slate-100 dark:bg-slate-800 rounded-lg">
@@ -37,7 +37,7 @@ export function SystemNode({ data }: NodeProps) {
         </span>
       </div>
 
-      <Handle type="source" position={Position.Bottom} className="!w-3 !h-3 !bg-slate-400" />
+      <Handle type="source" position={Position.Bottom} className="w-3! h-3! bg-slate-400!" />
     </div>
   );
 }
