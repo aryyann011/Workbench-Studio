@@ -11,28 +11,33 @@ export const parseCode = (input: string) => {
     const trimmedLine = line.trim();
     if (!trimmedLine) return; 
 
-    const nodeRegex = /\[(.*?)\]/; 
-    const match = trimmedLine.match(nodeRegex); 
+    const nodeRegex = /\[(.*?)\]/g; 
+    const matches = [...trimmedLine.matchAll(nodeRegex)];
 
-    if (match) {
-      const label = match[1]; 
-      const id = label.toLowerCase();
+    matches.forEach((match, nodeIndex) => {
+      if (match) {
+        const label = match[1]; 
+        const id = label.toLowerCase();
 
-      if (existingIds.has(id)) return;
-      existingIds.add(id);
+        if (existingIds.has(id)) return;
+        existingIds.add(id);
 
-      const newNode: Node = {
-        id: id,
-        type: 'system',
-        position: { x: 0, y: index * 100 },
-        data: { 
-          label: label, 
-          nodeType: label 
-        }
-      };
+        const newNode: Node = {
+          id: id,
+          type: 'system',
+          position: {
+            x: nodeIndex * 200,   
+            y: index * 150       
+          },
+          data: { 
+            label: label, 
+            nodeType: label 
+          }
+        };
 
-      nodes.push(newNode); 
-    }
+        nodes.push(newNode); 
+      }
+    })
   });
 
   return { nodes, edges }; 
