@@ -5,6 +5,14 @@ import {
   Database, Server, Laptop, Cloud, Shield, Globe, Smartphone 
 } from 'lucide-react'; 
 
+const categoryRules = [
+  { keywords: ["db", "sql", "postgres", "mysql", "mongo", "redis"], icon: Database },
+  { keywords: ["client", "user", "browser", "mobile", "app"], icon: Laptop },
+  { keywords: ["server", "api", "backend", "host", "lambda"], icon: Server },
+  { keywords: ["cloud", "aws", "azure", "gcp", "network"], icon: Cloud },
+  { keywords: ["firewall", "waf", "shield", "auth"], icon: Shield },
+];
+
 export function SystemNode({ data }: NodeProps) {
   const lowerType = data.nodeType?.toLowerCase() || '';
   const matchedRule = categoryRules.find(r => 
