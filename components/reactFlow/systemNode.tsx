@@ -63,7 +63,7 @@ export function SystemNode({ data }: NodeProps) {
           {/* 4. Use the Dynamic Component */}
           <DynamicIcon name={iconName} color={accentColor} />
         </div>
-        
+         
         <span className="font-mono text-sm font-medium text-slate-900 dark:text-slate-100">
           {data.label}
         </span>
