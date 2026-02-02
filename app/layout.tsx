@@ -25,6 +25,8 @@ export const metadata: Metadata = {
   description: "The Algorithmic System Design Workspace",
 };
 
+
+
 export default function RootLayout({
   children,
 }: Readonly<{

@@ -51,6 +51,7 @@ export const useAppStore = create<AppState>((set, get) => ({
       nodes : applyNodeChanges(changes, get().nodes),
     })
   },
+  
   onEdgesChange : (changes) => {
     set({
       edges : applyEdgeChanges(changes, get().edges),
