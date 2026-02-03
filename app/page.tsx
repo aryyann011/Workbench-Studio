@@ -16,13 +16,14 @@ export default function ResizableDemo() {
   const [code, setCode] = useState<string>("")
   const setGraph = useAppStore((state) => state.setGraph)
 
-  useAutoEnrichment(); 
+  // useAutoEnrichment(); 
 
   const handleRun = () => {
     if (!code) return;
     const result = parseCode(code);
     setGraph(result.nodes, result.edges);
   };
+  
   return (
     <ResizablePanelGroup
       orientation="horizontal"
