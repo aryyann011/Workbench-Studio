@@ -1,47 +1,88 @@
-import { NextResponse } from 'next/server';
-import { GoogleGenerativeAI } from '@google/generative-ai';
+import { NextResponse } from "next/server";
+import { GoogleGenAI } from "@google/genai";
 
-const genAI = new GoogleGenerativeAI(process.env.GOOGLE_API_KEY || '');
+const ai = new GoogleGenAI({
+  apiKey: process.env.GOOGLE_API_KEY!,
+});
 
 export async function POST(request: Request) {
   try {
-    const { label } = await request.json();
+    const body = await request.json();
+    const label = body?.label;
+
+    // ---------- HARD VALIDATION ----------
+    if (typeof label !== "string" || !label.trim()) {
+      return NextResponse.json(
+        { icon: "Server", color: "#64748b" },
+        { status: 200 }
+      );
+    }
+
+    // ---------- LOCAL FALLBACK (NO AI) ----------
+    const isDb = ["redis", "mongo", "postgres", "mysql", "sql"].some(k =>
+      label.toLowerCase().includes(k)
+    );
 
     if (!process.env.GOOGLE_API_KEY) {
-      const isDb = ["redis", "mongo", "postgres", "sql"].some(k => label.toLowerCase().includes(k));
-      return NextResponse.json({ 
-        icon: isDb ? 'Database' : 'Server',
-        color: isDb ? '#3b82f6' : '#64748b' 
+      return NextResponse.json({
+        icon: isDb ? "Database" : "Server",
+        color: isDb ? "#3b82f6" : "#64748b",
       });
     }
 
-    const model = genAI.getGenerativeModel({ model: "gemini-pro" });
-    
+    // ---------- GEMINI PROMPT ----------
     const prompt = `
-      You are a UI design assistant. 
-      For the tech term "${label}", provide:
-      1. The best matching Lucide React icon name.
-      2. The official brand HEX color code for this technology.
+You are a UI design expert. Map the tech term "${label}" to a Lucide React icon name and a HEX color.
+      
+      CRITICAL VOCABULARY (Use these EXACT names):
+      - Databases -> "Database"
+      - Messaging/Kafka/Queues -> "MessageSquare"
+      - Mobile/Phone -> "Smartphone"
+      - Web/Browser -> "Globe"
+      - AI/Bot -> "Bot"
+      - Code/Python/JS -> "Code2"
+      - Container/Docker -> "Box"
+      - Storage/S3 -> "HardDrive"
+      - Server/Nginx -> "Server"
+      - Security/Firewall -> "Shield"
+      - User/Client -> "User"
+      - Analytics/Chart -> "BarChart"
 
-      Return ONLY a valid JSON object. No markdown.
-      Format: { "icon": "String", "color": "#HexCode" }
+      Rules:
+      1. If the term fits one of these categories, use the EXACT name above.
+      2. If it is unique (like "Wifi"), use the best Lucide match.
+      3. Return valid JSON: { "icon": "String", "color": "#Hex" }
 
-      Examples:
-      "Redis" -> { "icon": "Database", "color": "#DC382D" }
-      "Azure" -> { "icon": "Cloud", "color": "#0078D4" }
-      "Nginx" -> { "icon": "Server", "color": "#009639" }
-    `;
+      Input: "${label}"
+`.trim();
 
-    const result = await model.generateContent(prompt);
-    const text = result.response.text();
+    // ---------- GEMINI CALL ----------
+    const response = await ai.models.generateContent({
+      model: "gemini-2.5-flash",
+      contents: prompt,
+    });
 
-    const cleanJson = text.replace(/```json|```/g, '').trim();
-    const data = JSON.parse(cleanJson);
+    const text = response.text?.trim();
+
+    if (!text) {
+      throw new Error("Empty Gemini response");
+    }
+
+    // ---------- JSON PARSE ----------
+    const data = JSON.parse(text);
+
+    if (!data.icon || !data.color) {
+      throw new Error("Invalid JSON shape");
+    }
 
     return NextResponse.json(data);
-
   } catch (error) {
-    console.error('Enrich Error:', error);
-    return NextResponse.json({ icon: 'Server', color: '#64748b' });
+    console.error("ENRICH ERROR:", error);
+
+    // ---------- NEVER BREAK UI ----------
+    return NextResponse.json({
+      icon: "Server",
+      color: "#64748b",
+    });
   }
 }
