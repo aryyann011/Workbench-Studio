@@ -36,13 +36,14 @@ export function useAutoEnrichment() {
 
         // 4. Update the Store
         if (data.icon && data.color) {
+          console.log("label", data.icon)
             updateNodeData(node.id, { 
                 icon: data.icon, 
                 color: data.color 
             });
         }
       } catch (error) {
-        console.error(`Failed to enrich node ${node.id}:`, error);
+        // console.error(`Failed to enrich node ${node.id}:`, error);
         // Optional: Remove from processedIds if you want to retry later
       }
     });
