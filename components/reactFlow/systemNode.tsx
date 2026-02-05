@@ -3,7 +3,7 @@
 import { Handle, Position, NodeProps } from 'reactflow';
 import { lazy, Suspense, useMemo } from 'react';
 import dynamicIconImports from 'lucide-react/dynamicIconImports';
-import { getIconForLabel } from '@/lib/icon-utils'; // 👈 IMPORT THE BRAIN
+import { getIconForLabel } from '@/lib/icon-utils'; 
 
 interface IconProps {
   name: string;
@@ -33,7 +33,6 @@ const DynamicIcon = ({ name, color }: IconProps) => {
 };
 
 export function SystemNode({ data }: NodeProps) {
-  // 🟡 THE CHANGE:
   // Instead of passively waiting, we actively calculate the icon using our utility.
   // This ensures 'Kafka' gets 'message-square' instantly.
   const resolved = data.icon ? 
