@@ -7,9 +7,10 @@ import { useTheme } from "next-themes"
 interface CodeEditorProps {
   code: string
   setCode: React.Dispatch<React.SetStateAction<string>>
+  onRun : () => void
 }
 
-export const CodeEditor = ({ code, setCode }: CodeEditorProps) => {
+export const CodeEditor = ({ code, setCode, onRun }: CodeEditorProps) => {
   const { theme } = useTheme()
   const editorRef = useRef<any>(null)
 
@@ -19,7 +20,7 @@ export const CodeEditor = ({ code, setCode }: CodeEditorProps) => {
   }
 
   return (
-    <div className="h-full w-full pt-2">
+    <div className="relative w-full pt-2">
       <Editor
         height="100%"
         defaultLanguage="markdown"
@@ -37,6 +38,12 @@ export const CodeEditor = ({ code, setCode }: CodeEditorProps) => {
           fontFamily: "Geist Mono, monospace",
         }}
       />
+      <button
+        onClick={onRun}
+        className="absolute bottom-4 right-4 bg-blue-600 text-white px-4 py-1 rounded-lg"
+      >
+        RUN
+      </button>
     </div>
   )
 }
