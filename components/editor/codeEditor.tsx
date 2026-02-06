@@ -20,7 +20,7 @@ export const CodeEditor = ({ code, setCode, onRun }: CodeEditorProps) => {
   }
 
   return (
-    <div className="relative w-full pt-2">
+    <div className="relative h-full w-full pt-2">
       <Editor
         height="100%"
         defaultLanguage="markdown"
