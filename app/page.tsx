@@ -11,6 +11,7 @@ import { BaseEditor } from "@/components/reactFlow/diagramCanvas"
 import { useAutoEnrichment } from "@/hooks/auto-enrichment"
 import { parseCode } from "@/lib/parser"
 import { useAppStore } from "@/lib/store"
+import PromptBar from "@/components/editor/prompt-input"
 
 export default function ResizableDemo() {
   const [code, setCode] = useState<string>("")
@@ -30,11 +31,16 @@ export default function ResizableDemo() {
       className="h-[300px] w-full rounded-lg border"
     >
       <ResizablePanel defaultSize={50}>
-        <div className="relative flex flex-col h-full items-center justify-center p-6">
+        <div className="relative h-full p-4 pb-28">
           {/* <span className="font-semibold">One</span> */}
-          <CodeEditor code={code} setCode={setCode}/>
+          <div className="h-full">
+            <CodeEditor code={code} setCode={setCode} onRun={handleRun}/>
+          </div>
           {/* <div className="relative"> */}
-            <button onClick={handleRun} className="absolute cursor-pointer bg-blue-600 border rounded-lg p-1 pl-4 pr-4 right-12 bottom-10">RUN</button>
+          <div className="w-full h-[64px]">
+            <PromptBar />
+          </div>
+
           {/* </div> */}
         </div>
       </ResizablePanel>
