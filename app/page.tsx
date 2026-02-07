@@ -31,13 +31,13 @@ export default function ResizableDemo() {
       className="h-[300px] w-full rounded-lg border"
     >
       <ResizablePanel defaultSize={50}>
-        <div className="relative h-full p-6 pb-28">
+        <div className="relative h-full p-4 pb-28">
           {/* <span className="font-semibold">One</span> */}
           <div className="h-full">
             <CodeEditor code={code} setCode={setCode} onRun={handleRun}/>
           </div>
           {/* <div className="relative"> */}
-          <div className="relative h-[64px]">
+          <div className="w-full h-[64px]">
             <PromptBar />
           </div>
 

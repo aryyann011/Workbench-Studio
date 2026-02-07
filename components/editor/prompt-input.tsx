@@ -3,32 +3,18 @@ import TextareaAutosize from "react-textarea-autosize"
 import { useState } from "react"
 
 export default function PromptBar() {
-  const [overlay, setOverlay] = useState(false)
   const MAX_HEIGHT = 180
 
   return (
-    <div className="relative w-full p-4 border rounded-lg mt-4 thin-scrollbar">
-      <div
-        className={
-          overlay
-            ? "absolute bottom-0 left-1/2 -translate-x-1/2 w-full z-20"
-            : "relative w-full"
-        }
-      >
+    <div className="absolute bottom-0 inset-x-0 z-20 w-full">
+      <div className="mx-auto w-[100%] p-8">
         <textarea
           rows={1}
           placeholder="Write to create..."
           onInput={(e) => {
             const el = e.currentTarget
             el.style.height = "auto"
-
-            if (el.scrollHeight > MAX_HEIGHT) {
-              setOverlay(true)
-              el.style.height = MAX_HEIGHT + "px"
-            } else {
-              setOverlay(false)
-              el.style.height = el.scrollHeight + "px"
-            }
+            el.style.height = Math.min(el.scrollHeight, MAX_HEIGHT) + "px"
           }}
           className="
             w-full
@@ -36,17 +22,15 @@ export default function PromptBar() {
             thin-scrollbar
             overflow-y-auto
             bg-gray-800
-            max-h-[180px]
             rounded-xl
-            px-4
-            py-3
+            px-8
+            py-5
             outline-none
           "
         />
-
-        <div className="absolute p-1 right-3 bottom-3 rounded-lg border cursor-pointer bg-blue-600">
-          <ArrowUp />
-        </div>
+      </div>
+      <div className="absolute p-1 right-10 bottom-13 rounded-lg border cursor-pointer bg-blue-600">
+        <ArrowUp />
       </div>
     </div>
   )
