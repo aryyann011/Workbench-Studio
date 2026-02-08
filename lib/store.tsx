@@ -32,7 +32,7 @@ export const useAppStore = create<AppState>((set, get) => ({
 
     const currentNodes = get().nodes;
 
-    const mergedNodes = newNodes.map((newNode) => {
+    const mergedNodes = newNodes.map((newNode) => { 
       const existingNode = currentNodes.find((n) => n.id === newNode.id);
       
       if (existingNode) {

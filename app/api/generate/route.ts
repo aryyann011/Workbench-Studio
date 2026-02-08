@@ -23,7 +23,7 @@ export async function POST(request : Request){
       STRICT SYNTAX RULES:
       1. Use [NodeName] for services/components.
       2. Use -> for connections.
-      3. Format: [Source]->[Target]->[anotherTarget]->.... and so on. it can keep going on or you can start from new line also for new nodes 
+      3. Format: [Source]->[Target]->[anotherTarget]->.... and so on. it can keep going on or you can start from new line also for new nodes for better structured look 
       4. DO NOT generate positions or props. Logic only.
       5. OUTPUT RAW TEXT ONLY. No markdown, no explanations.
 
@@ -44,6 +44,10 @@ export async function POST(request : Request){
       }
 
       const code = JSON.parse(data)
+
+      return NextResponse.json(
+        {code : `${code}`}
+      )
 
       
 }

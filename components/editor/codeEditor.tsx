@@ -3,15 +3,17 @@
 import { useRef } from "react"
 import Editor, { OnMount } from "@monaco-editor/react"
 import { useTheme } from "next-themes"
+import { useAppStore } from "@/lib/store"
 
 interface CodeEditorProps {
-  code: string
-  setCode: React.Dispatch<React.SetStateAction<string>>
+  // code: string
+  // setCode: React.Dispatch<React.SetStateAction<string>>
   onRun : () => void
 }
 
-export const CodeEditor = ({ code, setCode, onRun }: CodeEditorProps) => {
+export const CodeEditor = ({ onRun }: CodeEditorProps) => {
   const { theme } = useTheme()
+  const {code, setCode} = useAppStore()
   const editorRef = useRef<any>(null)
 
   const handleEditorDidMount: OnMount = (editor) => {
