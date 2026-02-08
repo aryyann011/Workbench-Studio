@@ -2,7 +2,13 @@ import { ArrowUp } from "lucide-react"
 import TextareaAutosize from "react-textarea-autosize"
 import { useState } from "react"
 
-export default function PromptBar() {
+interface CodeEditorProps {
+  prompt: string
+  setPrompt: React.Dispatch<React.SetStateAction<string>>
+  onPromptRun : () => void
+}
+
+export default function PromptBar({ prompt, setPrompt, onPromptRun } : CodeEditorProps) {
   const MAX_HEIGHT = 180
 
   return (
@@ -16,6 +22,8 @@ export default function PromptBar() {
             el.style.height = "auto"
             el.style.height = Math.min(el.scrollHeight, MAX_HEIGHT) + "px"
           }}
+          value={prompt}
+          onChange={(e)=> setPrompt(e.target.value)}
           className="
             w-full
             resize-none

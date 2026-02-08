@@ -14,7 +14,8 @@ import { useAppStore } from "@/lib/store"
 import PromptBar from "@/components/editor/prompt-input"
 
 export default function ResizableDemo() {
-  const [code, setCode] = useState<string>("")
+  const {code, setCode} = useAppStore()
+  const [prompt, setPrompt] = useState<string>("")
   const setGraph = useAppStore((state) => state.setGraph)
 
   // useAutoEnrichment(); 
@@ -24,6 +25,28 @@ export default function ResizableDemo() {
     const result = parseCode(code);
     setGraph(result.nodes, result.edges);
   };
+
+  const handlePromptRun = async () => {
+    if(!prompt) return;
+
+    try {
+      const response = await fetch('/api/enrich', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ text: prompt }),
+      });
+
+      const data = await response.json()
+
+      if(data.code){
+        setCode(data.code);
+
+      }
+    } catch (error) {
+      
+    }
+
+  }
   
   return (
     <ResizablePanelGroup
@@ -34,11 +57,11 @@ export default function ResizableDemo() {
         <div className="relative h-full p-4 pb-28">
           {/* <span className="font-semibold">One</span> */}
           <div className="h-full">
-            <CodeEditor code={code} setCode={setCode} onRun={handleRun}/>
+            <CodeEditor onRun={handleRun}/>
           </div>
           {/* <div className="relative"> */}
           <div className="w-full h-[64px]">
-            <PromptBar />
+            <PromptBar prompt={prompt} setPrompt={setPrompt} onPromptRun={handlePromptRun}/>
           </div>
 
           {/* </div> */}
