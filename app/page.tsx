@@ -14,23 +14,21 @@ import { useAppStore } from "@/lib/store"
 import PromptBar from "@/components/editor/prompt-input"
 
 export default function ResizableDemo() {
-  const {code, setCode} = useAppStore()
+  const {code, setCode, generateGraph} = useAppStore()
   const [prompt, setPrompt] = useState<string>("")
-  const setGraph = useAppStore((state) => state.setGraph)
 
   // useAutoEnrichment(); 
 
   const handleRun = () => {
     if (!code) return;
-    const result = parseCode(code);
-    setGraph(result.nodes, result.edges);
+    generateGraph();
   };
 
   const handlePromptRun = async () => {
     if(!prompt) return;
 
     try {
-      const response = await fetch('/api/enrich', {
+      const response = await fetch('/api/generate', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ text: prompt }),
@@ -40,10 +38,14 @@ export default function ResizableDemo() {
 
       if(data.code){
         setCode(data.code);
-
+        setTimeout(() => {
+            generateGraph(); 
+        }, 0);
       }
+
+
     } catch (error) {
-      
+      console.error("Failed to call api", error);
     }
 
   }

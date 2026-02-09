@@ -37,7 +37,7 @@ export default function PromptBar({ prompt, setPrompt, onPromptRun } : CodeEdito
           "
         />
       </div>
-      <div className="absolute p-1 right-10 bottom-13 rounded-lg border cursor-pointer bg-blue-600">
+      <div onClick={onPromptRun} className="absolute p-1 right-10 bottom-13 rounded-lg border cursor-pointer bg-blue-600">
         <ArrowUp />
       </div>
     </div>

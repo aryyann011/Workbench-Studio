@@ -43,7 +43,7 @@ export async function POST(request : Request){
         )
       }
 
-      const code = JSON.parse(data)
+      const code = data
 
       return NextResponse.json(
         {code : `${code}`}
