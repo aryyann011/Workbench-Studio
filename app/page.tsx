@@ -16,6 +16,7 @@ import PromptBar from "@/components/editor/prompt-input"
 export default function ResizableDemo() {
   const {code, setCode, generateGraph} = useAppStore()
   const [prompt, setPrompt] = useState<string>("")
+  const [isloading, SetIsloading] = useState<boolean>(false)
 
   // useAutoEnrichment(); 
 
@@ -26,6 +27,7 @@ export default function ResizableDemo() {
 
   const handlePromptRun = async () => {
     if(!prompt) return;
+    SetIsloading(true);
 
     try {
       const response = await fetch('/api/generate', {
@@ -46,6 +48,9 @@ export default function ResizableDemo() {
 
     } catch (error) {
       console.error("Failed to call api", error);
+    } finally{
+      setPrompt("")
+      SetIsloading(false)
     }
 
   }
@@ -63,7 +68,7 @@ export default function ResizableDemo() {
           </div>
           {/* <div className="relative"> */}
           <div className="w-full h-[64px]">
-            <PromptBar prompt={prompt} setPrompt={setPrompt} onPromptRun={handlePromptRun}/>
+            <PromptBar prompt={prompt} setPrompt={setPrompt} onPromptRun={handlePromptRun} isloading={isloading}/>
           </div>
 
           {/* </div> */}

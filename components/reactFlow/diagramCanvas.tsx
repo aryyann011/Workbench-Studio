@@ -27,9 +27,17 @@ export const BaseEditor = () => {
         edges={edges}
         onNodesChange={onNodesChange}
         onEdgesChange={onEdgesChange}
-        
+        minZoom={0.01} 
+        maxZoom={1000}
         nodeTypes={nodeTypes}
         
+        panOnScroll={false}         
+        zoomOnScroll={true}
+        panOnDrag={true}
+        selectionOnDrag={false}
+
+        onlyRenderVisibleElements={true}
+
         defaultEdgeOptions={{
           type: 'smoothstep',
           markerEnd: { type: MarkerType.ArrowClosed },
@@ -44,6 +52,12 @@ export const BaseEditor = () => {
         <MiniMap 
           className="bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700" 
           maskColor="rgba(0,0,0, 0.1)"
+          style={{
+            height: 100, // Explicitly smaller height
+            width: 150,  // Explicitly smaller width
+          }}
+          zoomable 
+          pannable 
         />
       </ReactFlow>
     </div>
