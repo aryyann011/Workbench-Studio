@@ -14,23 +14,23 @@ import { useAppStore } from "@/lib/store"
 import PromptBar from "@/components/editor/prompt-input"
 
 export default function ResizableDemo() {
-  const {code, setCode} = useAppStore()
+  const {code, setCode, generateGraph} = useAppStore()
   const [prompt, setPrompt] = useState<string>("")
-  const setGraph = useAppStore((state) => state.setGraph)
+  const [isloading, SetIsloading] = useState<boolean>(false)
 
   // useAutoEnrichment(); 
 
   const handleRun = () => {
     if (!code) return;
-    const result = parseCode(code);
-    setGraph(result.nodes, result.edges);
+    generateGraph();
   };
 
   const handlePromptRun = async () => {
     if(!prompt) return;
+    SetIsloading(true);
 
     try {
-      const response = await fetch('/api/enrich', {
+      const response = await fetch('/api/generate', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ text: prompt }),
@@ -40,10 +40,17 @@ export default function ResizableDemo() {
 
       if(data.code){
         setCode(data.code);
-
+        setTimeout(() => {
+            generateGraph(); 
+        }, 0);
       }
+
+
     } catch (error) {
-      
+      console.error("Failed to call api", error);
+    } finally{
+      setPrompt("")
+      SetIsloading(false)
     }
 
   }
@@ -61,7 +68,7 @@ export default function ResizableDemo() {
           </div>
           {/* <div className="relative"> */}
           <div className="w-full h-[64px]">
-            <PromptBar prompt={prompt} setPrompt={setPrompt} onPromptRun={handlePromptRun}/>
+            <PromptBar prompt={prompt} setPrompt={setPrompt} onPromptRun={handlePromptRun} isloading={isloading}/>
           </div>
 
           {/* </div> */}

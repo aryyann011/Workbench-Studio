@@ -1,4 +1,4 @@
-import { ArrowUp } from "lucide-react"
+import { ArrowUp, Loader2 } from "lucide-react"
 import TextareaAutosize from "react-textarea-autosize"
 import { useState } from "react"
 
@@ -6,9 +6,10 @@ interface CodeEditorProps {
   prompt: string
   setPrompt: React.Dispatch<React.SetStateAction<string>>
   onPromptRun : () => void
+  isloading : boolean
 }
 
-export default function PromptBar({ prompt, setPrompt, onPromptRun } : CodeEditorProps) {
+export default function PromptBar({ prompt, setPrompt, onPromptRun, isloading } : CodeEditorProps) {
   const MAX_HEIGHT = 180
 
   return (
@@ -37,8 +38,11 @@ export default function PromptBar({ prompt, setPrompt, onPromptRun } : CodeEdito
           "
         />
       </div>
-      <div className="absolute p-1 right-10 bottom-13 rounded-lg border cursor-pointer bg-blue-600">
-        <ArrowUp />
+      <div onClick={onPromptRun} className="absolute p-1 right-10 bottom-13 rounded-lg border cursor-pointer bg-blue-600">
+        {isloading ? 
+          <Loader2 className="animate-spin" /> :
+          <ArrowUp />
+         }
       </div>
     </div>
   )
