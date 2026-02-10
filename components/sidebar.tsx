@@ -12,6 +12,7 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar"
+import { baskerville } from "@/app/layout"
 
 const items = [
   {
@@ -41,7 +42,9 @@ export function AppSidebar() {
     <Sidebar>
       <SidebarContent>
         <SidebarGroup className="p-4">
-          <SidebarGroupLabel className="text-[22px] dark:text-white font-bold">Workbench Studio</SidebarGroupLabel>
+          <SidebarGroupLabel
+    className={`text-[20px] dark:text-white font-bold ${baskerville.className}`}
+  >Workbench Studio</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu className="p-4">
               {items.map((item) => (
