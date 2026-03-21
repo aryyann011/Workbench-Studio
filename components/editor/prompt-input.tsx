@@ -30,7 +30,8 @@ export default function PromptBar({ prompt, setPrompt, onPromptRun, isloading } 
             resize-none
             thin-scrollbar
             overflow-y-auto
-            bg-gray-800
+            dark:bg-gray-800
+          bg-white
             rounded-xl
             px-8
             py-5
@@ -38,7 +39,7 @@ export default function PromptBar({ prompt, setPrompt, onPromptRun, isloading } 
           "
         />
       </div>
-      <div onClick={onPromptRun} className="absolute p-1 right-10 bottom-13 rounded-lg border cursor-pointer bg-blue-600">
+      <div onClick={onPromptRun} className="absolute p-1 bg-gray-300 right-10 bottom-13 rounded-lg border cursor-pointer dark:bg-blue-600">
         {isloading ? 
           <Loader2 className="animate-spin" /> :
           <ArrowUp />
