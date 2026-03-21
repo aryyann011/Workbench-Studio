@@ -20,7 +20,7 @@ export function LayoutWrapper({ children }: { children: React.ReactNode }) {
         <AppSidebar />
         
         <main className="w-full h-screen flex flex-col overflow-hidden">
-          
+    
           {/* Header Bar */}
           <div className="p-2 border-b border-border flex items-center gap-2">
             <SidebarTrigger /> 
