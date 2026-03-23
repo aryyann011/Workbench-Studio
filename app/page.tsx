@@ -53,7 +53,6 @@ export default function ResizableDemo() {
       setPrompt("")
       SetIsloading(false)
     }
-
   }
   
   return (
