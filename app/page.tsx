@@ -37,6 +37,7 @@ export default function ResizableDemo() {
       });
 
       const data = await response.json()
+      console.log(data)
 
       if(data.code){
         setCode(data.code);
@@ -52,7 +53,6 @@ export default function ResizableDemo() {
       setPrompt("")
       SetIsloading(false)
     }
-
   }
   
   return (
@@ -67,7 +67,7 @@ export default function ResizableDemo() {
             <CodeEditor onRun={handleRun}/>
           </div>
           {/* <div className="relative"> */}
-          <div className="w-full h-[64px]">
+          <div className="w-full h-16">
             <PromptBar prompt={prompt} setPrompt={setPrompt} onPromptRun={handlePromptRun} isloading={isloading}/>
           </div>
 

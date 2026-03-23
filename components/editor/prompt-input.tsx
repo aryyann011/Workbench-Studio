@@ -31,7 +31,7 @@ export default function PromptBar({ prompt, setPrompt, onPromptRun, isloading } 
             thin-scrollbar
             overflow-y-auto
             dark:bg-gray-800
-          bg-white
+            bg-white
             rounded-xl
             px-8
             py-5
