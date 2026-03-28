@@ -5,6 +5,7 @@ import { create } from 'zustand';
 import { Node, Edge, OnNodesChange, OnEdgesChange, applyEdgeChanges, applyNodeChanges } from 'reactflow'; 
 import { parseCode } from './parser';
 import { getLayoutedElements } from './layout';
+import { promises } from 'dns';
 
 
 
@@ -15,7 +16,7 @@ interface AppState {
   setCode : (code : string) => void
 
   updateNodeData : (id : string, data : any) => void;
-  generateGraph: () => void;
+  generateGraph: () => Promise<void>;
   onNodesChange : OnNodesChange;
   onEdgesChange : OnEdgesChange;
 }
@@ -41,11 +42,12 @@ export const useAppStore = create<AppState>((set, get) => ({
       })
     })
   },
-  generateGraph: () => {
+  generateGraph: async () => {
     const {code, nodes : currentNodes} = get()
     
-    const {nodes : newNodes, edges : newEdges} = parseCode(code)
-    const mergedNodes = newNodes.map((newNode) => {
+    const {nodes : parsed_nodes, edges : parsed_edges} = parseCode(code)
+    const {nodes : newNodes, edges : newEdges} = await getLayoutedElements(parsed_nodes, parsed_edges)
+    const mergedNodes = newNodes .map((newNode) => {
       const existingNode = currentNodes.find((n) => n.id === newNode.id);
 
       if(existingNode){
