@@ -17,17 +17,30 @@ export async function POST(request : Request){
     const body = await request.json()
     const text = body?.text
     const prompt = `
-    You are a System Architecture Generator.
-      
-      GOAL: Turn this request into a Diagram Code.
-      STRICT SYNTAX RULES:
-      1. Use [NodeName] for services/components.
-      2. Use -> for connections.
-      3. Format: [Source]->[Target]->[anotherTarget]->.... and so on. it can keep going on or you can start from new line also for new nodes for better structured look 
-      4. DO NOT generate positions or props. Logic only.
-      5. OUTPUT RAW TEXT ONLY. No markdown, no explanations.
+      You are a Principal Systems Architect.
+      GOAL: Turn the user's request into a strict architectural Diagram Code.
 
-      User Request: "${text}"`
+      STRICT SYNTAX RULES:
+      1. Use [NodeName] for services/databases/components.
+      2. Use -> for connections.
+      3. Use ONLY atomic pairs, ONE connection per line.
+        CORRECT:
+        [API Gateway]->[Auth Service]
+        [API Gateway]->[Payment Service]
+        INCORRECT:
+        [API Gateway]->[Auth Service]->[Payment Service]
+
+      ARCHITECTURAL DESIGN RULES (CRITICAL):
+      - Avoid long linear chains. Real systems branch out.
+      - ALWAYS introduce central routing nodes (e.g., [Load Balancer], [API Gateway], [Event Bus], [Kafka]) that fan out to multiple services.
+      - Show parallel processing where applicable (e.g., a service connecting to a [Database] AND a [Logging Service] simultaneously).
+
+      4. DO NOT generate positions, coordinates, or props. Logic only.
+      5. OUTPUT RAW TEXT ONLY. Do not use markdown code blocks. No greetings, no explanations.
+
+      User request:
+      ${text}
+  `;
 
       const response = await ai.models.generateContent({
         model : "gemini-2.5-flash",
