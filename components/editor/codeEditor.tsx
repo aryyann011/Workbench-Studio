@@ -4,6 +4,7 @@ import { useRef } from "react"
 import Editor, { OnMount } from "@monaco-editor/react"
 import { useTheme } from "next-themes"
 import { useAppStore } from "@/lib/store"
+import { SaveButton } from "../SaveButton"
 
 interface CodeEditorProps {
   // code: string
@@ -40,12 +41,15 @@ export const CodeEditor = ({ onRun }: CodeEditorProps) => {
           fontFamily: "Geist Mono, monospace",
         }}
       />
-      <button
-        onClick={onRun}
-        className="absolute bottom-4 right-4 bg-blue-600 text-white px-4 py-1 rounded-lg"
-      >
-        RUN
-      </button>
+      <div className="flex">
+          <button
+            onClick={onRun}
+            className="absolute bottom-4 right-4 bg-blue-600 text-white px-4 py-1 rounded-lg"
+          >
+            RUN
+          </button>
+          <SaveButton/>
+      </div>
     </div>
   )
 }
