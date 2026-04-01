@@ -37,7 +37,7 @@ export default async function DashboardPage() {
           </div>
           <h3 className="text-lg font-medium">No architectures yet</h3>
           <p className="text-muted-foreground max-w-sm mt-2">
-            Generate your first system design using the AI prompt to see it appear here.
+            Generate your first system design using the AI prompt to see appear here.
           </p>
         </div>
       ) : (
