@@ -47,7 +47,7 @@ export const useAppStore = create<AppState>((set, get) => ({
     
     const {nodes : parsed_nodes, edges : parsed_edges} = parseCode(code)
     const {nodes : newNodes, edges : newEdges} = await getLayoutedElements(parsed_nodes, parsed_edges)
-    const mergedNodes = newNodes .map((newNode) => {
+    const mergedNodes = newNodes.map((newNode) => {
       const existingNode = currentNodes.find((n) => n.id === newNode.id);
 
       if(existingNode){

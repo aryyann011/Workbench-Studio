@@ -1,94 +1,82 @@
-"use client"
+import { auth } from "@clerk/nextjs/server";
+import { prisma } from "@/lib/db";
+import { formatDistanceToNow } from "date-fns"; // We'll need to install this
+import { FileCode2 } from "lucide-react";
+import Link from "next/link";
+import { useAppStore } from "@/lib/store";
+import { useRouter } from "next/router";
 
-import { useEffect, useState } from "react"
-import { CodeEditor } from "@/components/editor/codeEditor"
-import {
-  ResizablePanelGroup,
-  ResizablePanel,
-  ResizableHandle,
-} from "@/components/ui/resizable"
-import { BaseEditor } from "@/components/reactFlow/diagramCanvas"
-import { useAutoEnrichment } from "@/hooks/auto-enrichment"
-import { parseCode } from "@/lib/parser"
-import { useAppStore } from "@/lib/store"
-import PromptBar from "@/components/editor/prompt-input"
-
-export default function ResizableDemo() {
+export default async function DashboardPage() {
+  const { userId } = await auth();
   const {code, setCode, generateGraph} = useAppStore()
-  const [prompt, setPrompt] = useState<string>("")
-  const [isloading, SetIsloading] = useState<boolean>(false)
+  const router = useRouter()
 
-  // useAutoEnrichment(); 
-
-  const handleRun = () => {
-    if (!code) return;
-    generateGraph();
-  };
-
-  const handlePromptRun = async () => {
-    if(!prompt) return;
-    SetIsloading(true);
-
-    try {
-      const response = await fetch('/api/generate', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ text: prompt }),
-      });
-
-      const data = await response.json()
-      console.log(data)
-
-      if(data.code){
-        setCode(data.code);
-        setTimeout(() => {
-            generateGraph(); 
-        }, 0);
-      }
-
-
-    } catch (error) {
-      console.error("Failed to call api", error);
-    } finally{
-      setPrompt("")
-      SetIsloading(false)
-    }
+  if (!userId) {
+    return <div>Please log in to view your workspaces.</div>;
   }
-  
+
+  const workspaces = await prisma.workspace.findMany({
+    where: {
+      userId: userId,
+    },
+    orderBy: {
+      updatedAt: "desc",
+    },
+  });
+
+  // const setUpdashboard = (code: string) => {
+  //   setCode(code)
+  //   if(code){
+  //     generateGraph()
+  //   }
+
+  //   router.push("/dashboard")
+  // }
+
   return (
-    <ResizablePanelGroup
-      orientation="horizontal"
-      className="h-[300px] w-full rounded-lg border"
-    >
-      <ResizablePanel defaultSize={50}>
-        <div className="relative h-full p-4 pb-28">
-          {/* <span className="font-semibold">One</span> */}
-          <div className="h-full">
-            <CodeEditor onRun={handleRun}/>
-          </div>
-          {/* <div className="relative"> */}
-          <div className="w-full h-16">
-            <PromptBar prompt={prompt} setPrompt={setPrompt} onPromptRun={handlePromptRun} isloading={isloading}/>
-          </div>
+    <div className="p-8 w-full max-w-6xl mx-auto">
+      <div className="mb-8">
+        <h1 className="text-3xl font-bold tracking-tight mb-2">Your Architectures</h1>
+        <p className="text-muted-foreground">Manage and view your saved system designs.</p>
+      </div>
 
-          {/* </div> */}
+      {workspaces.length === 0 ? (
+        <div className="flex flex-col items-center justify-center p-12 border-2 border-dashed rounded-lg border-border text-center">
+          <div className="w-12 h-12 rounded-full bg-muted flex items-center justify-center mb-4">
+            <FileCode2 className="w-6 h-6 text-muted-foreground" />
+          </div>
+          <h3 className="text-lg font-medium">No architectures yet</h3>
+          <p className="text-muted-foreground max-w-sm mt-2">
+            Generate your first system design using the AI prompt to see appear here.
+          </p>
         </div>
-      </ResizablePanel>
-
-      <ResizableHandle/>
-
-      <ResizablePanel defaultSize={50}>
-        <ResizablePanelGroup orientation="vertical">
-          <ResizablePanel defaultSize={50}>
-            <div className="flex h-full items-center justify-center p-6">
-              {/* <span className="font-semibold">Two</span> */}
-              <BaseEditor/>
-            </div>
-          </ResizablePanel>
-
-          <ResizableHandle withHandle />
-        </ResizablePanelGroup>
-      </ResizablePanel>
-    </ResizablePanelGroup>
-  )
+      ) : (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {workspaces.map((workspace) => (
+            <Link
+              href={`/dashboard/${workspace.id}`}
+              key={workspace.id} 
+              className="group flex flex-col p-6 border border-border rounded-xl bg-card hover:border-primary/50 transition-colors cursor-pointer"
+            >
+              <div className="flex items-center gap-3 mb-4">
+                <div className="p-2 bg-primary/10 rounded-lg text-primary">
+                  <FileCode2 className="w-5 h-5" />
+                </div>
+                <h2 className="font-semibold text-lg truncate" title={workspace.name}>
+                  {workspace.name}
+                </h2>
+              </div>
+              
+              <div className="mt-auto pt-4 border-t border-border flex items-center justify-between text-xs text-muted-foreground">
+                <span>Updated {workspace.updatedAt.toLocaleDateString()}</span>
+                <span className="font-mono text-[10px] bg-muted px-2 py-1 rounded">
+                  ID: {workspace.id.slice(0, 8)}...
+                </span>
+              </div>
+            </Link>
+          ))}
+        </div>
+      )}
+    </div>
+  );
 }
