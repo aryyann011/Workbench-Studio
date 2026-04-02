@@ -2,17 +2,19 @@ import { auth } from "@clerk/nextjs/server";
 import { prisma } from "@/lib/db";
 import { formatDistanceToNow } from "date-fns"; // We'll need to install this
 import { FileCode2 } from "lucide-react";
+import Link from "next/link";
+import { useAppStore } from "@/lib/store";
+import { useRouter } from "next/router";
 
 export default async function DashboardPage() {
-  // 1. Identify the user securely on the server
   const { userId } = await auth();
+  const {code, setCode, generateGraph} = useAppStore()
+  const router = useRouter()
 
-  // 2. Safety check (Middleware should catch this, but we are bulletproof)
   if (!userId) {
     return <div>Please log in to view your workspaces.</div>;
   }
 
-  // 3. The Retrieval: Tell Prisma to get all diagrams belonging to THIS user, newest first
   const workspaces = await prisma.workspace.findMany({
     where: {
       userId: userId,
@@ -22,6 +24,15 @@ export default async function DashboardPage() {
     },
   });
 
+  // const setUpdashboard = (code: string) => {
+  //   setCode(code)
+  //   if(code){
+  //     generateGraph()
+  //   }
+
+  //   router.push("/dashboard")
+  // }
+
   return (
     <div className="p-8 w-full max-w-6xl mx-auto">
       <div className="mb-8">
@@ -29,7 +40,6 @@ export default async function DashboardPage() {
         <p className="text-muted-foreground">Manage and view your saved system designs.</p>
       </div>
 
-      {/* If they have no saved diagrams, show a blank slate */}
       {workspaces.length === 0 ? (
         <div className="flex flex-col items-center justify-center p-12 border-2 border-dashed rounded-lg border-border text-center">
           <div className="w-12 h-12 rounded-full bg-muted flex items-center justify-center mb-4">
@@ -41,10 +51,10 @@ export default async function DashboardPage() {
           </p>
         </div>
       ) : (
-        /* If they have diagrams, map them into a grid of cards */
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {workspaces.map((workspace) => (
-            <div 
+            <Link
+              href={`/dashboard/${workspace.id}`}
               key={workspace.id} 
               className="group flex flex-col p-6 border border-border rounded-xl bg-card hover:border-primary/50 transition-colors cursor-pointer"
             >
@@ -63,7 +73,7 @@ export default async function DashboardPage() {
                   ID: {workspace.id.slice(0, 8)}...
                 </span>
               </div>
-            </div>
+            </Link>
           ))}
         </div>
       )}

@@ -12,13 +12,27 @@ import { useAutoEnrichment } from "@/hooks/auto-enrichment"
 import { parseCode } from "@/lib/parser"
 import { useAppStore } from "@/lib/store"
 import PromptBar from "@/components/editor/prompt-input"
+import { useParams } from "next/navigation"
+import { prisma } from "@/lib/db"
 
 export default function ResizableDemo() {
+  const id = useParams()
   const {code, setCode, generateGraph} = useAppStore()
   const [prompt, setPrompt] = useState<string>("")
   const [isloading, SetIsloading] = useState<boolean>(false)
 
   // useAutoEnrichment(); 
+
+  // useEffect(() => {
+    const workspaces = await prisma.workspace.findMany({
+      where: { id },
+    });
+
+    if (workspaces.length > 0) {
+      setCode(workspaces[0].code);
+      generateGraph()
+    }
+  // }, []);
 
   const handleRun = () => {
     if (!code) return;
