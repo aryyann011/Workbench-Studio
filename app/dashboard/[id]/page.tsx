@@ -1,8 +1,8 @@
 "use client"
 
 import { useEffect, useState } from "react"
-import { useParams, useRouter } from "next/navigation" // <-- This reads the URL
-import { getWorkspace, saveArchitecture } from "@/actions/workspace" // <-- Backend functions
+import { useParams, useRouter } from "next/navigation"
+import { getWorkspace, saveArchitecture } from "@/actions/workspace"
 import { CodeEditor } from "@/components/editor/codeEditor"
 import {
   ResizablePanelGroup,
@@ -12,16 +12,26 @@ import {
 import { BaseEditor } from "@/components/reactFlow/diagramCanvas"
 import { useAppStore } from "@/lib/store"
 import PromptBar from "@/components/editor/prompt-input"
+import { Code2, SquareSplitHorizontal, LayoutDashboard, Save, Play, Sparkles, X } from "lucide-react"
+
+// Inside the component:
+
+// Define the 3 states our screen can be in
+type ViewMode = "code" | "both" | "canvas";
 
 export default function ResizableDemo() {
   const params = useParams()
   const router = useRouter()
-  const workspaceId = params.id as string // Grabs the "new" or "abc-123" from the URL
+  const workspaceId = params.id as string 
 
+  const [isAIOpen, setIsAIOpen] = useState<boolean>(false) // <-- ADD THIS
   const { code, setCode, generateGraph } = useAppStore()
   const [prompt, setPrompt] = useState<string>("")
   const [isLoading, setIsLoading] = useState<boolean>(false)
   const [isSaving, setIsSaving] = useState<boolean>(false)
+  
+  // NEW: The state that controls the layout
+  const [viewMode, setViewMode] = useState<ViewMode>("both")
 
   useEffect(() => {
     if (workspaceId === "new") {
@@ -85,46 +95,105 @@ export default function ResizableDemo() {
   }
   
   return (
-    <div className="flex flex-col w-full h-[calc(100vh-64px)]">
-      {/* QUICK SAVE BAR AT THE TOP OF THE EDITOR */}
-      {/* <div className="flex justify-end p-2 border-b bg-background">
+    <div className="flex flex-col w-full h-[calc(100vh-64px)] relative bg-background overflow-hidden">
+      
+      {/* 1. FLOATING VIEW TOGGLES (Top Center) */}
+      <div className="absolute top-0 left-1/2 -translate-x-1/2 z-50 flex items-center bg-background/80 backdrop-blur-md border border-border p-1 rounded-lg shadow-sm">
         <button 
+          onClick={() => setViewMode("code")} 
+          className={`px-3 py-1.5 rounded-md flex items-center gap-2 text-sm transition-colors ${viewMode === 'code' ? 'bg-primary text-primary-foreground shadow' : 'hover:bg-muted text-muted-foreground'}`}
+        >
+          <Code2 className="w-4 h-4" /> Code
+        </button>
+        <button 
+          onClick={() => setViewMode("both")} 
+          className={`px-3 py-1.5 rounded-md flex items-center gap-2 text-sm transition-colors ${viewMode === 'both' ? 'bg-primary text-primary-foreground shadow' : 'hover:bg-muted text-muted-foreground'}`}
+        >
+          <SquareSplitHorizontal className="w-4 h-4" /> Both
+        </button>
+        <button 
+          onClick={() => setViewMode("canvas")} 
+          className={`px-3 py-1.5 rounded-md flex items-center gap-2 text-sm transition-colors ${viewMode === 'canvas' ? 'bg-primary text-primary-foreground shadow' : 'hover:bg-muted text-muted-foreground'}`}
+        >
+          <LayoutDashboard className="w-4 h-4" /> Canvas
+        </button>
+      </div>
+
+      {/* 2. FLOATING UTILITY BAR (Top Right) */}
+      <div className="absolute top-4 right-4 z-50 flex items-center gap-2">
+        {/* Run Button (Manual trigger if they type code instead of using AI) */}
+        <button
+          onClick={handleRun}
+          className="flex items-center gap-2 bg-secondary hover:bg-secondary/80 text-secondary-foreground px-4 py-2 rounded-md text-sm font-semibold transition-colors border border-border"
+        >
+          <Play className="w-4 h-4" />
+          Run
+        </button>
+
+        {/* Save Button */}
+        <button
           onClick={handleSaveWorkspace}
           disabled={isSaving || !code}
-          className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-1.5 rounded text-sm font-semibold transition-colors disabled:opacity-50"
+          className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md text-sm font-semibold transition-colors shadow-md disabled:opacity-50"
         >
-          {isSaving ? "Saving..." : "Save Architecture"}
+          <Save className="w-4 h-4" />
+          {isSaving ? "Saving..." : "Save"}
         </button>
-      </div> */}
+        <button
+          onClick={() => setIsAIOpen(!isAIOpen)}
+          className={`flex items-center gap-2 px-4 py-2 rounded-md text-sm font-semibold transition-colors border ${isAIOpen ? 'bg-blue-600/10 text-blue-500 border-blue-500/50' : 'bg-secondary hover:bg-secondary/80 text-secondary-foreground border-border'}`}
+        >
+          <Sparkles className="w-4 h-4" />
+          AI Chat
+        </button>
+      </div>
 
+      {/* 3. FLOATING AI PROMPT (Bottom Center) */}
+      {/* 3. SLIDING AI SIDEBAR */}
+      <div 
+        className={`absolute top-0 right-0 h-full w-80 z-50 transform transition-transform duration-300 ease-in-out ${isAIOpen ? 'translate-x-0' : 'translate-x-full'}`}
+      >
+        {/* Close Button overlaying the sidebar */}
+        <button 
+          onClick={() => setIsAIOpen(false)}
+          className="absolute top-4 right-4 z-50 p-1 bg-muted hover:bg-muted-foreground/20 rounded-md text-muted-foreground transition-colors"
+        >
+          <X className="w-4 h-4" />
+        </button>
+        
+        <PromptBar prompt={prompt} setPrompt={setPrompt} onPromptRun={handlePromptRun} isloading={isLoading}/>
+      </div>
+
+      {/* 4. DYNAMIC STRUCTURAL PANELS */}
       <ResizablePanelGroup
         orientation="horizontal"
-        className="w-full h-full rounded-lg border-0"
+        className="w-full h-full rounded-none border-0"
       >
-        <ResizablePanel defaultSize={50}>
-          <div className="relative h-full p-4 pb-28">
-            <div className="h-full">
-              <CodeEditor onRun={handleRun}/>
-            </div>
-            <div className="w-full h-16 mt-2">
-              <PromptBar prompt={prompt} setPrompt={setPrompt} onPromptRun={handlePromptRun} isloading={isLoading}/>
-            </div>
-          </div>
-        </ResizablePanel>
-
-        <ResizableHandle/>
-
-        <ResizablePanel defaultSize={50}>
-          <ResizablePanelGroup orientation="vertical">
-            <ResizablePanel defaultSize={50}>
-              <div className="flex h-full items-center justify-center p-6">
-                <BaseEditor/>
+        {/* CONDITIONAL CODE PANEL */}
+        {viewMode !== "canvas" && (
+          <>
+            <ResizablePanel defaultSize={viewMode === "code" ? 100 : 30} minSize={20}>
+              {/* Extra padding top/bottom so code doesn't hide behind the floating buttons */}
+              <div className="h-full w-full px-4 bg-zinc-950/50">
+                <CodeEditor onRun={handleRun}/>
               </div>
             </ResizablePanel>
-            <ResizableHandle withHandle />
-          </ResizablePanelGroup>
-        </ResizablePanel>
+            
+            {/* Only show the drag handle if BOTH are visible */}
+            {viewMode === "both" && <ResizableHandle withHandle />}
+          </>
+        )}
+
+        {/* CONDITIONAL CANVAS PANEL */}
+        {viewMode !== "code" && (
+          <ResizablePanel defaultSize={viewMode === "canvas" ? 100 : 70}>
+            <div className="h-full w-full bg-zinc-900/10">
+              <BaseEditor/>
+            </div>
+          </ResizablePanel>
+        )}
       </ResizablePanelGroup>
+
     </div>
   )
 }

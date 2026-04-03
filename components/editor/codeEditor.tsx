@@ -41,7 +41,7 @@ export const CodeEditor = ({ onRun }: CodeEditorProps) => {
           fontFamily: "Geist Mono, monospace",
         }}
       />
-      <div className="flex">
+      {/* <div className="flex">
           <button
             onClick={onRun}
             className="absolute bottom-4 right-4 bg-blue-600 text-white px-4 py-1 rounded-lg"
@@ -49,7 +49,7 @@ export const CodeEditor = ({ onRun }: CodeEditorProps) => {
             RUN
           </button>
           <SaveButton/>
-      </div>
+      </div> */}
     </div>
   )
 }
