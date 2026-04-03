@@ -11,8 +11,8 @@ import {
 } from "@/components/ui/resizable"
 import { BaseEditor } from "@/components/reactFlow/diagramCanvas"
 import { useAppStore } from "@/lib/store"
-import PromptBar from "@/components/editor/prompt-input"
 import { Code2, SquareSplitHorizontal, LayoutDashboard, Save, Play, Sparkles, X } from "lucide-react"
+import PromptBar, { ChatMessage } from "@/components/editor/prompt-input"
 
 // Inside the component:
 
@@ -29,6 +29,7 @@ export default function ResizableDemo() {
   const [prompt, setPrompt] = useState<string>("")
   const [isLoading, setIsLoading] = useState<boolean>(false)
   const [isSaving, setIsSaving] = useState<boolean>(false)
+  const [messages, setMessages] = useState<ChatMessage[]>([])
   
   // NEW: The state that controls the layout
   const [viewMode, setViewMode] = useState<ViewMode>("both")
@@ -55,28 +56,39 @@ export default function ResizableDemo() {
   };
 
   const handlePromptRun = async () => {
-    if(!prompt) return;
-    setIsLoading(true);
+  if(!prompt.trim()) return;
+  
+  // 1. Capture the prompt and instantly clear the input box for better UX
+  const userText = prompt;
+  setPrompt("");
+  
+  // 2. Add the user's message to the chat UI
+  setMessages(prev => [...prev, { role: "user", content: userText }]);
+  setIsLoading(true);
 
-    try {
-      const response = await fetch('/api/generate', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ text: prompt }),
-      });
+  try {
+    const response = await fetch('/api/generate', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ text: userText }),
+    });
 
-      const data = await response.json()
-      if(data.code){
-        setCode(data.code);
-        setTimeout(() => generateGraph(), 0);
-      }
-    } catch (error) {
-      console.error("Failed to call api", error);
-    } finally{
-      setPrompt("")
-      setIsLoading(false)
+    const data = await response.json()
+    if(data.code){
+      setCode(data.code);
+      setTimeout(() => generateGraph(), 0);
+      
+      // 3. Add the AI success reply to the chat UI
+      setMessages(prev => [...prev, { role: "ai", content: "Architecture updated successfully." }]);
     }
+  } catch (error) {
+    console.error("Failed to call api", error);
+    // Add an error reply if the API crashes
+    setMessages(prev => [...prev, { role: "ai", content: "Failed to generate architecture. Please try again." }]);
+  } finally {
+    setIsLoading(false)
   }
+}
 
   const handleSaveWorkspace = async () => {
     if (!code) return;
@@ -161,7 +173,13 @@ export default function ResizableDemo() {
           <X className="w-4 h-4" />
         </button>
         
-        <PromptBar prompt={prompt} setPrompt={setPrompt} onPromptRun={handlePromptRun} isloading={isLoading}/>
+        <PromptBar 
+          prompt={prompt} 
+          setPrompt={setPrompt} 
+          onPromptRun={handlePromptRun} 
+          isloading={isLoading}
+          messages={messages} // <-- ADD THIS
+        />
       </div>
 
       {/* 4. DYNAMIC STRUCTURAL PANELS */}
