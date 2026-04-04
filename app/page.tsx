@@ -1,43 +1,35 @@
 import { auth } from "@clerk/nextjs/server";
 import { prisma } from "@/lib/db";
-import { formatDistanceToNow } from "date-fns"; // We'll need to install this
-import { FileCode2 } from "lucide-react";
-import Link from "next/link";
-import { useAppStore } from "@/lib/store";
-import { useRouter } from "next/router";
+import { FileCode2, Plus } from "lucide-react";
+import Link from "next/link"; 
 
 export default async function DashboardPage() {
   const { userId } = await auth();
-  const {code, setCode, generateGraph} = useAppStore()
-  const router = useRouter()
 
   if (!userId) {
     return <div>Please log in to view your workspaces.</div>;
   }
 
   const workspaces = await prisma.workspace.findMany({
-    where: {
-      userId: userId,
-    },
-    orderBy: {
-      updatedAt: "desc",
-    },
+    where: { userId: userId },
+    orderBy: { updatedAt: "desc" },
   });
-
-  // const setUpdashboard = (code: string) => {
-  //   setCode(code)
-  //   if(code){
-  //     generateGraph()
-  //   }
-
-  //   router.push("/dashboard")
-  // }
 
   return (
     <div className="p-8 w-full max-w-6xl mx-auto">
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold tracking-tight mb-2">Your Architectures</h1>
-        <p className="text-muted-foreground">Manage and view your saved system designs.</p>
+      <div className="mb-8 flex items-center justify-between">
+        <div>
+          <h1 className="text-3xl font-bold tracking-tight mb-2">Your Architectures</h1>
+          <p className="text-muted-foreground">Manage and view your saved system designs.</p>
+        </div>
+        
+        <Link 
+          href="/dashboard/new" 
+          className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md font-semibold flex items-center gap-2 transition-colors"
+        >
+          <Plus className="w-5 h-5" />
+          Create New
+        </Link>
       </div>
 
       {workspaces.length === 0 ? (
@@ -47,14 +39,14 @@ export default async function DashboardPage() {
           </div>
           <h3 className="text-lg font-medium">No architectures yet</h3>
           <p className="text-muted-foreground max-w-sm mt-2">
-            Generate your first system design using the AI prompt to see appear here.
+            Click Create New to generate your first system design.
           </p>
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {workspaces.map((workspace) => (
-            <Link
-              href={`/dashboard/${workspace.id}`}
+            <Link 
+              href={`/dashboard/${workspace.id}`} 
               key={workspace.id} 
               className="group flex flex-col p-6 border border-border rounded-xl bg-card hover:border-primary/50 transition-colors cursor-pointer"
             >
