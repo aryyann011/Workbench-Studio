@@ -13,14 +13,13 @@ interface CodeEditorProps {
   setPrompt: React.Dispatch<React.SetStateAction<string>>
   onPromptRun: () => void
   isloading: boolean
-  messages: ChatMessage[] // <-- NEW PROP
+  messages: ChatMessage[] 
 }
 
 export default function PromptBar({ prompt, setPrompt, onPromptRun, isloading, messages }: CodeEditorProps) {
   const MAX_HEIGHT = 150
   const messagesEndRef = useRef<HTMLDivElement>(null)
 
-  // Auto-scroll to bottom whenever messages change or loading starts
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" })
   }, [messages, isloading])
@@ -28,13 +27,11 @@ export default function PromptBar({ prompt, setPrompt, onPromptRun, isloading, m
   return (
     <div className="flex flex-col h-full w-full bg-card shadow-2xl border-l border-border">
       
-      {/* HEADER */}
       <div className="flex items-center gap-2 p-4 border-b border-border bg-muted/30 shrink-0">
         <Bot className="w-5 h-5 text-blue-500" />
         <h3 className="font-semibold text-sm">AI Architect</h3>
       </div>
 
-      {/* CHAT HISTORY AREA */}
       <div className="flex-1 overflow-y-auto p-4 flex flex-col gap-4 thin-scrollbar">
         {messages.length === 0 ? (
           <div className="flex flex-col items-center justify-center h-full text-muted-foreground/50">
@@ -54,7 +51,6 @@ export default function PromptBar({ prompt, setPrompt, onPromptRun, isloading, m
           ))
         )}
 
-        {/* LOADING BUBBLE */}
         {isloading && (
           <div className="flex gap-3 flex-row">
             <div className="w-6 h-6 rounded-full bg-muted border border-border flex items-center justify-center shrink-0">
@@ -66,11 +62,9 @@ export default function PromptBar({ prompt, setPrompt, onPromptRun, isloading, m
           </div>
         )}
         
-        {/* Invisible div to anchor the auto-scroll */}
         <div ref={messagesEndRef} />
       </div>
 
-      {/* INPUT AREA */}
       <div className="p-4 bg-background border-t border-border shrink-0">
         <div className="relative flex items-end gap-2 bg-muted/50 focus-within:bg-muted border border-transparent focus-within:border-border rounded-xl p-2 transition-colors">
           <textarea
