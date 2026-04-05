@@ -15,14 +15,28 @@ export async function getWorkspace(id: string) {
     return null;
   }
 }
+export async function deleteArchitecture(Id : string){
+  try {
+    const {userId} = await auth();
+    if(!userId) return { success : false, error : "Unauthorized"};
 
-// 2. Save or Update the workspace
+    await prisma.workspace.deleteMany({
+      where: {
+        id: Id,
+        userId : userId
+      }
+    });
+
+    return {success : true}
+  } catch (error) {
+    return {success : false,  error : "failed to delete the file"}
+  }
+}
 export async function saveArchitecture(code: string, existingId?: string) {
   try {
     const { userId } = await auth();
     if (!userId) return { success: false, error: "Unauthorized" };
 
-    // IF IT'S AN EXISTING ID -> UPDATE IT
     if (existingId && existingId !== "new") {
       await prisma.workspace.update({
         where: { id: existingId },
@@ -31,7 +45,6 @@ export async function saveArchitecture(code: string, existingId?: string) {
       return { success: true, id: existingId };
     } 
     
-    // IF IT'S "new" -> CREATE IT
     const newWorkspace = await prisma.workspace.create({
       data: { userId: userId, code: code }
     });
