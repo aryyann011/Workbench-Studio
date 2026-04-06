@@ -3,6 +3,7 @@ import { prisma } from "@/lib/db";
 import { FileCode2, Plus, Trash } from "lucide-react";
 import Link from "next/link"; 
 import { deleteArchitecture } from "@/actions/workspace";
+import { WorkspaceActions } from "./workspaceActions";
 
 export default async function DashboardPage() {
   const { userId } = await auth();
@@ -66,6 +67,7 @@ export default async function DashboardPage() {
               {/* <div className="absolute left-132 top-48" onClick={() => deleteTheFile(workspace.id)}>
                 <Trash className="text-red-500"/>
               </div> */}
+              <WorkspaceActions workspaceId={workspace.id}/>
               <div className="flex items-center gap-3 mb-4">
                 <div className="p-2 bg-primary/10 rounded-lg text-primary">
                   <FileCode2 className="w-5 h-5" />

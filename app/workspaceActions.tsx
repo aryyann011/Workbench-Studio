@@ -26,11 +26,8 @@ export function WorkspaceActions({ workspaceId }: { workspaceId: string }) {
     e.preventDefault()
     e.stopPropagation()
     setIsOpen(false)
-    
-    // ==========================================
-    // YOUR LOGIC HERE: 
-    // Use the Next.js router to navigate to `/dashboard/${workspaceId}`
-    // ==========================================
+
+    router.push(`/dashboard/${workspaceId}`)
   }
 
   const handleDelete = async (e: React.MouseEvent) => {
@@ -40,10 +37,16 @@ export function WorkspaceActions({ workspaceId }: { workspaceId: string }) {
 
     const ans = window.confirm("Are you sure you want to delete this?")
     if(!ans) return;
-    // 2. If they say yes, set isDeleting to true
-    // 3. Await the deleteArchitecture Server Action
-    // 4. Set isDeleting back to false
-    // ==========================================
+
+    setIsDeleting(true)
+
+    const cnfirm = await deleteArchitecture(workspaceId)
+    if(!cnfirm){
+        console.log("couldnt delete the file")
+        return;
+    }
+
+    setIsDeleting(false)
   }
 
   return (
