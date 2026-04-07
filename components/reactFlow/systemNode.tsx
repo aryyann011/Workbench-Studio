@@ -17,7 +17,6 @@ const DynamicIcon = ({ name, color }: IconProps) => {
 
   const isValidIcon = kebabName in dynamicIconImports;
   
-  // 3. Pick the file (or fallback)
   const iconToLoad = isValidIcon ? kebabName : fallbackIcon;
   const iconImport = dynamicIconImports[iconToLoad as keyof typeof dynamicIconImports];
 
@@ -33,8 +32,7 @@ const DynamicIcon = ({ name, color }: IconProps) => {
 };
 
 export function SystemNode({ data }: NodeProps) {
-  // Instead of passively waiting, we actively calculate the icon using our utility.
-  // This ensures 'Kafka' gets 'message-square' instantly.
+ 
   const resolved = data.icon ? 
     { icon: data.icon, color: data.color || '#64748b' } : 
     getIconForLabel(data.label);
@@ -54,7 +52,6 @@ export function SystemNode({ data }: NodeProps) {
           className="p-3 rounded-lg"
           style={{ backgroundColor: `${resolved.color}15` }}
         >
-          {/* We pass the calculated 'resolved.icon' here */}
           <DynamicIcon name={resolved.icon} color={resolved.color} />
         </div>
         

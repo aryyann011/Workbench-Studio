@@ -2,7 +2,6 @@ import { auth } from "@clerk/nextjs/server";
 import { prisma } from "@/lib/db";
 import { FileCode2, Plus, Trash } from "lucide-react";
 import Link from "next/link"; 
-import { deleteArchitecture } from "@/actions/workspace";
 import { WorkspaceActions } from "./workspaceActions";
 
 export default async function DashboardPage() {
@@ -15,19 +14,6 @@ export default async function DashboardPage() {
     where: { userId: userId },
     orderBy: { updatedAt: "desc" },
   });
-
-  const deleteTheFile = async(id : string) => {
-    if(!id){
-      console.log("Invalid id")
-      return;
-    }
-
-    const res = await deleteArchitecture(id)
-
-    if(res.success){
-      alert("File deleted successfully")
-    }
-  }
 
   return (
     <div className="p-8 w-full max-w-6xl mx-auto">
@@ -62,7 +48,7 @@ export default async function DashboardPage() {
             <Link 
               href={`/dashboard/${workspace.id}`} 
               key={workspace.id} 
-              className="group flex flex-col p-6 border border-border rounded-xl bg-card hover:border-primary/50 transition-colors cursor-pointer"
+              className="relative group flex flex-col p-6 border border-border rounded-xl bg-card hover:border-primary/50 transition-colors cursor-pointer"
             >
               {/* <div className="absolute left-132 top-48" onClick={() => deleteTheFile(workspace.id)}>
                 <Trash className="text-red-500"/>

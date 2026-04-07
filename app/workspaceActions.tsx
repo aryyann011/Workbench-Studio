@@ -4,6 +4,7 @@ import { useState, useRef, useEffect } from "react"
 import { MoreVertical, Trash, ExternalLink, Loader2 } from "lucide-react"
 import { deleteArchitecture } from "@/actions/workspace"
 import { useRouter } from "next/navigation"
+import { Result } from "pg"
 
 export function WorkspaceActions({ workspaceId }: { workspaceId: string }) {
   const [isOpen, setIsOpen] = useState(false)
@@ -11,7 +12,6 @@ export function WorkspaceActions({ workspaceId }: { workspaceId: string }) {
   const router = useRouter()
   const menuRef = useRef<HTMLDivElement>(null)
 
-  // UI Logic: Close menu if user clicks outside of it
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
@@ -41,9 +41,10 @@ export function WorkspaceActions({ workspaceId }: { workspaceId: string }) {
     setIsDeleting(true)
 
     const cnfirm = await deleteArchitecture(workspaceId)
-    if(!cnfirm){
-        console.log("couldnt delete the file")
-        return;
+    if (!cnfirm.success) {
+      alert(cnfirm.error || "Something went wrong");
+      setIsDeleting(false);
+      return;
     }
 
     setIsDeleting(false)

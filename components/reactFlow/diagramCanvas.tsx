@@ -53,8 +53,8 @@ export const BaseEditor = () => {
           className="bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700" 
           maskColor="rgba(0,0,0, 0.1)"
           style={{
-            height: 100, // Explicitly smaller height
-            width: 150,  // Explicitly smaller width
+            height: 100, 
+            width: 150,
           }}
           zoomable 
           pannable 
