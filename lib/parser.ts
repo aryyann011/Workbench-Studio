@@ -1,4 +1,4 @@
-import { Node, Edge } from 'reactflow';
+import { Node, Edge, NodeResizeControl } from 'reactflow';
 
 export const parseCode = (input: string) => {
   const nodes: Node[] = [];
@@ -62,6 +62,37 @@ export const parseCode = (input: string) => {
                 }
             }
         }
+    }
+    
+    else if (trimmedLine.includes('inside')) {
+      const parts = trimmedLine.split('inside').map(part => part.trim());
+
+      if (parts.length === 2) {
+        const childMatch = parts[0].match(/\[(.*?)\]/);
+        const parentMatch = parts[1].match(/\[(.*?)\]/);
+
+        if (childMatch && parentMatch) {
+          const childId = childMatch[1].toLowerCase();
+          const parentId = parentMatch[1].toLowerCase();
+
+          const parentNode = nodes.find(node => node.id === parentId);
+          if (parentNode) {
+            parentNode.type = 'group';
+            parentNode.style = { 
+              backgroundColor: 'rgba(241, 245, 249, 0.05)', 
+              border: '2px dashed #64748b', 
+              width: 400, 
+              height: 400 
+            };
+          }
+
+          const childNode = nodes.find(node => node.id === childId);
+          if (childNode) {
+            childNode.parentNode = parentId;
+            childNode.extent = 'parent';
+          }
+        }
+      }
     }
   });
 
