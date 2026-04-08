@@ -21,7 +21,6 @@ interface AppState {
   onEdgesChange : OnEdgesChange;
 }
 
-
 export const useAppStore = create<AppState>((set, get) => ({
   nodes: [],
   edges: [],

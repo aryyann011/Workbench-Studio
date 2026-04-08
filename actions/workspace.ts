@@ -2,6 +2,7 @@
 
 import { prisma } from '../lib/db';
 import { auth } from '@clerk/nextjs/server';
+import { revalidatePath } from 'next/cache';
 
 export async function getWorkspace(id: string) {
   const { userId } = await auth();
@@ -15,6 +16,7 @@ export async function getWorkspace(id: string) {
     return null;
   }
 }
+
 export async function deleteArchitecture(Id : string){
   try {
     const {userId} = await auth();
@@ -26,12 +28,14 @@ export async function deleteArchitecture(Id : string){
         userId : userId
       }
     });
+    revalidatePath("/dashboard")
 
     return {success : true}
   } catch (error) {
     return {success : false,  error : "failed to delete the file"}
   }
 }
+
 export async function saveArchitecture(code: string, existingId?: string) {
   try {
     const { userId } = await auth();
