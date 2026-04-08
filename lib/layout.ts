@@ -1,32 +1,59 @@
 import ELK from 'elkjs/lib/elk.bundled.js';
 import { Node, Edge, Position } from 'reactflow';
 
-// Initialize the ELK engine
 const elk = new ELK();
 
-// Define standard sizes so the math engine knows how to space things
 const NODE_WIDTH = 250;
 const NODE_HEIGHT = 80;
 
 export const getLayoutedElements = async (nodes: Node[], edges: Edge[]) => {
-  // 1. Define the Math Rules (The ELK Config)
+  // STEP 1: Sort the Laundry
+  // Find all nodes that are NOT inside a container. 
+  // These are your "Baskets" (groups) and "Standalone Shirts".
+  const topLevelNodes = nodes.filter(node => !node.parentNode);
+
+  // STEP 2: Build the Nested Structure
+  const elkChildren = topLevelNodes.map((node) => {
+    
+    // The basic shape ELK expects
+    const elkNode: any = {
+      id: node.id,
+      width: node.type === 'group' ? 400 : NODE_WIDTH,
+      height: node.type === 'group' ? 400 : NODE_HEIGHT,
+    };
+
+    // If this node is a Basket (group), we need to put the shirts inside it!
+    if (node.type === 'group') {
+      
+      // Find all nodes that claim this group as their parent
+      const innerNodes = nodes.filter(child => child.parentNode === node.id);
+      
+      // Format them for ELK and attach them to the 'children' property
+      elkNode.children = innerNodes.map(child => ({
+        id: child.id,
+        width: NODE_WIDTH,
+        height: NODE_HEIGHT,
+      }));
+
+      // Add padding so the container walls don't touch the children inside
+      elkNode.layoutOptions = {
+        'elk.padding': '[top=50,left=50,bottom=50,right=50]'
+      };
+    }
+
+    return elkNode;
+  });
+
+  // STEP 3: The Main ELK Graph Object
   const graph = {
     id: 'root',
     layoutOptions: {
-      'elk.algorithm': 'layered',          // The standard hierarchical flowchart algorithm
-      'elk.direction': 'DOWN',             // Top-to-Bottom flow
-      'elk.spacing.nodeNode': '75',        // Horizontal gap between nodes
-      'elk.layered.spacing.nodeNodeBetweenLayers': '100', // Vertical gap
+      'elk.algorithm': 'layered',          
+      'elk.direction': 'DOWN',             
+      'elk.spacing.nodeNode': '75',        
+      'elk.layered.spacing.nodeNodeBetweenLayers': '100', 
     },
-    
-    // 2. Translate React Flow Nodes -> ELK Nodes
-    children: nodes.map((node) => ({
-      id: node.id,
-      width: NODE_WIDTH,
-      height: NODE_HEIGHT,
-    })),
-    
-    // 3. Translate React Flow Edges -> ELK Edges
+    children: elkChildren, // Pass our perfectly nested data here!
     edges: edges.map((edge) => ({
       id: edge.id,
       sources: [edge.source],
@@ -35,20 +62,36 @@ export const getLayoutedElements = async (nodes: Node[], edges: Edge[]) => {
   };
 
   try {
-    // 4. THE MATH HAPPENS HERE (This runs the algorithm)
+    // STEP 4: Run the Math
     const layoutedGraph = await elk.layout(graph);
 
-    // 5. Translate ELK Nodes back to React Flow Nodes
+    // STEP 5: Deep Search Extraction
+    // ELK gives us back a nested object. We need a helper function to find 
+    // a node's coordinates, whether it's at the root or hiding inside a container.
+    const getElkNode = (elkHierarchy: any, targetId: string): any => {
+      if (!elkHierarchy.children) return null;
+      
+      for (const child of elkHierarchy.children) {
+        if (child.id === targetId) return child;
+        
+        // If this child has its own children (it's a group), search inside it!
+        const foundInChildren = getElkNode(child, targetId);
+        if (foundInChildren) return foundInChildren;
+      }
+      return null;
+    };
+
+    // STEP 6: Apply the Math to React Flow
     const layoutedNodes = nodes.map((node) => {
-      // Find the specific node ELK just calculated
-      const elkNode = layoutedGraph.children?.find((n) => n.id === node.id);
+      // Use our new deep search function
+      const elkNode = getElkNode(layoutedGraph, node.id);
 
       if (!elkNode) return node;
 
       return {
         ...node,
-        targetPosition: Position.Top,    // Arrows come in the top
-        sourcePosition: Position.Bottom, // Arrows go out the bottom
+        targetPosition: Position.Top,    
+        sourcePosition: Position.Bottom, 
         position: {
           x: elkNode.x || 0,
           y: elkNode.y || 0,
@@ -57,8 +100,9 @@ export const getLayoutedElements = async (nodes: Node[], edges: Edge[]) => {
     });
 
     return { nodes: layoutedNodes, edges };
+
   } catch (error) {
     console.error("ELK Layout Error:", error);
-    return { nodes, edges }; // Fallback to original if math fails
+    return { nodes, edges }; 
   }
 };
