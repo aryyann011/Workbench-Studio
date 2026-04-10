@@ -21,7 +21,6 @@ export function LayoutWrapper({ children }: { children: React.ReactNode }) {
         
         <main className="w-full h-screen flex flex-col overflow-hidden">
     
-          {/* Header Bar */}
           <div className="p-1 border-b border-border flex items-center gap-2">
             <SidebarTrigger /> 
             <span className="text-lg font-medium text-muted-foreground"></span>
@@ -36,7 +35,6 @@ export function LayoutWrapper({ children }: { children: React.ReactNode }) {
             </div>
           </div>
 
-          {/* Main Content */}
           <div className="flex-1 overflow-hidden">
             {children}
           </div>
