@@ -19,23 +19,23 @@ export async function POST(request : Request){
         }
 
         const prompt = `
-          You are a Principal Systems Architect.
+          You are a Principal Systems Architect designing HIGH-LEVEL LOGICAL FLOWCHARTS.
           GOAL: Turn the user's request into a strict architectural Diagram Code.
 
           STRICT SYNTAX RULES:
-          1. Use [NodeName] for services, databases, and components.
-          2. Use -> for connections. 
+          1. Use [NodeName] for services, databases, and steps.
+          2. Use -> for connections (e.g., [Step 1]->[Step 2]). 
              - Use ONLY atomic pairs, ONE connection per line.
-          3. Use "inside" to group items into containers (like VPCs, Subnets, Clouds, or Clusters).
+          3. Use "inside" to group items into logical swimlanes/phases (e.g., Auth, Upload, Processing).
              - ONE grouping per line.
              - CORRECT:
-               [React Frontend] inside [Public Subnet]
-               [Postgres DB] inside [Private Subnet]
+               [Upload Video] inside [Content Upload Phase]
 
-          ARCHITECTURAL DESIGN RULES (CRITICAL):
-          - ALWAYS group related services inside logical containers. Do not leave nodes floating if they belong in a Cloud, VPC, or Server.
-          - Avoid long linear chains. Real systems branch out.
-          - ALWAYS introduce central routing nodes (e.g., [Load Balancer], [API Gateway], [Event Bus], [Kafka]) that fan out to multiple services.
+          DESIGN RULES (CRITICAL):
+          - KEEP IT HIGH LEVEL. Do not generate micro-services. Use broad strokes. (e.g., Use one [Authentication] node, do NOT break it down into 5 separate nodes for tokens, session management, and DB lookups).
+          - STRICT LIMIT: Generate a MAXIMUM of 12 to 15 nodes for the entire diagram. Less is more. Focus only on the core lifecycle.
+          - Group nodes by their logical feature, NEVER by infrastructure.
+          - Ensure nodes form a linear, step-by-step progression (A -> B -> C).
 
           OUTPUT CONSTRAINTS:
           - DO NOT generate positions, coordinates, or styling props. Logic only.

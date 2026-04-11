@@ -8,41 +8,55 @@ const NODE_HEIGHT = 80;
 
 export const getLayoutedElements = async (nodes: Node[], edges: Edge[]) => {
   
-  const topLevelNodes = nodes.filter(node => !node.parentNode);
+  // 1. THE RECURSIVE BUILDER (Fixes Fault 2)
+  // This function digs as deep as it needs to, building infinite boxes-in-boxes.
+  const buildElkTree = (parentId?: string): any[] => {
+    const currentLevelNodes = nodes.filter(n => 
+      parentId ? n.parentNode === parentId : !n.parentNode
+    );
 
-  const elkChildren = topLevelNodes.map((node) => {
-    
-    const elkNode: any = {
-      id: node.id,
-      width: node.type === 'group' ? 400 : NODE_WIDTH,
-      height: node.type === 'group' ? 400 : NODE_HEIGHT,
-    };
+    return currentLevelNodes.map(node => {
+      const isGroup = node.type === 'group';
+      const elkNode: any = { id: node.id };
 
-    if (node.type === 'group') {
-      
-      const innerNodes = nodes.filter(child => child.parentNode === node.id);
-      
-      elkNode.children = innerNodes.map(child => ({
-        id: child.id,
-        width: NODE_WIDTH,
-        height: NODE_HEIGHT,
-      }));
+      // 2. THE AUTO-RESIZE FIX (Fixes Fault 1)
+      // Only give exact sizes to the standard nodes. 
+      // DO NOT give sizes to groups. Let ELK calculate how big they need to be!
+      if (!isGroup) {
+        elkNode.width = NODE_WIDTH;
+        elkNode.height = NODE_HEIGHT;
+      } else {
+        // If it's a group, recursively fetch all its children
+        elkNode.children = buildElkTree(node.id);
+        elkNode.layoutOptions = {
+          'elk.padding': '[top=60,left=60,bottom=60,right=60]'
+        };
+      }
+      return elkNode;
+    });
+  };
 
-      elkNode.layoutOptions = {
-        'elk.padding': '[top=50,left=50,bottom=50,right=50]'
-      };
-    }
-
-    return elkNode;
-  });
+  // Start the recursive build from the absolute root
+  const elkChildren = buildElkTree(undefined);
 
   const graph = {
     id: 'root',
     layoutOptions: {
       'elk.algorithm': 'layered',          
-      'elk.direction': 'DOWN',             
-      'elk.spacing.nodeNode': '75',        
-      'elk.layered.spacing.nodeNodeBetweenLayers': '100', 
+      'elk.direction': 'RIGHT', 
+      
+      // 1. THE MAGIC WORD: Force 90-degree lines that avoid nodes
+      'elk.edgeRouting': 'ORTHOGONAL',
+      
+      // 2. Tidy up the spacing so lines have room to travel
+      'elk.spacing.nodeNode': '60',        
+      'elk.layered.spacing.nodeNodeBetweenLayers': '120', 
+      
+      // 3. Force ELK to spend extra CPU cycles untangling crossed lines
+      'elk.layered.crossingMinimization.strategy': 'LAYER_SWEEP',
+      
+      // 4. Align nodes to a strict grid so it stops looking messy
+      'elk.alignment': 'CENTER',
     },
     children: elkChildren, 
     edges: edges.map((edge) => ({
@@ -55,12 +69,11 @@ export const getLayoutedElements = async (nodes: Node[], edges: Edge[]) => {
   try {
     const layoutedGraph = await elk.layout(graph);
 
+    // Deep Search Extraction
     const getElkNode = (elkHierarchy: any, targetId: string): any => {
       if (!elkHierarchy.children) return null;
-      
       for (const child of elkHierarchy.children) {
         if (child.id === targetId) return child;
-        
         const foundInChildren = getElkNode(child, targetId);
         if (foundInChildren) return foundInChildren;
       }
@@ -74,8 +87,17 @@ export const getLayoutedElements = async (nodes: Node[], edges: Edge[]) => {
 
       return {
         ...node,
-        targetPosition: Position.Top,    
-        sourcePosition: Position.Bottom, 
+        targetPosition: Position.Left,    
+        sourcePosition: Position.Right, 
+        
+        // 3. APPLY THE CALCULATED SIZES TO REACT FLOW
+        // Since ELK figured out how big the groups should be, we must apply that to the UI.
+        style: node.type === 'group' ? {
+          ...node.style,
+          width: elkNode.width,
+          height: elkNode.height,
+        } : node.style,
+        
         position: {
           x: elkNode.x || 0,
           y: elkNode.y || 0,
