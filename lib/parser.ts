@@ -56,7 +56,7 @@ export const parseCode = (input: string) => {
                         id: edgeId,
                         source: sourceId,
                         target: targetId,
-                        type: 'default',
+                        type: 'smoothstep',
                         animated: true,
                     });
                 }

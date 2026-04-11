@@ -45,7 +45,7 @@ export function SystemNode({ data }: NodeProps) {
         ${isOffline ? "border-red-500/50" : ""}`}
       style={{ borderColor: isOffline ? undefined : `${resolved.color}40` }}
     >
-      <Handle type="target" position={Position.Top} className="!w-3 !h-3 !bg-slate-400" />
+      <Handle type="target" position={Position.Left} className="!w-3 !h-3 !bg-slate-400" />
 
       <div className="flex flex-col items-center p-4 gap-3">
         <div 
@@ -60,7 +60,7 @@ export function SystemNode({ data }: NodeProps) {
         </span>
       </div>
 
-      <Handle type="source" position={Position.Bottom} className="!w-3 !h-3 !bg-slate-400" />
+      <Handle type="source" position={Position.Right} className="!w-3 !h-3 !bg-slate-400" />
     </div>
   );
 }

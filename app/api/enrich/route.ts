@@ -10,7 +10,6 @@ export async function POST(request: Request) {
     const body = await request.json();
     const label = body?.label;
 
-    // ---------- HARD VALIDATION ----------
     if (typeof label !== "string" || !label.trim()) {
       return NextResponse.json(
         { icon: "Server", color: "#64748b" },
@@ -18,7 +17,6 @@ export async function POST(request: Request) {
       );
     }
 
-    // ---------- LOCAL FALLBACK (NO AI) ----------
     const isDb = ["redis", "mongo", "postgres", "mysql", "sql"].some(k =>
       label.toLowerCase().includes(k)
     );
@@ -30,7 +28,6 @@ export async function POST(request: Request) {
       });
     }
 
-    // ---------- GEMINI PROMPT ----------
     const prompt = `
 You are a UI design expert. Map the tech term "${label}" to a Lucide React icon name and a HEX color.
       
@@ -56,7 +53,6 @@ You are a UI design expert. Map the tech term "${label}" to a Lucide React icon 
       Input: "${label}"
 `.trim();
 
-    // ---------- GEMINI CALL ----------
     const response = await ai.models.generateContent({
       model: "gemini-2.5-flash",
       contents: prompt,
@@ -68,7 +64,6 @@ You are a UI design expert. Map the tech term "${label}" to a Lucide React icon 
       throw new Error("Empty Gemini response");
     }
 
-    // ---------- JSON PARSE ----------
     const data = JSON.parse(text);
 
     if (!data.icon || !data.color) {
@@ -79,7 +74,6 @@ You are a UI design expert. Map the tech term "${label}" to a Lucide React icon 
   } catch (error) {
     console.error("ENRICH ERROR:", error);
 
-    // ---------- NEVER BREAK UI ----------
     return NextResponse.json({
       icon: "Server",
       color: "#64748b",
