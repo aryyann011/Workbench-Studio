@@ -3,6 +3,7 @@ import { prisma } from "@/lib/db";
 import { FileCode2, Plus, Trash } from "lucide-react";
 import Link from "next/link"; 
 import { WorkspaceActions } from "./workspaceActions";
+import { Workspace } from "@prisma/client";
 
 export default async function DashboardPage() {
   const { userId } = await auth();
@@ -10,7 +11,7 @@ export default async function DashboardPage() {
     return <div>Please log in to view your workspaces.</div>;
   }
 
-  const workspaces = await prisma.workspace.findMany({
+  const workspaces: Workspace[] = await prisma.workspace.findMany({
     where: { userId: userId },
     orderBy: { updatedAt: "desc" },
   });
