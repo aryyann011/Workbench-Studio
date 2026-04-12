@@ -12,9 +12,11 @@ import ReactFlow, {
 import 'reactflow/dist/style.css';
 import { SystemNode } from './systemNode';
 import { useAppStore } from '@/lib/store';
+import { SystemGroupNode } from './systemGroupNode';
 
 const nodeTypes = {
   system: SystemNode,
+  group : SystemGroupNode
 };
 
 export const BaseEditor = () => {

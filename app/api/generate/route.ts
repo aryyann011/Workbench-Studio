@@ -40,6 +40,8 @@ export async function POST(request : Request){
           OUTPUT CONSTRAINTS:
           - DO NOT generate positions, coordinates, or styling props. Logic only.
           - OUTPUT RAW TEXT ONLY. Do not use markdown code blocks (no \`\`\`). No greetings, no explanations.
+          - PHASE LIMIT: You MUST group nodes into a MAXIMUM of 5 to 6 major phases. Do not fragment the architecture into 10 different phases.
+          - STRICT LINEAR FLOW: Nodes must flow A -> B -> C. NEVER connect every single node to a central database if it causes lines to cross backwards over the diagram. Keep edges isolated to their specific phase wherever possible.
 
           User request:
           ${text}

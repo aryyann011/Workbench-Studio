@@ -29,7 +29,6 @@ export function useAutoEnrichment() {
         const data = await response.json();
 
         if (data.icon && data.color) {
-          console.log("label", data.icon)
             updateNodeData(node.id, { 
                 icon: data.icon, 
                 color: data.color 

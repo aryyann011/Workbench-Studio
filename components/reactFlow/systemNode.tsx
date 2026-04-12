@@ -41,26 +41,35 @@ export function SystemNode({ data }: NodeProps) {
 
   return (
     <div 
-      className={`shadow-xl rounded-lg bg-white dark:bg-slate-950 min-w-[140px] border-2 transition-all
-        ${isOffline ? "border-red-500/50" : ""}`}
-      style={{ borderColor: isOffline ? undefined : `${resolved.color}40` }}
+      className={`shadow-lg rounded-md bg-white dark:bg-slate-900 min-w-[280px] min-h-[90px] py-2 border border-slate-200 dark:border-slate-800 transition-all
+        ${isOffline ? "opacity-50 border-red-500/50" : ""}`}
+      style={{ borderLeftWidth: '5px', borderLeftColor: isOffline ? '#ef4444' : resolved.color }}
     >
-      <Handle type="target" position={Position.Left} className="!w-3 !h-3 !bg-slate-400" />
+      <Handle type="target" position={Position.Left} className="!w-2 !h-2 !bg-slate-500 !border-none !-left-1" />
 
-      <div className="flex flex-col items-center p-4 gap-3">
+      <div className="flex flex-row items-center p-3 gap-3">
+        
         <div 
-          className="p-3 rounded-lg"
+          className="p-2 rounded-md shrink-0"
           style={{ backgroundColor: `${resolved.color}15` }}
         >
-          <DynamicIcon name={resolved.icon} color={resolved.color} />
+          <div className="w-5 h-5 flex items-center justify-center">
+             <DynamicIcon name={resolved.icon} color={resolved.color} />
+          </div>
         </div>
         
-        <span className="font-mono text-sm font-medium text-slate-900 dark:text-slate-100">
-          {data.label}
-        </span>
+        <div className="flex flex-col justify-center overflow-hidden w-full">
+          <span 
+            className="font-sans text-lg font-semibold text-slate-800 dark:text-slate-100 truncate w-full"
+            title={data.label} 
+          >
+            {data.label}
+          </span>
+        </div>
+
       </div>
 
-      <Handle type="source" position={Position.Right} className="!w-3 !h-3 !bg-slate-400" />
+      <Handle type="source" position={Position.Right} className="!w-2 !h-2 !bg-slate-500 !border-none !-right-1" />
     </div>
   );
 }

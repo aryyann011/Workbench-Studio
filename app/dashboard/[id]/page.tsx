@@ -33,7 +33,9 @@ export default function ResizableDemo() {
 
   useEffect(() => {
     if (workspaceId === "new") {
-      setCode(""); 
+      if (!code) {
+        setCode(""); 
+      }
       return;
     }
 
@@ -45,7 +47,9 @@ export default function ResizableDemo() {
         }, 100);
       }
     });
-  }, [workspaceId, setCode, generateGraph]);
+    
+    
+  }, [workspaceId]);
 
   const handleRun = () => {
     if (!code) return;
