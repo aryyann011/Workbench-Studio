@@ -13,6 +13,8 @@ import 'reactflow/dist/style.css';
 import { SystemNode } from './systemNode';
 import { useAppStore } from '@/lib/store';
 import { SystemGroupNode } from './systemGroupNode';
+import { useWorkspaceSocket } from '@/hooks/useWorkspaceSocket';
+import { useParams } from 'next/navigation';
 
 const nodeTypes = {
   system: SystemNode,
@@ -20,7 +22,12 @@ const nodeTypes = {
 };
 
 export const BaseEditor = () => {
+  const params = useParams()
+  const workspaceId = params.id as string 
   const {nodes, edges, onNodesChange, onEdgesChange} = useAppStore()
+  const {isConnected} = useWorkspaceSocket(workspaceId)
+
+  if(isConnected) console.log("successfullly subscribed")
 
   return (
     <div className="h-[100%] w-full bg-slate-50 dark:bg-slate-900">
