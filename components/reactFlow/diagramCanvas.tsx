@@ -9,6 +9,7 @@ import ReactFlow, {
   ConnectionMode,
   MarkerType
 } from 'reactflow';
+import { useRef } from 'react';
 import 'reactflow/dist/style.css';
 import { SystemNode } from './systemNode';
 import { useAppStore } from '@/lib/store';
@@ -25,7 +26,29 @@ export const BaseEditor = () => {
   const params = useParams()
   const workspaceId = params.id as string 
   const {nodes, edges, onNodesChange, onEdgesChange} = useAppStore()
-  const {isConnected} = useWorkspaceSocket(workspaceId)
+  const { isConnected, channel } = useWorkspaceSocket(workspaceId);
+
+  const lastUpdate = useRef<number>(0);
+
+  const handlePointerMove = (e: React.PointerEvent) => {
+      // 1. If we aren't connected to the network yet, do nothing
+      if (!isConnected || !channel) return;
+
+      // 2. Get the current time in milliseconds
+      const now = Date.now();
+
+      // 3. THE THROTTLE: If less than 50ms have passed since the last update, ignore the mouse move
+      if (now - lastUpdate.current < 50) return;
+
+      // 4. Update the timer
+      lastUpdate.current = now;
+
+      // 5. Send the X and Y coordinates to Supabase
+      channel.track({
+          x: e.clientX,
+          y: e.clientY,
+      });
+  };
 
   if(isConnected) console.log("successfullly subscribed")
 
