@@ -30,7 +30,7 @@ export const BaseEditor = () => {
 
   const lastUpdate = useRef<number>(0);
 
-  const handlePointerMove = (e: React.PointerEvent) => {
+  const handlePointerMove = (e: React.MouseEvent) => {
       // 1. If we aren't connected to the network yet, do nothing
       if (!isConnected || !channel) return;
 
@@ -43,17 +43,25 @@ export const BaseEditor = () => {
       // 4. Update the timer
       lastUpdate.current = now;
 
+      console.log("Broadcasting:", e.clientX, e.clientY);
       // 5. Send the X and Y coordinates to Supabase
-      channel.track({
-          x: e.clientX,
-          y: e.clientY,
+      channel.send({
+        type: 'broadcast',
+        event: 'cursor-move',
+        payload: { 
+          x: e.clientX, 
+          y: e.clientY 
+        },
+      }).then((resp) => {
+          // This will tell us immediately if Supabase rejects the message
+          if (resp !== 'ok') console.log("Network rejected message:", resp);
       });
   };
 
   if(isConnected) console.log("successfullly subscribed")
 
   return (
-    <div className="h-[100%] w-full bg-slate-50 dark:bg-slate-900">
+    <div  className="h-[100%] w-full bg-slate-50 dark:bg-slate-900">
       <ReactFlow
         nodes={nodes}
         edges={edges}
@@ -77,6 +85,7 @@ export const BaseEditor = () => {
         }}
         
         connectionMode={ConnectionMode.Loose}
+        onPaneMouseMove={handlePointerMove}
         fitView
       >
         <Background color="#94a3b8" gap={20} size={1} />
