@@ -159,7 +159,7 @@ export default function ResizableDemo() {
         <button 
           className="absolute top-4 right-4 z-50 p-1 bg-muted hover:bg-muted-foreground/20 rounded-md text-muted-foreground transition-colors"
         >
-          <X className="w-4 h-4" />
+          <X className="w-4 h-4 cursor-pointer" onClick={() => setIsAIOpen(!isAIOpen)}/>
         </button>
         
         <PromptBar 
