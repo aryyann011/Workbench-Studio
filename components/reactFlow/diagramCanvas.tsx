@@ -31,7 +31,6 @@ export const BaseEditor = () => {
   const lastUpdate = useRef<number>(0);
 
   const handlePointerMove = (e: React.MouseEvent) => {
-      // 1. If we aren't connected to the network yet, do nothing
       if (!isConnected || !channel) return;
 
       // 2. Get the current time in milliseconds
