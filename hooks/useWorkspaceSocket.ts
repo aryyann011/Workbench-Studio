@@ -3,10 +3,11 @@
 import { useState, useEffect } from "react"
 import { supabase } from "@/lib/supabase"
 import { RealtimeChannel } from "@supabase/supabase-js"
+import { useAppStore } from "@/lib/store"
 
 export function useWorkspaceSocket(workspaceId: string) {
     const [isConnected, setIsConnected] = useState<boolean>(false)
-
+ 
     const [channel, setChannel] = useState<RealtimeChannel | null>(null)
     const [cursors, setCursors] = useState<Record<string, {x : number, y : number}>>({})
 
@@ -31,6 +32,16 @@ export function useWorkspaceSocket(workspaceId: string) {
                     ...prev, 
                     [userId] : {x, y}
                 }))
+            }
+        )
+
+        myChannel.on(
+            'broadcast',
+            {event : 'node-move'},
+            (incoming) => {
+                const {nodeId, position} = incoming.payload;
+                useAppStore.getState().handleRealtimeChanges(nodeId, position);
+
             }
         )
 

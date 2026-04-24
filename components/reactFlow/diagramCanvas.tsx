@@ -14,6 +14,7 @@ import { useAppStore } from '@/lib/store';
 import { SystemGroupNode } from './systemGroupNode';
 import { useWorkspaceSocket } from '@/hooks/useWorkspaceSocket';
 import { useParams } from 'next/navigation';
+import { NodeChange } from 'reactflow';
 
 const nodeTypes = {
   system: SystemNode,
@@ -49,6 +50,28 @@ export const BaseEditor = () => {
       });
   };
 
+  const handleNodesChange = (changes : NodeChange[]) => {
+    onNodesChange(changes)
+
+    if(!isConnected || !channel){
+      return;
+    }
+
+    changes.forEach((change) => {
+      if(change.type === 'position' && change.position){
+        channel.send({
+          type : 'broadcast',
+          event : 'node-move',
+          payload : {
+            nodeId : change.id,
+            position : change.position
+          }
+        })
+      }
+    })
+
+  }
+
   return (
     <div className="relative h-[100%] w-full bg-slate-50 dark:bg-slate-900">
       
@@ -73,7 +96,7 @@ export const BaseEditor = () => {
       <ReactFlow
         nodes={nodes}
         edges={edges}
-        onNodesChange={onNodesChange}
+        onNodesChange={handleNodesChange}
         onEdgesChange={onEdgesChange}
         minZoom={0.01} 
         maxZoom={1000}
@@ -84,9 +107,9 @@ export const BaseEditor = () => {
         selectionOnDrag={false}
         onlyRenderVisibleElements={true}
         defaultEdgeOptions={{
-          type: 'smoothstep',
-          markerEnd: { type: MarkerType.ArrowClosed },
-          style: { strokeWidth: 2, stroke: '#64748b' }
+          type : 'smoothstep',
+          markerEnd : { type: MarkerType.ArrowClosed },
+          style : { strokeWidth: 2, stroke: '#64748b' }
         }}
         connectionMode={ConnectionMode.Loose}
         fitView
