@@ -19,6 +19,10 @@ interface AppState {
   generateGraph: () => Promise<void>;
   onNodesChange : OnNodesChange;
   onEdgesChange : OnEdgesChange;
+  handleRealtimeChanges: (
+    nodeId: string,
+    position: { x: number; y: number }
+  ) => Promise<void>;
 }
 
 export const useAppStore = create<AppState>((set, get) => ({
@@ -60,6 +64,14 @@ export const useAppStore = create<AppState>((set, get) => ({
     });
 
     set({nodes : mergedNodes, edges : newEdges})
+  },
+
+  handleRealtimeChanges : async (nodeId, position) => {
+    const nodes = get().nodes;
+
+    nodes.map((node) => {
+      node.id === nodeId ? {...node, position} : node;
+    })
   },
 
   onNodesChange : (changes) => {

@@ -3,11 +3,13 @@
 import { useState, useEffect } from "react"
 import { supabase } from "@/lib/supabase"
 import { RealtimeChannel } from "@supabase/supabase-js"
+import { useAppStore } from "@/lib/store"
 
 export function useWorkspaceSocket(workspaceId: string) {
     const [isConnected, setIsConnected] = useState<boolean>(false)
-    // We create a state to hold the actual radio channel
+ 
     const [channel, setChannel] = useState<RealtimeChannel | null>(null)
+    const [cursors, setCursors] = useState<Record<string, {x : number, y : number}>>({})
 
     useEffect(() => {
         if (!workspaceId || workspaceId === "new") return;
@@ -15,15 +17,38 @@ export function useWorkspaceSocket(workspaceId: string) {
         const myChannel = supabase.channel(`workspace-${workspaceId}`, {
             config: {
                 presence: {
-                    key: 'cursor', // We are tracking cursor data
+                    key: 'cursor', 
                 },
             },
         })
 
+        myChannel.on(
+            'broadcast',
+            {event : 'cursor-move'},
+            (incoming) => {
+                const {x, y, userId} = incoming.payload;
+
+                setCursors((prev) => ({
+                    ...prev, 
+                    [userId] : {x, y}
+                }))
+            }
+        )
+
+        myChannel.on(
+            'broadcast',
+            {event : 'node-move'},
+            (incoming) => {
+                const {nodeId, position} = incoming.payload;
+                useAppStore.getState().handleRealtimeChanges(nodeId, position);
+
+            }
+        )
+
         myChannel.subscribe((status) => {
             if (status === 'SUBSCRIBED') {
                 setIsConnected(true)
-                setChannel(myChannel) // Hand the channel to React
+                setChannel(myChannel) 
                 console.log(`📡 [NETWORK] Successfully subscribed to workspace-${workspaceId}`)
             }
             if (status === 'CLOSED') {
@@ -37,6 +62,5 @@ export function useWorkspaceSocket(workspaceId: string) {
         }
     }, [workspaceId])
 
-    // Now we return both the connection status AND the channel itself
-    return { isConnected, channel }
+    return { isConnected, channel, cursors };
 }
