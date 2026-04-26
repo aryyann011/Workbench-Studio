@@ -45,6 +45,24 @@ export function useWorkspaceSocket(workspaceId: string) {
             }
         )
 
+        myChannel.on(
+            'broadcast',
+            {event : 'node-start'},
+            (incoming) => {
+                const {nodeId, userId} = incoming.payload;
+                useAppStore.getState().handleNodeStart(nodeId, userId)
+            }
+        )
+
+        myChannel.on(
+            'broadcast',
+            {event : 'node-stop'},
+            (incoming) => {
+                const {nodeId} = incoming.payload
+                useAppStore.getState().handleNodeStop(nodeId)
+            }
+        )
+
         myChannel.subscribe((status) => {
             if (status === 'SUBSCRIBED') {
                 setIsConnected(true)

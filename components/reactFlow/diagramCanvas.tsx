@@ -7,7 +7,7 @@ import ReactFlow, {
   ConnectionMode,
   MarkerType
 } from 'reactflow';
-import { useRef } from 'react';
+import React, { useRef } from 'react';
 import 'reactflow/dist/style.css';
 import { SystemNode } from './systemNode';
 import { useAppStore } from '@/lib/store';
@@ -50,6 +50,31 @@ export const BaseEditor = () => {
       });
   };
 
+  const handleNodeDragStart = (e : React.MouseEvent, node : any) => {
+    if(!channel || !isConnected) return;
+
+    channel.send({
+      type : 'broadcast',
+      event : 'node-start',
+      payload : {
+        nodeId : node.id,
+        userId : myUserId
+      }
+    })
+  }
+
+  const handleNodeDragStop = (e : React.MouseEvent, node : any) => {
+    if(!channel || !isConnected) return;
+
+    channel.send({
+      type : 'broadcast',
+      event : 'node-stop',
+      payload : {
+        nodeId : node.id,
+        
+      }
+    })
+  }
   const handleNodesChange = (changes : NodeChange[]) => {
     onNodesChange(changes)
 
@@ -103,6 +128,8 @@ export const BaseEditor = () => {
         nodeTypes={nodeTypes}
         panOnScroll={false}         
         zoomOnScroll={true}
+        onNodeDragStart={handleNodeDragStart}
+        onNodeDragStop={handleNodeDragStop}
         panOnDrag={true}
         selectionOnDrag={false}
         onlyRenderVisibleElements={true}

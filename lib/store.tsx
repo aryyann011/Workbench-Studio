@@ -23,6 +23,13 @@ interface AppState {
     nodeId: string,
     position: { x: number; y: number }
   ) => Promise<void>;
+  handleNodeStart : (
+    nodeId : string,
+    userId : string
+  ) => Promise<void>;
+  handleNodeStop : (
+    nodeId : string 
+  ) => Promise<void>;
 }
 
 export const useAppStore = create<AppState>((set, get) => ({
@@ -66,12 +73,42 @@ export const useAppStore = create<AppState>((set, get) => ({
     set({nodes : mergedNodes, edges : newEdges})
   },
 
-  handleRealtimeChanges : async (nodeId, position) => {
-    const nodes = get().nodes;
+  handleRealtimeChanges: async (nodeId, position) => {
+    set({
+      nodes: get().nodes.map((node) =>
+        node.id === nodeId 
+          ? { ...node, position }
+          : node
+      ),
+    });
+  },
 
-    nodes.map((node) => {
-      node.id === nodeId ? {...node, position} : node;
-    })
+  handleNodeStart: async (nodeId, userId) => {
+    set({
+      nodes: get().nodes.map((node) =>
+        node.id === nodeId
+          ? { 
+              ...node, 
+              draggable: false, 
+              data: { ...node.data, lockedBy: userId } 
+            }
+          : node
+      ),
+    });
+  },
+
+  handleNodeStop: async (nodeId) => {
+    set({
+      nodes: get().nodes.map((node) =>
+        node.id === nodeId
+          ? { 
+              ...node, 
+              draggable: true, 
+              data: { ...node.data, lockedBy: undefined }
+            }
+          : node
+      ),
+    });
   },
 
   onNodesChange : (changes) => {
