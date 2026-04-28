@@ -2,11 +2,11 @@
 
 import { useState } from 'react';
 import { create } from 'zustand'; 
-import { Node, Edge, OnNodesChange, OnEdgesChange, applyEdgeChanges, applyNodeChanges } from 'reactflow'; 
+import { Node, Edge, OnNodesChange, OnEdgesChange, applyEdgeChanges, applyNodeChanges, addEdge } from 'reactflow'; 
 import { parseCode } from './parser';
 import { getLayoutedElements } from './layout';
 import { promises } from 'dns';
-
+import { Connection } from 'reactflow';
 
 
 interface AppState {
@@ -30,6 +30,9 @@ interface AppState {
   handleNodeStop : (
     nodeId : string 
   ) => Promise<void>;
+  onConnect : (
+    connection  : Connection
+  ) => void;
 }
 
 export const useAppStore = create<AppState>((set, get) => ({
@@ -71,6 +74,12 @@ export const useAppStore = create<AppState>((set, get) => ({
     });
 
     set({nodes : mergedNodes, edges : newEdges})
+  },
+
+  onConnect : (connection) => {
+    set({
+      edges : addEdge(connection, get().edges)
+    })
   },
 
   handleRealtimeChanges: async (nodeId, position) => {

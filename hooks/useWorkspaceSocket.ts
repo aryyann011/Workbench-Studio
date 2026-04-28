@@ -44,6 +44,14 @@ export function useWorkspaceSocket(workspaceId: string) {
 
             }
         )
+        myChannel.on(
+            'broadcast',
+            {event : 'edge-create'},
+            (incoming) => {
+                const {Connection} = incoming.payload
+                useAppStore.getState().onConnect(connection)
+            }
+        )
 
         myChannel.on(
             'broadcast',
