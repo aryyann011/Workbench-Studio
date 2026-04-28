@@ -45,8 +45,11 @@ export function SystemNode({ data }: NodeProps) {
         ${isOffline ? "opacity-50 border-red-500/50" : ""}`}
       style={{ borderLeftWidth: '5px', borderLeftColor: isOffline ? '#ef4444' : resolved.color }}
     >
-      <Handle type="target" position={Position.Left} className="!w-2 !h-2 !bg-slate-500 !border-none !-left-1" />
-
+      <Handle 
+        type="target" 
+        position={Position.Left} 
+        className="!w-4 !h-4 !bg-slate-500 !border-2 !border-white z-50 !-left-2" 
+      />
       <div className="flex flex-row items-center p-3 gap-3">
         
         <div 
@@ -69,7 +72,11 @@ export function SystemNode({ data }: NodeProps) {
 
       </div>
 
-      <Handle type="source" position={Position.Right} className="!w-2 !h-2 !bg-slate-500 !border-none !-right-1" />
+      <Handle 
+        type="source" 
+        position={Position.Right} 
+        className="!w-4 !h-4 !bg-slate-500 !border-2 !border-white z-50 !-right-2" 
+      />
     </div>
   );
 }

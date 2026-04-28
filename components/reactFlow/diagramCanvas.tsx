@@ -26,7 +26,7 @@ const nodeTypes = {
 const EditorContent = () => {
   const params = useParams()
   const workspaceId = params.id as string 
-  const {nodes, edges, onNodesChange, onEdgesChange} = useAppStore()
+  const {nodes, edges, onNodesChange, onEdgesChange,onConnect} = useAppStore()
   
   const {screenToFlowPosition, flowToScreenPosition} = useReactFlow()
   const { isConnected, channel, cursors } = useWorkspaceSocket(workspaceId);
@@ -63,6 +63,21 @@ const EditorContent = () => {
       payload : {
         nodeId : node.id,
         userId : myUserId
+      }
+    })
+  }
+
+  const handleEdgeCreation = (connection) => {
+
+    onConnect(connection)
+
+    if(!channel || !isConnected) return;
+
+    channel.send({
+      type : 'broadcast',
+      event : 'edge-create',
+      payload : {
+        Connection : connection
       }
     })
   }
@@ -138,6 +153,7 @@ const EditorContent = () => {
         onNodeDragStart={handleNodeDragStart}
         onNodeDragStop={handleNodeDragStop}
         panOnDrag={true}
+        edgesUpdatable={true}
         selectionOnDrag={false}
         onlyRenderVisibleElements={true}
         defaultEdgeOptions={{
@@ -146,6 +162,7 @@ const EditorContent = () => {
           style : { strokeWidth: 2, stroke: '#64748b' }
         }}
         connectionMode={ConnectionMode.Loose}
+        onConnect={handleEdgeCreation}
         fitView
       >
         <Background color="#94a3b8" gap={20} size={1} />
