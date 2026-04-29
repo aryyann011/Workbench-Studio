@@ -8,7 +8,6 @@ import { getLayoutedElements } from './layout';
 import { promises } from 'dns';
 import { Connection } from 'reactflow';
 
-
 interface AppState {
   nodes: Node[];
   edges: Edge[];
@@ -17,6 +16,7 @@ interface AppState {
 
   updateNodeData : (id : string, data : any) => void;
   generateGraph: () => Promise<void>;
+  fetchGraph: () => Promise<void>;
   onNodesChange : OnNodesChange;
   onEdgesChange : OnEdgesChange;
   handleRealtimeChanges: (
@@ -40,7 +40,7 @@ export const useAppStore = create<AppState>((set, get) => ({
   edges: [],
   code : "",
 
-  setCode : (input) =>{
+  setCode : (input) => {
     set({code : input})
   },
 
@@ -74,6 +74,13 @@ export const useAppStore = create<AppState>((set, get) => ({
     });
 
     set({nodes : mergedNodes, edges : newEdges})
+  },
+
+  fetchGraph: async () => {
+    const {code} = get()
+
+    
+
   },
 
   onConnect : (connection) => {

@@ -49,7 +49,7 @@ export function useWorkspaceSocket(workspaceId: string) {
             {event : 'edge-create'},
             (incoming) => {
                 const {Connection} = incoming.payload
-                useAppStore.getState().onConnect(connection)
+                useAppStore.getState().onConnect(Connection)
             }
         )
 

@@ -7,7 +7,9 @@ import ReactFlow, {
   ConnectionMode,
   MarkerType,
   ReactFlowProvider,
-  useReactFlow
+  useReactFlow,
+  Connection,
+  NodeChange
 } from 'reactflow';
 import React, { useRef } from 'react';
 import 'reactflow/dist/style.css';
@@ -16,7 +18,6 @@ import { useAppStore } from '@/lib/store';
 import { SystemGroupNode } from './systemGroupNode';
 import { useWorkspaceSocket } from '@/hooks/useWorkspaceSocket';
 import { useParams } from 'next/navigation';
-import { NodeChange } from 'reactflow';
 
 const nodeTypes = {
   system: SystemNode,
@@ -67,7 +68,7 @@ const EditorContent = () => {
     })
   }
 
-  const handleEdgeCreation = (connection) => {
+  const handleEdgeCreation = (connection: Connection) => {
 
     onConnect(connection)
 
@@ -113,7 +114,6 @@ const EditorContent = () => {
         })
       }
     })
-
   }
 
   return (
