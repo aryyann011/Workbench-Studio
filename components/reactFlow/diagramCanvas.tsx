@@ -5,7 +5,11 @@ import ReactFlow, {
   Controls, 
   MiniMap, 
   ConnectionMode,
-  MarkerType
+  MarkerType,
+  ReactFlowProvider,
+  useReactFlow,
+  Connection,
+  NodeChange
 } from 'reactflow';
 import React, { useRef } from 'react';
 import 'reactflow/dist/style.css';
@@ -14,18 +18,18 @@ import { useAppStore } from '@/lib/store';
 import { SystemGroupNode } from './systemGroupNode';
 import { useWorkspaceSocket } from '@/hooks/useWorkspaceSocket';
 import { useParams } from 'next/navigation';
-import { NodeChange } from 'reactflow';
 
 const nodeTypes = {
   system: SystemNode,
   group : SystemGroupNode
 };
 
-export const BaseEditor = () => {
+const EditorContent = () => {
   const params = useParams()
   const workspaceId = params.id as string 
-  const {nodes, edges, onNodesChange, onEdgesChange} = useAppStore()
+  const {nodes, edges, onNodesChange, onEdgesChange,onConnect} = useAppStore()
   
+  const {screenToFlowPosition, flowToScreenPosition} = useReactFlow()
   const { isConnected, channel, cursors } = useWorkspaceSocket(workspaceId);
 
   const myUserId = useRef(`user_${Math.floor(Math.random() * 10000)}`).current;
@@ -39,12 +43,13 @@ export const BaseEditor = () => {
       if (now - lastUpdate.current < 50) return;
       lastUpdate.current = now;
 
+      const newPosition = screenToFlowPosition({x : e.clientX, y : e.clientY})
       channel.send({
           type: 'broadcast',
           event: 'cursor-move',
           payload: {
-              x: e.clientX,
-              y: e.clientY,
+              x: newPosition.x,
+              y: newPosition.y,
               userId: myUserId
           },
       });
@@ -59,6 +64,21 @@ export const BaseEditor = () => {
       payload : {
         nodeId : node.id,
         userId : myUserId
+      }
+    })
+  }
+
+  const handleEdgeCreation = (connection: Connection) => {
+
+    onConnect(connection)
+
+    if(!channel || !isConnected) return;
+
+    channel.send({
+      type : 'broadcast',
+      event : 'edge-create',
+      payload : {
+        Connection : connection
       }
     })
   }
@@ -94,18 +114,19 @@ export const BaseEditor = () => {
         })
       }
     })
-
   }
 
   return (
-    <div className="relative h-[100%] w-full bg-slate-50 dark:bg-slate-900">
+    <div onPointerMove={handlePointerMove} className="relative h-[100%] w-full bg-slate-50 dark:bg-slate-900">
       
-      {Object.entries(cursors).map(([id, cursor]) => (
-        <div
+      {Object.entries(cursors).map(([id, cursor]) => {
+        const changedPosition = flowToScreenPosition({x : cursor.x, y : cursor.y});
+        return (
+          <div
             key={id}
-            className="absolute top-0 left-0 z-50 transition-transform duration-75"
+            className="fixed top-0 left-0 z-50 transition-transform duration-75"
             style={{
-                transform: `translate(${cursor.x}px, ${cursor.y}px)`,
+                transform: `translate(${changedPosition.x}px, ${changedPosition.y}px)`,
                 pointerEvents: 'none', 
             }}
         >
@@ -116,7 +137,8 @@ export const BaseEditor = () => {
                 {id}
             </div>
         </div>
-      ))}
+        );
+      })}
 
       <ReactFlow
         nodes={nodes}
@@ -131,6 +153,7 @@ export const BaseEditor = () => {
         onNodeDragStart={handleNodeDragStart}
         onNodeDragStop={handleNodeDragStop}
         panOnDrag={true}
+        edgesUpdatable={true}
         selectionOnDrag={false}
         onlyRenderVisibleElements={true}
         defaultEdgeOptions={{
@@ -139,8 +162,8 @@ export const BaseEditor = () => {
           style : { strokeWidth: 2, stroke: '#64748b' }
         }}
         connectionMode={ConnectionMode.Loose}
+        onConnect={handleEdgeCreation}
         fitView
-        onPaneMouseMove={handlePointerMove} 
       >
         <Background color="#94a3b8" gap={20} size={1} />
         <Controls className="bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700" />
@@ -154,4 +177,12 @@ export const BaseEditor = () => {
       </ReactFlow>
     </div>
   );
+}
+
+export const BaseEditor = () => {
+  return(
+    <ReactFlowProvider>
+      <EditorContent/>
+    </ReactFlowProvider>
+  )
 }

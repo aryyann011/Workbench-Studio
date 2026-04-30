@@ -6,6 +6,7 @@ import { saveArchitecture } from '@/actions/workspace';
 
 export function SaveButton() {
   const code = useAppStore((state) => state.code);
+  const {nodes, edges} = useAppStore();
   
   const [isSaving, setIsSaving] = useState(false);
 
@@ -14,7 +15,7 @@ export function SaveButton() {
 
     setIsSaving(true);
     
-    const result = await saveArchitecture(code);
+    const result = await saveArchitecture(code, nodes, edges);
     
     if (result.success) {
       alert(`Success! Saved securely to Neon. Database ID: ${result.id}`);

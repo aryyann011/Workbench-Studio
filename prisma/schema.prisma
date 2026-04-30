@@ -3,14 +3,16 @@ generator client {
 }
 
 datasource db {
-  provider  = "postgresql"
+  provider = "postgresql"
 }
 
 model Workspace {
-  id        String   @id @default(uuid())
-  userId    String   
-  name      String   @default("Untitled Architecture")
-  code      String   @db.Text
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id           String   @id @default(uuid())
+  userId       String
+  name         String   @default("Untitled Architecture")
+  code         String
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  canvas_nodes Json?
+  canvas_edges Json?
 }

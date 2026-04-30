@@ -2,12 +2,11 @@
 
 import { useState } from 'react';
 import { create } from 'zustand'; 
-import { Node, Edge, OnNodesChange, OnEdgesChange, applyEdgeChanges, applyNodeChanges } from 'reactflow'; 
+import { Node, Edge, OnNodesChange, OnEdgesChange, applyEdgeChanges, applyNodeChanges, addEdge } from 'reactflow'; 
 import { parseCode } from './parser';
 import { getLayoutedElements } from './layout';
 import { promises } from 'dns';
-
-
+import { Connection } from 'reactflow';
 
 interface AppState {
   nodes: Node[];
@@ -17,6 +16,10 @@ interface AppState {
 
   updateNodeData : (id : string, data : any) => void;
   generateGraph: () => Promise<void>;
+  SetTheGraph: (
+    nodes : Node[],
+    edges : Edge[]
+  ) => Promise<void>;
   onNodesChange : OnNodesChange;
   onEdgesChange : OnEdgesChange;
   handleRealtimeChanges: (
@@ -30,6 +33,9 @@ interface AppState {
   handleNodeStop : (
     nodeId : string 
   ) => Promise<void>;
+  onConnect : (
+    connection  : Connection
+  ) => void;
 }
 
 export const useAppStore = create<AppState>((set, get) => ({
@@ -37,7 +43,7 @@ export const useAppStore = create<AppState>((set, get) => ({
   edges: [],
   code : "",
 
-  setCode : (input) =>{
+  setCode : (input) => {
     set({code : input})
   },
 
@@ -52,6 +58,7 @@ export const useAppStore = create<AppState>((set, get) => ({
       })
     })
   },
+
   generateGraph: async () => {
     const {code, nodes : currentNodes} = get()
     
@@ -71,6 +78,17 @@ export const useAppStore = create<AppState>((set, get) => ({
     });
 
     set({nodes : mergedNodes, edges : newEdges})
+  },
+
+  SetTheGraph: async (nodes, edges) => {
+    set({nodes : nodes, edges : edges})
+
+  },
+
+  onConnect : (connection) => {
+    set({
+      edges : addEdge(connection, get().edges)
+    })
   },
 
   handleRealtimeChanges: async (nodeId, position) => {
@@ -97,7 +115,7 @@ export const useAppStore = create<AppState>((set, get) => ({
     });
   },
 
-  handleNodeStop: async (nodeId) => {
+  handleNodeStop : async (nodeId) => {
     set({
       nodes: get().nodes.map((node) =>
         node.id === nodeId
