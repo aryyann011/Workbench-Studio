@@ -40,8 +40,9 @@ export default function ResizableDemo() {
     }
 
     getWorkspace(workspaceId).then((data) => {
-      if (data && data.code) {
+      if (data && data.code && data.canvas_nodes && data.canvas_edges) {
         setCode(data.code);
+        
         setTimeout(() => {
           generateGraph(); 
         }, 100);
