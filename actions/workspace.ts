@@ -45,11 +45,14 @@ export async function saveArchitecture(code: string, nodes : Node[], edges : Edg
     if (existingId && existingId !== "new") {
       await prisma.workspace.update({
         where: { id: existingId },
-        data: { code: code },
-
+        data: { 
+          code: code,
+          canvas_nodes: JSON.stringify(nodes),
+          canvas_edges: JSON.stringify(edges)
+        },
       });
       return { success: true, id: existingId };
-    } 
+    }
     
     const newWorkspace = await prisma.workspace.create({
       data: { userId: userId, code: code, canvas_nodes : JSON.stringify(nodes), canvas_edges : JSON.stringify(edges) }

@@ -13,6 +13,7 @@ import { BaseEditor } from "@/components/reactFlow/diagramCanvas"
 import { useAppStore } from "@/lib/store"
 import { Code2, SquareSplitHorizontal, LayoutDashboard, Save, Play, Sparkles, X } from "lucide-react"
 import PromptBar, { ChatMessage } from "@/components/editor/prompt-input"
+import { Node, Edge } from 'react-flow'
 
 
 type ViewMode = "code" | "both" | "canvas";
@@ -23,7 +24,7 @@ export default function ResizableDemo() {
   const workspaceId = params.id as string 
 
   const [isAIOpen, setIsAIOpen] = useState<boolean>(false) 
-  const { code, setCode, generateGraph } = useAppStore()
+  const { code, setCode, generateGraph, SetTheGraph, nodes, edges } = useAppStore()
   const [prompt, setPrompt] = useState<string>("")
   const [isLoading, setIsLoading] = useState<boolean>(false)
   const [isSaving, setIsSaving] = useState<boolean>(false)
@@ -42,9 +43,17 @@ export default function ResizableDemo() {
     getWorkspace(workspaceId).then((data) => {
       if (data && data.code && data.canvas_nodes && data.canvas_edges) {
         setCode(data.code);
-        
+
+        const parsedNodes = typeof data.canvas_nodes === 'string' 
+          ? JSON.parse(data.canvas_nodes) 
+          : data.canvas_nodes;
+          
+        const parsedEdges = typeof data.canvas_edges === 'string' 
+          ? JSON.parse(data.canvas_edges) 
+          : data.canvas_edges;
+
         setTimeout(() => {
-          generateGraph(); 
+          SetTheGraph(parsedNodes, parsedEdges); 
         }, 100);
       }
     });
@@ -92,7 +101,7 @@ export default function ResizableDemo() {
     if (!code) return;
     setIsSaving(true);
     
-    const result = await saveArchitecture(code, workspaceId);
+    const result = await saveArchitecture(code, nodes, edges, workspaceId);
     
     if (result.success && workspaceId === "new") {
       router.replace(`/dashboard/${result.id}`);

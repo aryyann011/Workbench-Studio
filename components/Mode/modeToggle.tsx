@@ -8,13 +8,25 @@ import { Button } from "@/components/ui/button"
 
 export function ModeToggle() {
   const { theme, setTheme } = useTheme()
+  const [mounted, setMounted] = React.useState(false)
+
+  React.useEffect(() => {
+    setMounted(true)
+  }, [])
+
+  if (!mounted) return null
 
   const toggleTheme = () => {
     setTheme(theme === "dark" ? "light" : "dark")
   }
 
   return (
-    <Button className="cursor-pointer" variant="outline" size="icon" onClick={toggleTheme}>
+    <Button
+      className="cursor-pointer"
+      variant="outline"
+      size="icon"
+      onClick={toggleTheme}
+    >
       {theme === "dark" ? (
         <Sun className="h-[1.2rem] w-[1.2rem]" />
       ) : (
