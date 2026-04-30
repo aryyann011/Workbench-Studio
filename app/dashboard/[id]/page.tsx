@@ -13,8 +13,7 @@ import { BaseEditor } from "@/components/reactFlow/diagramCanvas"
 import { useAppStore } from "@/lib/store"
 import { Code2, SquareSplitHorizontal, LayoutDashboard, Save, Play, Sparkles, X } from "lucide-react"
 import PromptBar, { ChatMessage } from "@/components/editor/prompt-input"
-import { Node, Edge } from 'react-flow'
-
+import { Node, Edge } from "reactflow"
 
 type ViewMode = "code" | "both" | "canvas";
 
