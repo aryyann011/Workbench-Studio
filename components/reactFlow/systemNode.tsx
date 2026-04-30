@@ -32,7 +32,8 @@ const DynamicIcon = ({ name, color }: IconProps) => {
 };
 
 export function SystemNode({ data }: NodeProps) {
- 
+  const isLocked = !!data.lockedBy
+  
   const resolved = data.icon ? 
     { icon: data.icon, color: data.color || '#64748b' } : 
     getIconForLabel(data.label);
@@ -41,10 +42,18 @@ export function SystemNode({ data }: NodeProps) {
 
   return (
     <div 
-      className={`shadow-lg rounded-md bg-white dark:bg-slate-900 min-w-[280px] min-h-[90px] py-2 border border-slate-200 dark:border-slate-800 transition-all
-        ${isOffline ? "opacity-50 border-red-500/50" : ""}`}
+      className={`relative shadow-lg rounded-md bg-white dark:bg-slate-900 min-w-[280px] min-h-[90px] py-2 border border-slate-200 dark:border-slate-800 transition-all
+        ${isOffline ? "opacity-50 border-red-500/50" : ""}
+        ${isLocked ? 'border-rose-500 ring-2 ring-rose-500/20 opacity-90 cursor-not-allowed' : ''}`}
       style={{ borderLeftWidth: '5px', borderLeftColor: isOffline ? '#ef4444' : resolved.color }}
     >
+      
+      {isLocked && (
+        <div className="absolute -top-3 right-2 bg-rose-500 text-white text-[10px] font-semibold px-2 py-0.5 rounded-full shadow-sm z-50 flex items-center gap-1">
+          🔒 {data.lockedBy}
+        </div>
+      )}
+
       <Handle 
         type="target" 
         position={Position.Left} 
