@@ -56,9 +56,19 @@ export default function ResizableDemo() {
         }, 100);
       }
     });
-    
-    
-  }, [workspaceId]);
+  }, [workspaceId]); 
+
+
+  useEffect(() => {
+    if (workspaceId === "new" || !code || nodes.length === 0) return;
+
+    const saveTimer = setTimeout(() => {
+      saveArchitecture(code, nodes, edges, workspaceId);
+      console.log("[AUTO-SAVE] Canvas state permanently saved.");
+    }, 2000);
+
+    return () => clearTimeout(saveTimer);
+  }, [nodes, edges, code, workspaceId]); 
 
   const handleRun = () => {
     if (!code) return;
