@@ -8,12 +8,31 @@ import { getLayoutedElements } from './layout';
 import { promises } from 'dns';
 import { Connection } from 'reactflow';
 
+type Action = {
+  type: "DELETE_NODE"; 
+  userId: string | null | undefined;
+  deletedNode: Node | undefined;   
+  deletedEdges: Edge[];
+} | {
+  type : "MOVE_NODE";
+  userId : string | null;
+  nodeId : string;
+  fromPosition : {x : number, y : number};
+  toPosition : {x : number, y : number};
+};
+type position = {
+  x : number,
+  y : number
+}
+
 interface AppState {
   nodes: Node[];
   edges: Edge[];
   code : string
   setCode : (code : string) => void
-
+  
+  past : Action[]
+  future : Action[]
   updateNodeData : (id : string, data : any) => void;
   generateGraph: () => Promise<void>;
   SetTheGraph: (
@@ -36,11 +55,28 @@ interface AppState {
   onConnect : (
     connection  : Connection
   ) => void;
+  deleteNode : (
+    nodeId : string,
+    userId : string
+  ) => void;
+  undoTheActiion : (
+    // userId : string | null
+  ) => void;
+  RedoTheAction : (
+    // userId : string | null
+  ) => void;
+  NodeMovementTracker : (
+    userId: string | null,
+    nodeId : string,
+    dragState : {start : position | null, end : position | null}
+  ) => void;
 }
 
 export const useAppStore = create<AppState>((set, get) => ({
   nodes: [],
   edges: [],
+  past : [],
+  future : [],
   code : "",
 
   setCode : (input) => {
@@ -80,11 +116,113 @@ export const useAppStore = create<AppState>((set, get) => ({
     set({nodes : mergedNodes, edges : newEdges})
   },
 
+  undoTheActiion: () => {
+    const { nodes, edges, past, future } = get();
+    if (past.length === 0) return;
+
+    const lastAction = past[past.length - 1];
+    const newPast = past.slice(0, -1);
+
+    let nextNodes = [...nodes];
+    let nextEdges = [...edges];
+
+    switch (lastAction.type) {
+      case "DELETE_NODE":
+        if (lastAction.deletedNode) nextNodes.push(lastAction.deletedNode);
+        if (lastAction.deletedEdges.length > 0) nextEdges.push(...lastAction.deletedEdges);
+        break;
+
+      case "MOVE_NODE":
+        nextNodes = nextNodes.map(node => 
+          node.id === lastAction.nodeId 
+            ? { ...node, position: lastAction.fromPosition } 
+            : node
+        );
+        break;
+    }
+
+    set({
+      past: newPast,
+      future: [...future, lastAction],
+      nodes: nextNodes,
+      edges: nextEdges
+    });
+  },
+
+  NodeMovementTracker : (userId, nodeId, dragState) => {
+    const {past} = get()
+
+    if (!dragState.start || !dragState.end) return;
+
+    const newPastElement: Action = {
+      type: "MOVE_NODE",
+      userId,
+      nodeId,
+      fromPosition: dragState.start,
+      toPosition: dragState.end
+    };
+    set({past : [...past, newPastElement]})
+  },
+
+  RedoTheAction : () => {
+    const { nodes, edges, past, future } = get();
+    if (past.length === 0) return;
+
+    const lastAction = past[past.length - 1];
+    const newPast = past.slice(0, -1);
+
+    let nextNodes = [...nodes];
+    let nextEdges = [...edges];
+
+    switch (lastAction.type) {
+      case "DELETE_NODE":
+        if (lastAction.deletedNode) nextNodes.push(lastAction.deletedNode);
+        if (lastAction.deletedEdges.length > 0) nextEdges.push(...lastAction.deletedEdges);
+        break;
+
+      case "MOVE_NODE":
+        nextNodes = nextNodes.map(node => 
+          node.id === lastAction.nodeId 
+            ? { ...node, position: lastAction.toPosition} 
+            : node
+        );
+        break;
+    }
+
+    set({
+      past: newPast,
+      future: [...future, lastAction],
+      nodes: nextNodes,
+      edges: nextEdges
+    });
+  },
+
   SetTheGraph: async (nodes, edges) => {
     set({nodes : nodes, edges : edges})
 
   },
+  deleteNode: (nodeId, userId) => {
+    const { nodes, edges, past } = get();
 
+    const nodeToDelete = nodes.find(n => n.id === nodeId);
+    
+    const connectedEdges = edges.filter(e => e.source === nodeId || e.target === nodeId);
+
+    set({
+      past: [...past, { 
+        type: "DELETE_NODE", 
+        userId: userId, 
+        deletedNode: nodeToDelete, 
+        deletedEdges: connectedEdges 
+      }],
+      future: [] 
+    });
+
+    set({
+      nodes: nodes.filter(n => n.id !== nodeId),
+      edges: edges.filter(e => e.source !== nodeId && e.target !== nodeId)
+    });
+  },
   onConnect : (connection) => {
     set({
       edges : addEdge(connection, get().edges)

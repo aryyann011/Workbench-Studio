@@ -9,7 +9,8 @@ import ReactFlow, {
   ReactFlowProvider,
   useReactFlow,
   Connection,
-  NodeChange
+  NodeChange,
+  Panel
 } from 'reactflow';
 import React, { useRef, useState } from 'react';
 import 'reactflow/dist/style.css';
@@ -18,27 +19,43 @@ import { useAppStore } from '@/lib/store';
 import { SystemGroupNode } from './systemGroupNode';
 import { useWorkspaceSocket } from '@/hooks/useWorkspaceSocket';
 import { useParams } from 'next/navigation';
+import { useAuth } from '@clerk/nextjs';
 
 const nodeTypes = {
   system: SystemNode,
   group : SystemGroupNode
 };
+type position = {
+  x : number,
+  y : number
+}
+
+type dragState = {
+  start  : position | null,
+  end : position | null
+}
 
 const EditorContent = () => {
   const params = useParams()
   const [menuState, setMenuState] = useState<{
-  isOpen: boolean;
-  x: number;
-  y: number;
-  nodeId: string | null;
-}>({ isOpen: false, x: 0, y: 0, nodeId: null });
+    isOpen: boolean;
+    x: number;
+    y: number;
+    nodeId: string | null;
+  }>({ isOpen: false, x: 0, y: 0, nodeId: null });
+  const [dragState, setDragState] = useState<dragState>({
+    start : null,
+    end : null
+  })
+
+  const {userId} = useAuth()
   const workspaceId = params.id as string 
-  const {nodes, edges, onNodesChange, onEdgesChange,onConnect} = useAppStore()
+  const {nodes, edges, onNodesChange, onEdgesChange,onConnect, deleteNode, undoTheActiion, RedoTheAction, NodeMovementTracker} = useAppStore()
   
   const {screenToFlowPosition, flowToScreenPosition} = useReactFlow()
   const { isConnected, channel, cursors } = useWorkspaceSocket(workspaceId);
 
-  const myUserId = useRef(`user_${Math.floor(Math.random() * 10000)}`).current;
+  //const myUserId = useRef(`user_${Math.floor(Math.random() * 10000)}`).current;
   
   const lastUpdate = useRef<number>(0);
 
@@ -56,7 +73,7 @@ const EditorContent = () => {
           payload: {
               x: newPosition.x,
               y: newPosition.y,
-              userId: myUserId
+              userId: userId
           },
       });
   };
@@ -71,6 +88,10 @@ const EditorContent = () => {
   });
 };
   const handleNodeDragStart = (e : React.MouseEvent, node : any) => {
+    setDragState(prev => ({
+      ...prev, start : {x : e.clientX, y : e.clientY}
+    }))
+
     if(!channel || !isConnected) return;
 
     channel.send({
@@ -78,7 +99,7 @@ const EditorContent = () => {
       event : 'node-start',
       payload : {
         nodeId : node.id,
-        userId : myUserId
+        userId : userId
       }
     })
   }
@@ -101,6 +122,14 @@ const EditorContent = () => {
   }
 
   const handleNodeDragStop = (e : React.MouseEvent, node : any) => {
+    setDragState(prev => ({
+      ...prev, end : {x : e.clientX, y : e.clientY}
+    }))
+
+    if(userId)
+    NodeMovementTracker(userId, node.id, dragState)
+
+
     if(!channel || !isConnected) return;
 
     channel.send({
@@ -114,7 +143,14 @@ const EditorContent = () => {
   }
 
   const deleteNodeManually = (Id : string) => {
-
+    if (!userId) return;
+    deleteNode(Id, userId);
+  }
+  const undoTheaction = () => {
+    undoTheActiion()
+  }
+  const RedoTheaction = () => {
+    RedoTheAction()
   }
   const handleNodesChange = (changes : NodeChange[]) => {
     onNodesChange(changes)
@@ -205,6 +241,29 @@ const EditorContent = () => {
         onConnect={handleEdgeCreation}
         fitView
       >
+        <Panel position="bottom-left" className="flex gap-2 m-4">
+          <button
+            onClick={() => {undoTheaction}}
+            className="p-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 shadow-md rounded hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors text-slate-600 dark:text-slate-300 flex items-center justify-center group"
+            title="Undo (Ctrl+Z)"
+          >
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="group-active:-translate-x-1 transition-transform">
+              <path d="M3 7v6h6" />
+              <path d="M21 17a9 9 0 0 0-9-9 9 9 0 0 0-6 2.3L3 13" />
+            </svg>
+          </button>
+          
+          <button
+            onClick={() => {RedoTheaction}}
+            className="p-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 shadow-md rounded hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors text-slate-600 dark:text-slate-300 flex items-center justify-center group"
+            title="Redo (Ctrl+Y)"
+          >
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="group-active:translate-x-1 transition-transform">
+              <path d="M21 7v6h-6" />
+              <path d="M3 17a9 9 0 0 1 9-9 9 9 0 0 1 6 2.3l3 2.7" />
+            </svg>
+          </button>
+        </Panel>
         <Background color="#94a3b8" gap={20} size={1} />
         <Controls className="bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700" />
         <MiniMap 
