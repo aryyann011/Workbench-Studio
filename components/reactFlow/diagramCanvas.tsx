@@ -20,6 +20,7 @@ import { SystemGroupNode } from './systemGroupNode';
 import { useWorkspaceSocket } from '@/hooks/useWorkspaceSocket';
 import { useParams } from 'next/navigation';
 import { useAuth } from '@clerk/nextjs';
+import { toPng } from 'html-to-image';
 
 const nodeTypes = {
   system: SystemNode,
@@ -178,6 +179,25 @@ const EditorContent = () => {
       });
     }
   }
+  const downloadArchitecture = () => {
+    const element = document.querySelector('.react-flow__viewport') as HTMLElement;
+    if (!element) return;
+
+    toPng(element, {
+      backgroundColor: '#0f172a', 
+      pixelRatio: 3,
+      quality: 1, 
+    })
+      .then((dataUrl) => {
+        const a = document.createElement('a');
+        a.setAttribute('download', `architecture-${workspaceId}.png`);
+        a.setAttribute('href', dataUrl);
+        a.click();
+      })
+      .catch((err) => {
+        console.error('Failed to export architecture:', err);
+      });
+  };
   const handleNodesChange = (changes : NodeChange[]) => {
     onNodesChange(changes)
 
@@ -267,9 +287,16 @@ const EditorContent = () => {
         onConnect={handleEdgeCreation}
         fitView
       >
-        <Panel position="bottom-left" className="flex gap-2 m-4">
+        <Panel
+          position="bottom-left"
+          style={{
+            left: '16%',
+            transform: 'translateX(-50%)',
+          }}
+          className="flex gap-2 m-4"
+        >
           <button
-            onClick={undoTheaction} // <--- FIX HERE
+            onClick={undoTheaction} 
             className="p-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 shadow-md rounded hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors text-slate-600 dark:text-slate-300 flex items-center justify-center group"
             title="Undo (Ctrl+Z)"
           >
@@ -280,7 +307,7 @@ const EditorContent = () => {
           </button>
           
           <button
-            onClick={RedoTheaction} // <--- FIX HERE
+            onClick={RedoTheaction} 
             className="p-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 shadow-md rounded hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors text-slate-600 dark:text-slate-300 flex items-center justify-center group"
             title="Redo (Ctrl+Y)"
           >
@@ -288,6 +315,20 @@ const EditorContent = () => {
               <path d="M21 7v6h-6" />
               <path d="M3 17a9 9 0 0 1 9-9 9 9 0 0 1 6 2.3l3 2.7" />
             </svg>
+          </button>
+          <div className="w-px h-6 bg-slate-200 dark:bg-slate-700 mx-1 self-center" /> {/* A nice visual divider */}
+          
+          <button
+            onClick={downloadArchitecture}
+            className="px-3 py-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 shadow-md rounded hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors text-slate-600 dark:text-slate-300 flex items-center justify-center font-medium text-sm gap-2 active:scale-95"
+            title="Export as PNG"
+          >
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+              <polyline points="7 10 12 15 17 10" />
+              <line x1="12" y1="15" x2="12" y2="3" />
+            </svg>
+            Export PNG
           </button>
         </Panel>
         <Background color="#94a3b8" gap={20} size={1} />
