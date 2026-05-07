@@ -145,12 +145,38 @@ const EditorContent = () => {
   const deleteNodeManually = (Id : string) => {
     if (!userId) return;
     deleteNode(Id, userId);
+
+    if (channel && isConnected) {
+      channel.send({
+        type: 'broadcast',
+        event: 'node-delete', 
+        payload: { nodeId: Id }
+      });
+    }
   }
   const undoTheaction = () => {
-    undoTheActiion()
+    undoTheActiion(userId)
+
+    if (channel && isConnected) {
+      const { nodes, edges } = useAppStore.getState(); 
+      channel.send({
+        type: 'broadcast',
+        event: 'sync-timeline',
+        payload: { nodes, edges }
+      });
+    }
   }
   const RedoTheaction = () => {
-    RedoTheAction()
+    RedoTheAction(userId)
+
+    if (channel && isConnected) {
+      const { nodes, edges } = useAppStore.getState();
+      channel.send({
+        type: 'broadcast',
+        event: 'sync-timeline',
+        payload: { nodes, edges }
+      });
+    }
   }
   const handleNodesChange = (changes : NodeChange[]) => {
     onNodesChange(changes)

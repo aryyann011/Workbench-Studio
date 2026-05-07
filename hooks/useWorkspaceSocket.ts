@@ -55,6 +55,24 @@ export function useWorkspaceSocket(workspaceId: string) {
 
         myChannel.on(
             'broadcast',
+            {event : 'node-delete'},
+            (incoming) => {
+                const {nodeId, userId} = incoming.payload
+                useAppStore.getState().removeNodeRemotely(nodeId)
+            }
+        )
+
+        myChannel.on(
+            'broadcast',
+            {event : 'sync-timeline'},
+            (incoming) => {
+                const {nodes, edges} = incoming.payload
+                useAppStore.getState().SetTheGraph(nodes, edges)
+            }
+        )
+
+        myChannel.on(
+            'broadcast',
             {event : 'node-start'},
             (incoming) => {
                 const {nodeId, userId} = incoming.payload;
