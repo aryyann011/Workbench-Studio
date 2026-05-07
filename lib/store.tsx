@@ -59,17 +59,14 @@ interface AppState {
     nodeId : string,
     userId : string
   ) => void;
-  undoTheActiion : (
-    // userId : string | null
-  ) => void;
-  RedoTheAction : (
-    // userId : string | null
-  ) => void;
+  undoTheActiion : (userId: string | null | undefined) => void;
+  RedoTheAction : (userId: string | null | undefined) => void;
   NodeMovementTracker : (
     userId: string | null,
     nodeId : string,
     dragState : {start : position | null, end : position | null}
   ) => void;
+  removeNodeRemotely : (nodeId : string) => void;
 }
 
 export const useAppStore = create<AppState>((set, get) => ({
@@ -116,11 +113,12 @@ export const useAppStore = create<AppState>((set, get) => ({
     set({nodes : mergedNodes, edges : newEdges})
   },
 
-  undoTheActiion: () => {
+  undoTheActiion: (userId) => {
     const { nodes, edges, past, future } = get();
     if (past.length === 0) return;
 
     const lastAction = past[past.length - 1];
+    if (lastAction.userId !== userId) return; // 
     const newPast = past.slice(0, -1);
 
     let nextNodes = [...nodes];
@@ -161,37 +159,47 @@ export const useAppStore = create<AppState>((set, get) => ({
       fromPosition: dragState.start,
       toPosition: dragState.end
     };
-    set({past : [...past, newPastElement]})
+    set({past : [...past, newPastElement],
+      future : []
+    })
+  },
+  removeNodeRemotely: (nodeId) => {
+    const { nodes, edges } = get();
+    set({
+      nodes: nodes.filter(n => n.id !== nodeId),
+      edges: edges.filter(e => e.source !== nodeId && e.target !== nodeId)
+    });
   },
 
-  RedoTheAction : () => {
+  RedoTheAction: (userId) => {
     const { nodes, edges, past, future } = get();
-    if (past.length === 0) return;
+    if (future.length === 0) return; 
 
-    const lastAction = past[past.length - 1];
-    const newPast = past.slice(0, -1);
+    const nextAction = future[future.length - 1];
+    const newFuture = future.slice(0, -1);
 
     let nextNodes = [...nodes];
     let nextEdges = [...edges];
 
-    switch (lastAction.type) {
+    switch (nextAction.type) {
       case "DELETE_NODE":
-        if (lastAction.deletedNode) nextNodes.push(lastAction.deletedNode);
-        if (lastAction.deletedEdges.length > 0) nextEdges.push(...lastAction.deletedEdges);
+        const nodeIdToDelete = nextAction.deletedNode?.id;
+        nextNodes = nextNodes.filter(n => n.id !== nodeIdToDelete);
+        nextEdges = nextEdges.filter(e => e.source !== nodeIdToDelete && e.target !== nodeIdToDelete);
         break;
 
       case "MOVE_NODE":
         nextNodes = nextNodes.map(node => 
-          node.id === lastAction.nodeId 
-            ? { ...node, position: lastAction.toPosition} 
+          node.id === nextAction.nodeId 
+            ? { ...node, position: nextAction.toPosition} 
             : node
         );
         break;
     }
 
     set({
-      past: newPast,
-      future: [...future, lastAction],
+      past: [...past, nextAction],
+      future: newFuture,
       nodes: nextNodes,
       edges: nextEdges
     });
