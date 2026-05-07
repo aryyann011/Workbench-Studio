@@ -89,7 +89,7 @@ const EditorContent = () => {
 };
   const handleNodeDragStart = (e : React.MouseEvent, node : any) => {
     setDragState(prev => ({
-      ...prev, start : {x : e.clientX, y : e.clientY}
+      ...prev, start : {x : node.position.x, y : node.position.y}
     }))
 
     if(!channel || !isConnected) return;
@@ -123,7 +123,7 @@ const EditorContent = () => {
 
   const handleNodeDragStop = (e : React.MouseEvent, node : any) => {
     setDragState(prev => ({
-      ...prev, end : {x : e.clientX, y : e.clientY}
+      ...prev, end : {x : node.position.x, y : node.position.y}
     }))
 
     if(userId)
@@ -243,7 +243,7 @@ const EditorContent = () => {
       >
         <Panel position="bottom-left" className="flex gap-2 m-4">
           <button
-            onClick={() => {undoTheaction}}
+            onClick={undoTheaction} // <--- FIX HERE
             className="p-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 shadow-md rounded hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors text-slate-600 dark:text-slate-300 flex items-center justify-center group"
             title="Undo (Ctrl+Z)"
           >
@@ -254,7 +254,7 @@ const EditorContent = () => {
           </button>
           
           <button
-            onClick={() => {RedoTheaction}}
+            onClick={RedoTheaction} // <--- FIX HERE
             className="p-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 shadow-md rounded hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors text-slate-600 dark:text-slate-300 flex items-center justify-center group"
             title="Redo (Ctrl+Y)"
           >

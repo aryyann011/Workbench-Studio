@@ -161,37 +161,40 @@ export const useAppStore = create<AppState>((set, get) => ({
       fromPosition: dragState.start,
       toPosition: dragState.end
     };
-    set({past : [...past, newPastElement]})
+    set({past : [...past, newPastElement],
+      future : []
+    })
   },
 
-  RedoTheAction : () => {
+  RedoTheAction: () => {
     const { nodes, edges, past, future } = get();
-    if (past.length === 0) return;
+    if (future.length === 0) return; 
 
-    const lastAction = past[past.length - 1];
-    const newPast = past.slice(0, -1);
+    const nextAction = future[future.length - 1];
+    const newFuture = future.slice(0, -1);
 
     let nextNodes = [...nodes];
     let nextEdges = [...edges];
 
-    switch (lastAction.type) {
+    switch (nextAction.type) {
       case "DELETE_NODE":
-        if (lastAction.deletedNode) nextNodes.push(lastAction.deletedNode);
-        if (lastAction.deletedEdges.length > 0) nextEdges.push(...lastAction.deletedEdges);
+        const nodeIdToDelete = nextAction.deletedNode?.id;
+        nextNodes = nextNodes.filter(n => n.id !== nodeIdToDelete);
+        nextEdges = nextEdges.filter(e => e.source !== nodeIdToDelete && e.target !== nodeIdToDelete);
         break;
 
       case "MOVE_NODE":
         nextNodes = nextNodes.map(node => 
-          node.id === lastAction.nodeId 
-            ? { ...node, position: lastAction.toPosition} 
+          node.id === nextAction.nodeId 
+            ? { ...node, position: nextAction.toPosition} 
             : node
         );
         break;
     }
 
     set({
-      past: newPast,
-      future: [...future, lastAction],
+      past: [...past, nextAction],
+      future: newFuture,
       nodes: nextNodes,
       edges: nextEdges
     });
