@@ -280,8 +280,13 @@ const EditorContent = () => {
         onlyRenderVisibleElements={true}
         defaultEdgeOptions={{
           type : 'smoothstep',
-          markerEnd : { type: MarkerType.ArrowClosed },
-          style : { strokeWidth: 2, stroke: '#64748b' }
+          markerEnd : { 
+            type: MarkerType.ArrowClosed, 
+            width: 24, 
+            height: 24, 
+            color: '#94a3b8' 
+          },
+          style : { strokeWidth: 2.5, stroke: '#94a3b8' }
         }}
         connectionMode={ConnectionMode.Loose}
         onConnect={handleEdgeCreation}
@@ -331,7 +336,7 @@ const EditorContent = () => {
             Export PNG
           </button>
         </Panel>
-        <Background color="#94a3b8" gap={20} size={1} />
+        <Background color="#475569" gap={28} size={1.5} />
         <Controls className="bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700" />
         <MiniMap 
           className="bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700" 

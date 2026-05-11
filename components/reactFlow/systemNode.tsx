@@ -25,8 +25,8 @@ const DynamicIcon = ({ name, color }: IconProps) => {
   }, [iconImport]);
 
   return (
-    <Suspense fallback={<div className="w-6 h-6 bg-slate-100 animate-pulse rounded" />}>
-      <IconComponent className="w-6 h-6" style={{ color }} />
+    <Suspense fallback={<div className="w-7 h-7 bg-slate-100 animate-pulse rounded" />}>
+      <IconComponent className="w-7 h-7" style={{ color }} />
     </Suspense>
   );
 };
@@ -42,10 +42,10 @@ export function SystemNode({ data }: NodeProps) {
 
   return (
     <div 
-      className={`relative shadow-lg rounded-md bg-white dark:bg-slate-900 min-w-[280px] min-h-[90px] py-2 border border-slate-200 dark:border-slate-800 transition-all
+      className={`relative shadow-xl rounded-xl bg-white dark:bg-slate-900 min-w-[340px] min-h-[110px] py-3 border-2 border-slate-200 dark:border-slate-700/80 transition-all hover:shadow-2xl
         ${isOffline ? "opacity-50 border-red-500/50" : ""}
         ${isLocked ? 'border-rose-500 ring-2 ring-rose-500/20 opacity-90 cursor-not-allowed' : ''}`}
-      style={{ borderLeftWidth: '5px', borderLeftColor: isOffline ? '#ef4444' : resolved.color }}
+      style={{ borderLeftWidth: '6px', borderLeftColor: isOffline ? '#ef4444' : resolved.color }}
     >
       
       {isLocked && (
@@ -56,26 +56,36 @@ export function SystemNode({ data }: NodeProps) {
 
       <Handle 
         type="target" 
-        position={Position.Left} 
-        className="!w-4 !h-4 !bg-slate-500 !border-2 !border-white z-50 !-left-2" 
+        position={Position.Top} 
+        className="!w-5 !h-5 !bg-slate-400 dark:!bg-slate-500 !border-[3px] !border-white dark:!border-slate-900 z-50 !-top-[10px] !rounded-full" 
+        style={{ boxShadow: '0 0 0 2px rgba(148, 163, 184, 0.3)' }}
       />
-      <div className="flex flex-row items-center p-3 gap-3">
+      <div className="flex flex-row items-center px-4 py-2 gap-4">
         
         <div 
-          className="p-2 rounded-md shrink-0"
-          style={{ backgroundColor: `${resolved.color}15` }}
+          className="p-3 rounded-lg shrink-0"
+          style={{ backgroundColor: `${resolved.color}20` }}
         >
-          <div className="w-5 h-5 flex items-center justify-center">
+          <div className="w-7 h-7 flex items-center justify-center">
              <DynamicIcon name={resolved.icon} color={resolved.color} />
           </div>
         </div>
         
-        <div className="flex flex-col justify-center overflow-hidden w-full">
+        <div className="flex flex-col justify-center overflow-hidden w-full gap-1">
           <span 
-            className="font-sans text-lg font-semibold text-slate-800 dark:text-slate-100 truncate w-full"
+            className="font-sans text-[15px] font-bold text-slate-800 dark:text-slate-100 truncate w-full leading-tight"
             title={data.label} 
           >
             {data.label}
+          </span>
+          <span className="text-[11px] font-medium text-slate-400 dark:text-slate-500 uppercase tracking-wider">
+            {data.label.toLowerCase().includes('database') ? 'Database' : 
+             data.label.toLowerCase().includes('service') ? 'Service' : 
+             data.label.toLowerCase().includes('gateway') ? 'Gateway' :
+             data.label.toLowerCase().includes('interface') ? 'Interface' :
+             data.label.toLowerCase().includes('model') ? 'Model' :
+             data.label.toLowerCase().includes('orchestrator') ? 'Orchestrator' :
+             'Component'}
           </span>
         </div>
 
@@ -83,8 +93,9 @@ export function SystemNode({ data }: NodeProps) {
 
       <Handle 
         type="source" 
-        position={Position.Right} 
-        className="!w-4 !h-4 !bg-slate-500 !border-2 !border-white z-50 !-right-2" 
+        position={Position.Bottom} 
+        className="!w-5 !h-5 !bg-slate-400 dark:!bg-slate-500 !border-[3px] !border-white dark:!border-slate-900 z-50 !-bottom-[10px] !rounded-full" 
+        style={{ boxShadow: '0 0 0 2px rgba(148, 163, 184, 0.3)' }}
       />
     </div>
   );

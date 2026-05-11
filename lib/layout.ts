@@ -3,8 +3,8 @@ import { Node, Edge, Position } from 'reactflow';
 
 const elk = new ELK();
 
-const NODE_WIDTH = 280;  
-const NODE_HEIGHT = 100; 
+const NODE_WIDTH = 320;  
+const NODE_HEIGHT = 120; 
 
 export const getLayoutedElements = async (nodes: Node[], edges: Edge[]) => {
   
@@ -24,11 +24,16 @@ export const getLayoutedElements = async (nodes: Node[], edges: Edge[]) => {
       } else {
         elkNode.children = buildElkTree(node.id);
         elkNode.layoutOptions = {
-          'elk.padding': '[top=120,left=80,bottom=80,right=80]',
-          'elk.spacing.nodeNode': '100', 
-          'elk.layered.spacing.nodeNodeBetweenLayers': '250',
+          'elk.algorithm': 'layered',
+          'elk.direction': 'RIGHT',
+          'elk.edgeRouting': 'ORTHOGONAL',
+          'elk.padding': '[top=140,left=100,bottom=100,right=100]',
+          'elk.spacing.nodeNode': '120', 
+          'elk.layered.spacing.nodeNodeBetweenLayers': '300',
           'elk.spacing.edgeNode': '80',
-          'elk.spacing.edgeEdge': '80',
+          'elk.spacing.edgeEdge': '40',
+          'elk.layered.nodePlacement.strategy': 'NETWORK_SIMPLEX',
+          'elk.layered.crossingMinimization.strategy': 'LAYER_SWEEP',
         };
       }
       return elkNode;
@@ -41,17 +46,20 @@ export const getLayoutedElements = async (nodes: Node[], edges: Edge[]) => {
     id: 'root',
     layoutOptions: {
       'elk.algorithm': 'layered',          
-      'elk.direction': 'RIGHT', 
+      'elk.direction': 'DOWN', 
       'elk.edgeRouting': 'ORTHOGONAL',
       
-      'elk.spacing.nodeNode': '100',        
-      'elk.layered.spacing.nodeNodeBetweenLayers': '400', 
+      'elk.spacing.nodeNode': '150',        
+      'elk.layered.spacing.nodeNodeBetweenLayers': '200', 
       
-      'elk.spacing.edgeNode': '50',
-      'elk.spacing.edgeEdge': '50',
+      'elk.spacing.edgeNode': '80',
+      'elk.spacing.edgeEdge': '30',
       
       'elk.layered.crossingMinimization.strategy': 'LAYER_SWEEP',
+      'elk.layered.nodePlacement.strategy': 'NETWORK_SIMPLEX',
+      'elk.layered.mergeEdges': 'false',
       'elk.alignment': 'CENTER',
+      'elk.layered.considerModelOrder.strategy': 'NODES_AND_EDGES',
     },
     children: elkChildren, 
     edges: edges.map((edge) => ({
@@ -81,8 +89,8 @@ export const getLayoutedElements = async (nodes: Node[], edges: Edge[]) => {
 
       return {
         ...node,
-        targetPosition: Position.Left,    
-        sourcePosition: Position.Right, 
+        targetPosition: Position.Top,    
+        sourcePosition: Position.Bottom, 
         
         
         style: node.type === 'group' ? {
