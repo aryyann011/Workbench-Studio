@@ -155,3 +155,65 @@
     @apply bg-background text-foreground;
   }
 }
+
+/* ===== React Flow Enhancements ===== */
+
+/* Edge path visibility & hover glow */
+.react-flow__edge-path {
+  transition: stroke 0.2s ease, stroke-width 0.2s ease, filter 0.2s ease;
+}
+
+.react-flow__edge:hover .react-flow__edge-path {
+  stroke: #cbd5e1 !important;
+  stroke-width: 3.5px !important;
+  filter: drop-shadow(0 0 6px rgba(148, 163, 184, 0.5));
+}
+
+/* Animated edge label badges */
+.react-flow__edge-textwrapper {
+  font-size: 12px;
+  font-weight: 600;
+}
+
+/* Bigger clickable handle area */
+.react-flow__handle {
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.react-flow__handle:hover {
+  transform: scale(1.3);
+  box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.3) !important;
+}
+
+/* Smooth node transitions */
+.react-flow__node {
+  transition: box-shadow 0.2s ease;
+}
+
+/* Edge marker arrow color sync */
+.react-flow__edge .react-flow__arrowhead polyline,
+.react-flow__edge .react-flow__arrowhead polygon {
+  fill: #94a3b8;
+  stroke: #94a3b8;
+}
+
+.react-flow__edge:hover .react-flow__arrowhead polyline,
+.react-flow__edge:hover .react-flow__arrowhead polygon {
+  fill: #cbd5e1;
+  stroke: #cbd5e1;
+}
+
+/* MiniMap styling */
+.react-flow__minimap {
+  border-radius: 12px !important;
+  overflow: hidden;
+  border: 1px solid rgba(148, 163, 184, 0.2) !important;
+}
+
+/* Controls styling */
+.react-flow__controls {
+  border-radius: 10px !important;
+  overflow: hidden;
+  border: 1px solid rgba(148, 163, 184, 0.2) !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15) !important;
+}

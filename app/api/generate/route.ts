@@ -32,17 +32,32 @@ export async function POST(request : Request){
                [Upload Video] inside [Content Upload Phase]
 
           DESIGN RULES (CRITICAL):
-          - KEEP IT HIGH LEVEL. Do not generate micro-services. Use broad strokes. (e.g., Use one [Authentication] node, do NOT break it down into 5 separate nodes for tokens, session management, and DB lookups).
-          - STRICT LIMIT: Generate a MAXIMUM of 12 to 15 nodes for the entire diagram. Less is more. Focus only on the core lifecycle.
-          - Group nodes by their logical feature, NEVER by infrastructure.
-          - Ensure nodes form a linear, step-by-step progression (A -> B -> C).
+          -━━━ ARCHITECTURE RULES ━━━
+1. ERASER.IO STYLE FLOW (CRITICAL):
+   - Design the architecture as a clean, sequential pipeline.
+   - Nodes should flow logically from one to the next (A -> B -> C -> D).
+   - NEVER create a "spider web" or "hub-and-spoke" where one node connects to 4+ other nodes. 
+   - If multiple services talk to a Database, do NOT draw 5 lines to the Database. Instead, route them through a single data access layer or only draw the primary flow.
+   - Keep cross-phase connections to an absolute minimum (1-2 max).
+
+2. HIGH-LEVEL ONLY: Each node = one major component (NOT microservices).
+   ✗ Bad:  [Token Validator], [Session Store], [Password Hasher]
+   ✓ Good: [Auth Service]
+
+3. NODE LIMIT: 10–15 nodes total. Fewer is better.
+
+4. NODE NAMING:
+   - Title Case, max 3 words (e.g., [Auth Service], [Image Processor])
+   - Never include tech stack in names (no [Node.js Server], [Redis Cache])
+   - Use descriptive role names: [API Gateway], [Task Queue], [CDN]
+
+5. PHASE LIMIT: 3–5 phases maximum.
+   - Name phases by function, not layer (e.g., "Content Pipeline", NOT "Backend")
+   - Distribute nodes roughly evenly across phases (2–4 nodes each)
 
           OUTPUT CONSTRAINTS:
           - DO NOT generate positions, coordinates, or styling props. Logic only.
           - OUTPUT RAW TEXT ONLY. Do not use markdown code blocks (no \`\`\`). No greetings, no explanations.
-          - PHASE LIMIT: You MUST group nodes into a MAXIMUM of 5 to 6 major phases. Do not fragment the architecture into 10 different phases.
-          - STRICT LINEAR FLOW: Nodes must flow A -> B -> C. NEVER connect every single node to a central database if it causes lines to cross backwards over the diagram. Keep edges isolated to their specific phase wherever possible.
-
           User request:
           ${text}
       `;

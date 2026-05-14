@@ -3,8 +3,8 @@ import { Node, Edge, Position } from 'reactflow';
 
 const elk = new ELK();
 
-const NODE_WIDTH = 280;  
-const NODE_HEIGHT = 100; 
+const NODE_WIDTH = 400;  
+const NODE_HEIGHT = 140; 
 
 export const getLayoutedElements = async (nodes: Node[], edges: Edge[]) => {
   
@@ -24,11 +24,17 @@ export const getLayoutedElements = async (nodes: Node[], edges: Edge[]) => {
       } else {
         elkNode.children = buildElkTree(node.id);
         elkNode.layoutOptions = {
-          'elk.padding': '[top=120,left=80,bottom=80,right=80]',
-          'elk.spacing.nodeNode': '100', 
-          'elk.layered.spacing.nodeNodeBetweenLayers': '250',
+          'elk.algorithm': 'layered',
+          'elk.direction': 'RIGHT',
+          'elk.edgeRouting': 'ORTHOGONAL',
+          'elk.padding': '[top=120,left=40,bottom=40,right=40]',
+          'elk.spacing.nodeNode': '110', 
+          'elk.layered.spacing.nodeNodeBetweenLayers': '270',
           'elk.spacing.edgeNode': '80',
-          'elk.spacing.edgeEdge': '80',
+          'elk.spacing.edgeEdge': '40',
+          'elk.layered.nodePlacement.strategy': 'BRANDES_KOEPF',
+          'elk.layered.crossingMinimization.strategy': 'LAYER_SWEEP',
+          'elk.layered.mergeEdges': 'false',
         };
       }
       return elkNode;
@@ -41,17 +47,21 @@ export const getLayoutedElements = async (nodes: Node[], edges: Edge[]) => {
     id: 'root',
     layoutOptions: {
       'elk.algorithm': 'layered',          
-      'elk.direction': 'RIGHT', 
+      'elk.direction': 'DOWN', 
       'elk.edgeRouting': 'ORTHOGONAL',
       
-      'elk.spacing.nodeNode': '100',        
-      'elk.layered.spacing.nodeNodeBetweenLayers': '400', 
+      'elk.spacing.nodeNode': '300',        
+      'elk.layered.spacing.nodeNodeBetweenLayers': '450', 
+      'elk.spacing.componentComponent': '150',
       
-      'elk.spacing.edgeNode': '50',
+      'elk.spacing.edgeNode': '120',
       'elk.spacing.edgeEdge': '50',
       
       'elk.layered.crossingMinimization.strategy': 'LAYER_SWEEP',
-      'elk.alignment': 'CENTER',
+      'elk.layered.nodePlacement.strategy': 'BRANDES_KOEPF',
+      'elk.layered.mergeEdges': 'false',
+      'elk.alignment': 'JUSTIFIED',
+      'elk.layered.considerModelOrder.strategy': 'NODES_AND_EDGES',
     },
     children: elkChildren, 
     edges: edges.map((edge) => ({
@@ -81,8 +91,8 @@ export const getLayoutedElements = async (nodes: Node[], edges: Edge[]) => {
 
       return {
         ...node,
-        targetPosition: Position.Left,    
-        sourcePosition: Position.Right, 
+        targetPosition: Position.Top,    
+        sourcePosition: Position.Bottom, 
         
         
         style: node.type === 'group' ? {

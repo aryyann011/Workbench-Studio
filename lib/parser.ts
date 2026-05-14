@@ -1,4 +1,4 @@
-import { Node, Edge, NodeResizeControl } from 'reactflow';
+import { Node, Edge, NodeResizeControl, MarkerType } from 'reactflow';
 
 export const parseCode = (input: string) => {
   const nodes: Node[] = [];
@@ -57,7 +57,17 @@ export const parseCode = (input: string) => {
                         source: sourceId,
                         target: targetId,
                         type: 'smoothstep',
-                        animated: true,
+                        animated: false,
+                        markerEnd: {
+                            type: MarkerType.ArrowClosed,
+                            width: 20,
+                            height: 20,
+                            color: '#94a3b8',
+                        },
+                        style: {
+                            strokeWidth: 2.5,
+                            stroke: '#94a3b8',
+                        },
                     });
                 }
             }
