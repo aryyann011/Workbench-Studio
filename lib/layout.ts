@@ -3,8 +3,8 @@ import { Node, Edge, Position } from 'reactflow';
 
 const elk = new ELK();
 
-const NODE_WIDTH = 320;  
-const NODE_HEIGHT = 120; 
+const NODE_WIDTH = 400;  
+const NODE_HEIGHT = 140; 
 
 export const getLayoutedElements = async (nodes: Node[], edges: Edge[]) => {
   
@@ -27,13 +27,14 @@ export const getLayoutedElements = async (nodes: Node[], edges: Edge[]) => {
           'elk.algorithm': 'layered',
           'elk.direction': 'RIGHT',
           'elk.edgeRouting': 'ORTHOGONAL',
-          'elk.padding': '[top=140,left=100,bottom=100,right=100]',
-          'elk.spacing.nodeNode': '120', 
-          'elk.layered.spacing.nodeNodeBetweenLayers': '300',
+          'elk.padding': '[top=120,left=40,bottom=40,right=40]',
+          'elk.spacing.nodeNode': '110', 
+          'elk.layered.spacing.nodeNodeBetweenLayers': '270',
           'elk.spacing.edgeNode': '80',
           'elk.spacing.edgeEdge': '40',
-          'elk.layered.nodePlacement.strategy': 'NETWORK_SIMPLEX',
+          'elk.layered.nodePlacement.strategy': 'BRANDES_KOEPF',
           'elk.layered.crossingMinimization.strategy': 'LAYER_SWEEP',
+          'elk.layered.mergeEdges': 'false',
         };
       }
       return elkNode;
@@ -49,16 +50,17 @@ export const getLayoutedElements = async (nodes: Node[], edges: Edge[]) => {
       'elk.direction': 'DOWN', 
       'elk.edgeRouting': 'ORTHOGONAL',
       
-      'elk.spacing.nodeNode': '150',        
-      'elk.layered.spacing.nodeNodeBetweenLayers': '200', 
+      'elk.spacing.nodeNode': '300',        
+      'elk.layered.spacing.nodeNodeBetweenLayers': '450', 
+      'elk.spacing.componentComponent': '150',
       
-      'elk.spacing.edgeNode': '80',
-      'elk.spacing.edgeEdge': '30',
+      'elk.spacing.edgeNode': '120',
+      'elk.spacing.edgeEdge': '50',
       
       'elk.layered.crossingMinimization.strategy': 'LAYER_SWEEP',
-      'elk.layered.nodePlacement.strategy': 'NETWORK_SIMPLEX',
+      'elk.layered.nodePlacement.strategy': 'BRANDES_KOEPF',
       'elk.layered.mergeEdges': 'false',
-      'elk.alignment': 'CENTER',
+      'elk.alignment': 'JUSTIFIED',
       'elk.layered.considerModelOrder.strategy': 'NODES_AND_EDGES',
     },
     children: elkChildren, 
