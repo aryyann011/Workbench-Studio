@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { GoogleGenAI } from "@google/genai";
 import { getCachedPromptResult, saveCachePromptResult } from "@/actions/promptCache";
+import { auth } from "@clerk/nextjs/server";
 
 const ai = new GoogleGenAI({
     apiKey : process.env.GOOGLE_API_KEY
@@ -8,31 +9,39 @@ const ai = new GoogleGenAI({
 
 export async function POST(request : Request){
     try {
+        const { userId } = await auth();
+        if (!userId) {
+            return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+        }
+
         if(!process.env.GOOGLE_API_KEY){
             return NextResponse.json({error : "Invalid api key"}, {status : 400});
         }
 
         const body = await request.json();
         const text = body?.text;
+        const skipCache = body?.skipCache === true;
 
         if (!text) {
              return NextResponse.json({error : "No text provided"}, {status : 400});
         }
 
-        // Step 1: Check prompt cache first
-        try {
-            const cacheResult = await getCachedPromptResult(text);
-            if (cacheResult.success && cacheResult.cached && cacheResult.code) {
-                return NextResponse.json({
-                    code: cacheResult.code,
-                    fromCache: true,
-                    cacheType: cacheResult.type,
-                    similarity: cacheResult.similarity
-                });
+        // Step 1: Check prompt cache first (unless skipCache is requested)
+        if (!skipCache) {
+            try {
+                const cacheResult = await getCachedPromptResult(text);
+                if (cacheResult.success && cacheResult.cached && cacheResult.code) {
+                    return NextResponse.json({
+                        code: cacheResult.code,
+                        fromCache: true,
+                        cacheType: cacheResult.type,
+                        similarity: cacheResult.similarity
+                    });
+                }
+            } catch (cacheError) {
+                // Cache check failed silently — proceed with AI generation
+                console.warn("Cache lookup failed, proceeding with AI:", cacheError);
             }
-        } catch (cacheError) {
-            // Cache check failed silently — proceed with AI generation
-            console.warn("Cache lookup failed, proceeding with AI:", cacheError);
         }
 
         // Step 2: Generate via AI (cache miss)
@@ -65,21 +74,22 @@ Separate Section 1 and Section 2 with a single blank line.
 ━━━ ARCHITECTURE RULES (CRITICAL FOR VISUAL CLEANLINESS) ━━━
 1. STRICT LINEAR PIPELINE (NO JUNGLES):
    - You MUST force a sequential, waterfall flow (A -> B -> C -> D).
+   - NO LOOPS OR CYCLES: Never connect a downstream node back to an upstream node. Data must flow in one direction only.
+   - NO LAYER SKIPPING: Node A cannot connect directly to Node C. It must pass through Node B. (e.g., A Client cannot connect directly to a Database; it must go through an API/Service layer first).
    - NEVER create a "hub-and-spoke" pattern where one node connects to 3+ other nodes.
-   - If multiple services need to talk to a database, DO NOT draw multiple lines to the database. Instead, route them all through a single intermediate [Data Access] node.
-   - Keep cross-phase connections to an absolute minimum.
+   - If multiple services need to talk to a database, route them through a single intermediate [Data Access] node.
 
 2. HIGH-LEVEL ABSTRACTION: 
    - MAXIMUM of 10-12 nodes total. Fewer is better.
-   - Combine granular microservices into single major components. (e.g., use one [Auth Service], NOT separate token/session nodes).
+   - Combine granular microservices into single major components. (e.g., use one [Auth Service]).
 
 3. NODE NAMING:
    - Title Case, max 3 words (e.g., [Task Queue]). 
-   - Never use tech stack names (e.g., no "Redis", "AWS", "Node.js"). Use role names.
+   - Never use tech stack names. Use role names.
 
-4. PHASE LIMIT: 
-   - Maximum 3-4 phases. Name them by lifecycle function (e.g., "Ingestion Phase", "Processing Phase").
-
+4. PHASE LIMIT & ORDER: 
+   - Maximum 3-4 phases. 
+   - Name them by lifecycle function (e.g., "Client Phase", "Processing Phase", "Storage Phase").
 ━━━ OUTPUT CONSTRAINTS ━━━
 - RAW TEXT ONLY. No markdown formatting (no \`\`\`). No greetings. No explanations.
 - NEVER output trailing or leading spaces around brackets. Use exactly [NodeA] -> [NodeB].
