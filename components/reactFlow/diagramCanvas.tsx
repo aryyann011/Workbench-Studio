@@ -12,7 +12,7 @@ import ReactFlow, {
   NodeChange,
   Panel
 } from 'reactflow';
-import React, { useRef, useState } from 'react';
+import React, { useCallback, useRef, useState } from 'react';
 import 'reactflow/dist/style.css';
 import { SystemNode } from './systemNode';
 import { useAppStore } from '@/lib/store';
@@ -48,6 +48,7 @@ const EditorContent = () => {
     start : null,
     end : null
   })
+  const [isInteractive, setIsInteractive] = useState(true)
 
   const {userId} = useAuth()
   const workspaceId = params.id as string 
@@ -265,7 +266,7 @@ const EditorContent = () => {
         edges={edges}
         onNodesChange={handleNodesChange}
         onEdgesChange={onEdgesChange}
-        minZoom={0.01} 
+        minZoom={0.15} 
         maxZoom={1000}
         onNodeContextMenu={handleThePopUpPosition}
         nodeTypes={nodeTypes}
@@ -273,10 +274,11 @@ const EditorContent = () => {
         zoomOnScroll={true}
         onNodeDragStart={handleNodeDragStart}
         onNodeDragStop={handleNodeDragStop}
+        nodesDraggable={isInteractive}
+        nodesConnectable={isInteractive}
         panOnDrag={true}
         onPaneClick={handlePaneClick}
-        edgesUpdatable={true}
-        selectionOnDrag={false}
+        edgesUpdatable={isInteractive}
         onlyRenderVisibleElements={true}
         defaultEdgeOptions={{
           type : 'smoothstep',
@@ -291,6 +293,7 @@ const EditorContent = () => {
         connectionMode={ConnectionMode.Loose}
         onConnect={handleEdgeCreation}
         fitView
+        fitViewOptions={{ minZoom: 0.7, padding: 0.1 }}
       >
         <Panel
           position="bottom-left"
@@ -337,7 +340,10 @@ const EditorContent = () => {
           </button>
         </Panel>
         <Background color="#475569" gap={28} size={1.5} />
-        <Controls className="bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700" />
+        <Controls 
+          className="bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700" 
+          showInteractive={false}
+        />
         <MiniMap 
           className="bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700" 
           maskColor="rgba(0,0,0, 0.1)"

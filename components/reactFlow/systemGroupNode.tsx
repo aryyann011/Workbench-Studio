@@ -10,7 +10,7 @@ export const SystemGroupNode = memo(({ data }: any) => {
   return (
     
     <div 
-      className="w-full h-full border-[3px] border-dashed rounded-3xl relative -z-10"
+      className="w-full h-full border-[3px] border-dashed rounded-3xl relative"
       style={{ 
         backgroundColor: `${themeColor}08`, 
         borderColor: `${themeColor}35`,
@@ -31,8 +31,9 @@ export const SystemGroupNode = memo(({ data }: any) => {
           {data.lockedBy}
         </div>
       )}
+      {/* group-drag-handle: Only this label can be used to drag the group */}
       <div 
-        className="absolute -top-5 left-9 flex items-center gap-3 px-5 py-2.5 rounded-xl text-lg font-extrabold tracking-widest uppercase shadow-xl border-2"
+        className="group-drag-handle absolute -top-5 left-9 flex items-center gap-3 px-5 py-2.5 rounded-xl text-lg font-extrabold tracking-widest uppercase shadow-xl border-2 cursor-grab active:cursor-grabbing"
         style={{ 
           backgroundColor: '#0f172a', 
           color: themeColor, 
