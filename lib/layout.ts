@@ -3,8 +3,8 @@ import { Node, Edge, Position } from 'reactflow';
 
 const elk = new ELK();
 
-const NODE_WIDTH = 400;  
-const NODE_HEIGHT = 140; 
+const NODE_WIDTH = 550;  
+const NODE_HEIGHT = 250; 
 
 export const getLayoutedElements = async (nodes: Node[], edges: Edge[]) => {
   
@@ -27,7 +27,7 @@ export const getLayoutedElements = async (nodes: Node[], edges: Edge[]) => {
           'elk.algorithm': 'layered',
           'elk.direction': 'RIGHT',
           'elk.edgeRouting': 'ORTHOGONAL',
-          'elk.padding': '[top=120,left=40,bottom=40,right=40]',
+          'elk.padding': '[top=150,left=60,bottom=60,right=60]',
           'elk.spacing.nodeNode': '110', 
           'elk.layered.spacing.nodeNodeBetweenLayers': '270',
           'elk.spacing.edgeNode': '80',
