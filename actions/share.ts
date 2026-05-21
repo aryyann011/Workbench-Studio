@@ -27,7 +27,6 @@ export async function createShareLink(
     const { userId } = await auth();
     if (!userId) return { success: false, error: "Unauthorized" };
 
-    // Verify ownership of workspace
     const workspace = await prisma.workspace.findUnique({
       where: { id: workspaceId }
     });
@@ -36,7 +35,6 @@ export async function createShareLink(
       return { success: false, error: "Workspace not found or unauthorized" };
     }
 
-    // Prevent creating OWNER role shares (only the original owner has this)
     if (role === WorkspaceRole.OWNER) {
       return { success: false, error: "Cannot share as OWNER" };
     }

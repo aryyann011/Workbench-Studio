@@ -88,6 +88,10 @@ export const parseCode = (input: string) => {
           const parentNode = nodes.find(node => node.id === parentId);
           if (parentNode) {
             parentNode.type = 'group';
+            parentNode.zIndex = 0;
+            parentNode.draggable = true;
+            // dragHandle restricts group dragging to only the label element
+            parentNode.dragHandle = '.group-drag-handle';
             parentNode.style = { 
               backgroundColor: 'rgba(241, 245, 249, 0.05)', 
               border: '2px dashed #64748b', 
@@ -100,11 +104,22 @@ export const parseCode = (input: string) => {
           if (childNode) {
             childNode.parentNode = parentId;
             childNode.extent = 'parent';
+            // Higher zIndex so child is always on top of parent for hit detection
+            childNode.zIndex = 10;
           }
         }
       }
     }
   });
 
-  return { nodes, edges }; 
+  // ReactFlow requires parent nodes to appear BEFORE their children in the array.
+  // Sort: group nodes first, then child nodes, then standalone nodes maintain order.
+  const parentIds = new Set(nodes.filter(n => n.type === 'group').map(n => n.id));
+  const sortedNodes = [
+    ...nodes.filter(n => n.type === 'group'),
+    ...nodes.filter(n => n.parentNode && parentIds.has(n.parentNode)),
+    ...nodes.filter(n => n.type !== 'group' && !n.parentNode),
+  ];
+
+  return { nodes: sortedNodes, edges }; 
 };

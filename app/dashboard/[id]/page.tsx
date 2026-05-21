@@ -12,6 +12,7 @@ import {
 import { BaseEditor } from "@/components/reactFlow/diagramCanvas"
 import { useAppStore } from "@/lib/store"
 import { Code2, SquareSplitHorizontal, LayoutDashboard, Save, Play, Sparkles, X } from "lucide-react"
+import { WorkspaceShare } from "@/components/WorkspaceShare"
 import PromptBar, { ChatMessage } from "@/components/editor/prompt-input"
 import { Node, Edge } from "reactflow"
 
@@ -23,6 +24,7 @@ export default function ResizableDemo() {
   const workspaceId = params.id as string 
 
   const [isAIOpen, setIsAIOpen] = useState<boolean>(false) 
+  const [workspaceName, setWorkspaceName] = useState<string>("Untitled")
   const { code, setCode, generateGraph, SetTheGraph, nodes, edges } = useAppStore()
   const [prompt, setPrompt] = useState<string>("")
   const [isLoading, setIsLoading] = useState<boolean>(false)
@@ -42,6 +44,7 @@ export default function ResizableDemo() {
     getWorkspace(workspaceId).then((data) => {
       if (data && data.code && data.canvas_nodes && data.canvas_edges) {
         setCode(data.code);
+        setWorkspaceName(data.name || "Untitled");
 
         const parsedNodes = typeof data.canvas_nodes === 'string' 
           ? JSON.parse(data.canvas_nodes) 
@@ -96,13 +99,49 @@ export default function ResizableDemo() {
         setCode(data.code);
         setTimeout(() => generateGraph(), 0);
         
-        setMessages(prev => [...prev, { role: "ai", content: "Architecture updated successfully." }]);
+        if (data.fromCache) {
+          setMessages(prev => [...prev, { 
+            role: "ai", 
+            content: "Architecture loaded from cache.", 
+            fromCache: true,
+            cacheType: data.cacheType,
+            similarity: data.similarity,
+            originalPrompt: userText
+          }]);
+        } else {
+          setMessages(prev => [...prev, { role: "ai", content: "Architecture updated successfully." }]);
+        }
       }
     } catch (error) {
       console.error("Failed to call api", error);
       setMessages(prev => [...prev, { role: "ai", content: "Failed to generate architecture. Please try again." }]);
     } finally {
       setIsLoading(false)
+    }
+  }
+
+  const handleRegenerateNew = async (promptText: string) => {
+    setMessages(prev => [...prev, { role: "user", content: `🔄 Regenerating: ${promptText}` }]);
+    setIsLoading(true);
+
+    try {
+      const response = await fetch('/api/generate', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ text: promptText, skipCache: true }),
+      });
+
+      const data = await response.json();
+      if (data.code) {
+        setCode(data.code);
+        setTimeout(() => generateGraph(), 0);
+        setMessages(prev => [...prev, { role: "ai", content: "Fresh architecture generated successfully!" }]);
+      }
+    } catch (error) {
+      console.error("Failed to regenerate", error);
+      setMessages(prev => [...prev, { role: "ai", content: "Failed to regenerate. Please try again." }]);
+    } finally {
+      setIsLoading(false);
     }
   }
 
@@ -147,6 +186,11 @@ export default function ResizableDemo() {
       </div>
 
       <div className="absolute top-4 right-4 z-50 flex items-center gap-2">
+        <WorkspaceShare 
+          workspaceId={workspaceId === "new" ? "" : workspaceId}
+          workspaceName={workspaceName}
+        />
+        
         <button
           onClick={handleRun}
           className="flex items-center gap-2 bg-secondary hover:bg-secondary/80 text-secondary-foreground px-4 py-2 rounded-md text-sm font-semibold transition-colors border border-border"
@@ -160,7 +204,7 @@ export default function ResizableDemo() {
           disabled={isSaving || !code}
           className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md text-sm font-semibold transition-colors shadow-md disabled:opacity-50"
         >
-          <Save className="w-4 h-4" />
+          <Save className="w-4 h-4"/>
           {isSaving ? "Saving..." : "Save"}
         </button>
         <button
@@ -185,6 +229,7 @@ export default function ResizableDemo() {
           prompt={prompt} 
           setPrompt={setPrompt} 
           onPromptRun={handlePromptRun} 
+          onRegenerateNew={handleRegenerateNew}
           isloading={isLoading}
           messages={messages} 
         />

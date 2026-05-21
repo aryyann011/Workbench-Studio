@@ -69,7 +69,6 @@ export function WorkspaceShare({ workspaceId, workspaceName = "Workspace" }: Wor
     
     if (result.success) {
       setShareUrl(result.shareUrl || "")
-      // Refresh shares list
       const sharesResult = await getWorkspaceShares(workspaceId)
       if (sharesResult.success) {
         setShares(sharesResult.shares || [])
@@ -78,7 +77,7 @@ export function WorkspaceShare({ workspaceId, workspaceName = "Workspace" }: Wor
     setIsCreatingLink(false)
   }
 
-  const handleInviteUser = async () => {
+  const handleInviteUser = async () => { 
     if (!inviteeEmail.trim()) return
 
     const result = await inviteUser(workspaceId, inviteeEmail, selectedRole as WorkspaceRole)
