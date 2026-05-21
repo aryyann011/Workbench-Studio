@@ -15,4 +15,60 @@ model Workspace {
   updatedAt    DateTime @updatedAt
   canvas_nodes Json?
   canvas_edges Json?
+  
+  // Sharing relationships
+  shares       WorkspaceShare[]
+  
+  @@index([userId])
+}
+
+// Role-based access control for shared workspaces
+enum WorkspaceRole {
+  OWNER
+  COLLABORATOR
+  READER
+}
+
+// Track workspace access and sharing
+model WorkspaceShare {
+  id            String   @id @default(uuid())
+  workspaceId   String
+  workspace     Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  
+  // Either userId (direct invite) or shareToken (public link)
+  userId        String?  
+  shareToken    String?  @unique
+  
+  role          WorkspaceRole @default(READER)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  
+  // Metadata for tracking
+  createdBy     String   // The user who created this share
+  expiresAt     DateTime? // Optional: when the share link expires
+  
+  @@unique([workspaceId, userId]) // Prevent duplicate direct shares
+  @@index([workspaceId])
+  @@index([shareToken])
+  @@index([userId])
+}
+
+// Cache for prompts to avoid redundant API calls
+model PromptCache {
+  id            String   @id @default(uuid())
+  userId        String
+  
+  promptText    String   @db.Text
+  promptHash    String   @unique // Hash for quick comparison
+  
+  generatedCode String   @db.Text
+  canvas_nodes  Json?
+  canvas_edges  Json?
+  
+  usageCount    Int      @default(1)
+  lastUsed      DateTime @default(now())
+  createdAt     DateTime @default(now())
+  
+  @@index([userId])
+  @@index([promptHash])
 }

@@ -1,10 +1,10 @@
 "use client"
 
 import { useState, useRef, useEffect } from "react"
-import { MoreVertical, Trash, ExternalLink, Loader2 } from "lucide-react"
+import { MoreVertical, Trash, ExternalLink, Loader2, Share2 } from "lucide-react"
 import { deleteArchitecture } from "@/actions/workspace"
 import { useRouter } from "next/navigation"
-import { Result } from "pg"
+import { WorkspaceShare } from "@/components/WorkspaceShare"
 
 export function WorkspaceActions({ workspaceId }: { workspaceId: string }) {
   const [isOpen, setIsOpen] = useState(false)
@@ -51,7 +51,12 @@ export function WorkspaceActions({ workspaceId }: { workspaceId: string }) {
   }
 
   return (
-    <div ref={menuRef} className="absolute top-4 right-4 z-20">
+    <div ref={menuRef} className="absolute top-4 right-4 z-20 flex items-center gap-2">
+      <WorkspaceShare 
+        workspaceId={workspaceId}
+        workspaceName="Workspace"
+      />
+      
       <button
         onClick={(e) => {
           e.preventDefault()

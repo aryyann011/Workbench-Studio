@@ -1,5 +1,7 @@
 import { NextResponse } from "next/server";
 import { GoogleGenAI } from "@google/genai";
+import { getCachedPromptResult, saveCachePromptResult } from "@/actions/promptCache";
+import { auth } from "@clerk/nextjs/server";
 
 const ai = new GoogleGenAI({
     apiKey : process.env.GOOGLE_API_KEY
@@ -7,60 +9,95 @@ const ai = new GoogleGenAI({
 
 export async function POST(request : Request){
     try {
+        const { userId } = await auth();
+        if (!userId) {
+            return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+        }
+
         if(!process.env.GOOGLE_API_KEY){
             return NextResponse.json({error : "Invalid api key"}, {status : 400});
         }
 
         const body = await request.json();
         const text = body?.text;
+        const skipCache = body?.skipCache === true;
 
         if (!text) {
              return NextResponse.json({error : "No text provided"}, {status : 400});
         }
 
-        const prompt = `
-          You are a Principal Systems Architect designing HIGH-LEVEL LOGICAL FLOWCHARTS.
-          GOAL: Turn the user's request into a strict architectural Diagram Code.
+        // Step 1: Check prompt cache first (unless skipCache is requested)
+        if (!skipCache) {
+            try {
+                const cacheResult = await getCachedPromptResult(text);
+                if (cacheResult.success && cacheResult.cached && cacheResult.code) {
+                    return NextResponse.json({
+                        code: cacheResult.code,
+                        fromCache: true,
+                        cacheType: cacheResult.type,
+                        similarity: cacheResult.similarity
+                    });
+                }
+            } catch (cacheError) {
+                // Cache check failed silently — proceed with AI generation
+                console.warn("Cache lookup failed, proceeding with AI:", cacheError);
+            }
+        }
 
-          STRICT SYNTAX RULES:
-          1. Use [NodeName] for services, databases, and steps.
-          2. Use -> for connections (e.g., [Step 1]->[Step 2]). 
-             - Use ONLY atomic pairs, ONE connection per line.
-          3. Use "inside" to group items into logical swimlanes/phases (e.g., Auth, Upload, Processing).
-             - ONE grouping per line.
-             - CORRECT:
-               [Upload Video] inside [Content Upload Phase]
+        // Step 2: Generate via AI (cache miss)
+        const prompt = `You are a Principal Systems Architect. Convert the user's request into a STRICT architectural diagram using the exact syntax below.
 
-          DESIGN RULES (CRITICAL):
-          -━━━ ARCHITECTURE RULES ━━━
-1. ERASER.IO STYLE FLOW (CRITICAL):
-   - Design the architecture as a clean, sequential pipeline.
-   - Nodes should flow logically from one to the next (A -> B -> C -> D).
-   - NEVER create a "spider web" or "hub-and-spoke" where one node connects to 4+ other nodes. 
-   - If multiple services talk to a Database, do NOT draw 5 lines to the Database. Instead, route them through a single data access layer or only draw the primary flow.
-   - Keep cross-phase connections to an absolute minimum (1-2 max).
+━━━ SYNTAX ━━━
+• Nodes:       [Node Name]
+• Connections: [Source] -> [Target]    (one per line, atomic pairs only)
+• Grouping:    [Node] inside [Phase Name]  (one per line)
 
-2. HIGH-LEVEL ONLY: Each node = one major component (NOT microservices).
-   ✗ Bad:  [Token Validator], [Session Store], [Password Hasher]
-   ✓ Good: [Auth Service]
+━━━ OUTPUT FORMAT (MANDATORY ORDER) ━━━
+Section 1: Define ALL connections (one connection per line).
+Section 2: Define ALL groupings (one "inside" per line).
+Separate Section 1 and Section 2 with a single blank line.
 
-3. NODE LIMIT: 10–15 nodes total. Fewer is better.
+━━━ EXAMPLE OUTPUT (MIMIC THIS EXACTLY) ━━━
+[Client] -> [API Gateway]
+[API Gateway] -> [Auth Service]
+[Auth Service] -> [Logic Processor]
+[Logic Processor] -> [Data Access Layer]
+[Data Access Layer] -> [Primary Database]
 
-4. NODE NAMING:
-   - Title Case, max 3 words (e.g., [Auth Service], [Image Processor])
-   - Never include tech stack in names (no [Node.js Server], [Redis Cache])
-   - Use descriptive role names: [API Gateway], [Task Queue], [CDN]
+[Client] inside [User Interaction]
+[API Gateway] inside [Routing Phase]
+[Auth Service] inside [Processing Phase]
+[Logic Processor] inside [Processing Phase]
+[Data Access Layer] inside [Storage Phase]
+[Primary Database] inside [Storage Phase]
 
-5. PHASE LIMIT: 3–5 phases maximum.
-   - Name phases by function, not layer (e.g., "Content Pipeline", NOT "Backend")
-   - Distribute nodes roughly evenly across phases (2–4 nodes each)
+━━━ ARCHITECTURE RULES (CRITICAL FOR VISUAL CLEANLINESS) ━━━
+1. STRICT LINEAR PIPELINE (NO JUNGLES):
+   - You MUST force a sequential, waterfall flow (A -> B -> C -> D).
+   - NO LOOPS OR CYCLES: Never connect a downstream node back to an upstream node. Data must flow in one direction only.
+   - NO LAYER SKIPPING: Node A cannot connect directly to Node C. It must pass through Node B. (e.g., A Client cannot connect directly to a Database; it must go through an API/Service layer first).
+   - NEVER create a "hub-and-spoke" pattern where one node connects to 3+ other nodes.
+   - If multiple services need to talk to a database, route them through a single intermediate [Data Access] node.
 
-          OUTPUT CONSTRAINTS:
-          - DO NOT generate positions, coordinates, or styling props. Logic only.
-          - OUTPUT RAW TEXT ONLY. Do not use markdown code blocks (no \`\`\`). No greetings, no explanations.
-          User request:
-          ${text}
-      `;
+2. HIGH-LEVEL ABSTRACTION: 
+   - MAXIMUM of 10-12 nodes total. Fewer is better.
+   - Combine granular microservices into single major components. (e.g., use one [Auth Service]).
+
+3. NODE NAMING:
+   - Title Case, max 3 words (e.g., [Task Queue]). 
+   - Never use tech stack names. Use role names.
+
+4. PHASE LIMIT & ORDER: 
+   - Maximum 3-4 phases. 
+   - Name them by lifecycle function (e.g., "Client Phase", "Processing Phase", "Storage Phase").
+━━━ OUTPUT CONSTRAINTS ━━━
+- RAW TEXT ONLY. No markdown formatting (no \`\`\`). No greetings. No explanations.
+- NEVER output trailing or leading spaces around brackets. Use exactly [NodeA] -> [NodeB].
+- Do NOT generate coordinates, positions, or styling.
+
+━━━ USER REQUEST ━━━
+${text}
+`;
 
         const response = await ai.models.generateContent({
           model : "gemini-2.5-flash",
@@ -73,7 +110,15 @@ export async function POST(request : Request){
             return NextResponse.json({error : "no response from api"}, {status : 400});
         }
 
-        return NextResponse.json({code : data});
+        // Step 3: Save result to cache for future lookups
+        try {
+            await saveCachePromptResult(text, data);
+        } catch (saveError) {
+            // Cache save failed silently — don't block the response
+            console.warn("Cache save failed:", saveError);
+        }
+
+        return NextResponse.json({code : data, fromCache: false});
 
     } catch (error: any) {
         console.error("GEMINI API ERROR:", error);
