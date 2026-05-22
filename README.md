@@ -20,8 +20,8 @@ Workbench Studio is an AI-powered system design workspace that converts natural 
 
 ## ✨ Features
 
-### 🤖 AI-Powered Generation
-Describe your system in plain English — *"create a backend for an e-commerce platform with payments, inventory, and notifications"* — and Gemini 2.5 Flash generates a structured architecture with properly grouped phases, labeled nodes, and directional data flow.
+### 🤖 AI-Powered Compilation
+Describe your system in plain English — "create a backend for an e-commerce platform..." — and our backend engine compiles your intent into a strict custom DSL. We leverage Gemini 2.5 Flash as a translation layer, passing the structured syntax down to our custom parser and layout engine to instantly render a mathematically routed architecture diagram.
 
 ### 🎨 Interactive Canvas
 - **Drag-and-drop** nodes with independent child/parent movement
