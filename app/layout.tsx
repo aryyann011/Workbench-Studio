@@ -36,7 +36,7 @@ export default function RootLayout({
     <ClerkProvider>
       <html lang="en" className="dark" suppressHydrationWarning>
         <body
-          className={`${geistSans.variable} ${geistMono.variable} antialiased bg-background text-foreground`}
+          className={`${geistSans.variable} ${geistMono.variable} ${baskerville.variable} antialiased bg-background text-foreground`}
         >
           <LayoutWrapper>
             {children}

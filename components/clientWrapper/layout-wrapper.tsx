@@ -1,6 +1,7 @@
 "use client"
 
 import * as React from "react"
+import { usePathname } from "next/navigation"
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar"
 import { AppSidebar } from "@/components/sidebar"
 import { LogOut } from "lucide-react"
@@ -9,6 +10,23 @@ import { ModeToggle } from "@/components/Mode/modeToggle"
 import { SignOutButton } from "@clerk/nextjs"
 
 export function LayoutWrapper({ children }: { children: React.ReactNode }) {
+  const pathname = usePathname()
+  const isLandingPage = pathname?.startsWith("/landing")
+
+  // Landing page gets a clean, sidebar-free layout
+  if (isLandingPage) {
+    return (
+      <ThemeProvider
+        attribute="class"
+        defaultTheme="dark"
+        enableSystem
+        disableTransitionOnChange
+      >
+        {children}
+      </ThemeProvider>
+    )
+  }
+
   return (
     <ThemeProvider
       attribute="class"
