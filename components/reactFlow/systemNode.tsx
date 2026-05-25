@@ -71,11 +71,14 @@ export function SystemNode({ data }: NodeProps) {
       
  
       <div 
-        className={`relative rounded-2xl overflow-hidden backdrop-blur-sm border transition-all duration-300
-          ${isLocked 
-            ? 'border-indigo-500/50 bg-slate-900/95' 
-            : 'border-slate-700/60 bg-gradient-to-br from-slate-900 via-slate-900/98 to-slate-800/90 group-hover:border-slate-600/80'
-          }`}
+        className="relative rounded-2xl overflow-hidden backdrop-blur-md border transition-all duration-300 bg-neutral-950/95 group-hover:bg-neutral-900/95"
+        style={isLocked ? {
+          borderColor: 'rgba(99, 102, 241, 0.6)',
+          boxShadow: '0 8px 32px rgba(0,0,0,0.6), 0 0 24px rgba(99, 102, 241, 0.2)'
+        } : {
+          borderColor: `${resolved.color}65`,
+          boxShadow: `0 8px 32px rgba(0, 0, 0, 0.7), 0 0 24px ${resolved.color}20`
+        }}
       >
         <div 
           className="h-[6px] w-full"
