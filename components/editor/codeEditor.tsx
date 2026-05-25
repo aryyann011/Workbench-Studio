@@ -17,8 +17,22 @@ export const CodeEditor = ({ onRun }: CodeEditorProps) => {
   const {code, setCode} = useAppStore()
   const editorRef = useRef<any>(null)
 
-  const handleEditorDidMount: OnMount = (editor) => {
+  const handleEditorDidMount: OnMount = (editor, monaco) => {
     editorRef.current = editor
+    
+    // Register custom dark theme matching the Workbench style
+    monaco.editor.defineTheme('workbench-dark', {
+      base: 'vs-dark',
+      inherit: true,
+      rules: [],
+      colors: {
+        'editor.background': '#070709', // Deep near-black charcoal
+        'editor.lineHighlightBackground': '#141417',
+        'editorGutter.background': '#070709',
+      }
+    })
+    
+    monaco.editor.setTheme('workbench-dark')
     editor.focus()
   }
 

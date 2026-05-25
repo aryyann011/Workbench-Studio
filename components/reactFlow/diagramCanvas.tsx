@@ -185,7 +185,7 @@ const EditorContent = () => {
     if (!element) return;
 
     toPng(element, {
-      backgroundColor: '#0f172a', 
+      backgroundColor: '#000000', 
       pixelRatio: 3,
       quality: 1, 
     })
@@ -221,7 +221,7 @@ const EditorContent = () => {
   }
 
   return (
-    <div onPointerMove={handlePointerMove} className="relative h-[100%] w-full bg-slate-50 dark:bg-slate-900">
+    <div onPointerMove={handlePointerMove} className="relative h-[100%] w-full bg-slate-50 dark:bg-black">
       
       {Object.entries(cursors).map(([id, cursor]) => {
         const changedPosition = flowToScreenPosition({x : cursor.x, y : cursor.y});
