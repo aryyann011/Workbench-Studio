@@ -2,20 +2,26 @@ import { NextResponse } from "next/server";
 import { GoogleGenAI } from "@google/genai";
 import { getCachedPromptResult, saveCachePromptResult } from "@/actions/promptCache";
 import { auth } from "@clerk/nextjs/server";
+import Groq from "groq-sdk";
+import { error } from "console";
 
 const ai = new GoogleGenAI({
-    apiKey : process.env.GOOGLE_API_KEY
+    apiKey: process.env.GOOGLE_API_KEY
 });
 
-export async function POST(request : Request){
+const groq = new Groq({
+    apiKey: process.env.GROQ_API_KEY
+});
+
+export async function POST(request: Request) {
     try {
         const { userId } = await auth();
         if (!userId) {
             return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
         }
 
-        if(!process.env.GOOGLE_API_KEY){
-            return NextResponse.json({error : "Invalid api key"}, {status : 400});
+        if (!process.env.GOOGLE_API_KEY) {
+            return NextResponse.json({ error: "Invalid api key" }, { status: 400 });
         }
 
         const body = await request.json();
@@ -23,10 +29,9 @@ export async function POST(request : Request){
         const skipCache = body?.skipCache === true;
 
         if (!text) {
-             return NextResponse.json({error : "No text provided"}, {status : 400});
+            return NextResponse.json({ error: "No text provided" }, { status: 400 });
         }
 
-        // Step 1: Check prompt cache first (unless skipCache is requested)
         if (!skipCache) {
             try {
                 const cacheResult = await getCachedPromptResult(text);
@@ -39,12 +44,10 @@ export async function POST(request : Request){
                     });
                 }
             } catch (cacheError) {
-                // Cache check failed silently — proceed with AI generation
                 console.warn("Cache lookup failed, proceeding with AI:", cacheError);
             }
         }
 
-        // Step 2: Generate via AI (cache miss)
         const prompt = `You are a Principal Systems Architect. Convert the user's request into a STRICT architectural diagram using the exact syntax below.
 
 ━━━ SYNTAX ━━━
@@ -99,32 +102,54 @@ Separate Section 1 and Section 2 with a single blank line.
 ${text}
 `;
 
-        const response = await ai.models.generateContent({
-          model : "gemini-2.5-flash",
-          contents: prompt,
-        });
+        let data = "";
 
-        const data = response.text?.trim();
+        try {
+            const response = await ai.models.generateContent({
+                model: "gemini-2.5-flash",
+                contents: prompt,
+            });
 
-        if(!data){
-            return NextResponse.json({error : "no response from api"}, {status : 400});
+            data = response.text?.trim() || "";
+
+            if (!data) {
+                throw new Error("gemini returned an empty response")
+            }
+        } catch (error) {
+            console.warn("gemini failed, switching to groq...", error)
+
+            try {
+                const chatCompletion = await groq.chat.completions.create({
+                    messages: [{ role: "user", content: prompt }],
+                    model: "llama-3.3-70b-versatile",
+                    temperature: 0.1,
+                });
+
+                data = chatCompletion.choices[0]?.message?.content?.trim() || "";
+
+                if (!data) throw new Error("groq returned an empty response")
+            } catch (error) {
+                console.error("Both GEMINI and GROQ failed:", error);
+                return NextResponse.json(
+                    { error: "Failed to generate architecture." },
+                    { status: 500 }
+                );
+            }
         }
 
-        // Step 3: Save result to cache for future lookups
         try {
             await saveCachePromptResult(text, data);
         } catch (saveError) {
-            // Cache save failed silently — don't block the response
             console.warn("Cache save failed:", saveError);
         }
 
-        return NextResponse.json({code : data, fromCache: false});
+        return NextResponse.json({ code: data, fromCache: false });
 
     } catch (error: any) {
         console.error("GEMINI API ERROR:", error);
-        
+
         return NextResponse.json(
-            { error: "Failed to generate architecture from AI." }, 
+            { error: "Failed to generate architecture from AI." },
             { status: 500 }
         );
     }

@@ -31,6 +31,7 @@
     "dotenv": "^17.3.1",
     "dropdown-menu": "^0.1.1",
     "elkjs": "^0.11.1",
+    "groq-sdk": "^1.2.0",
     "html-to-image": "^1.11.13",
     "lucide-react": "^0.562.0",
     "next": "16.1.4",
