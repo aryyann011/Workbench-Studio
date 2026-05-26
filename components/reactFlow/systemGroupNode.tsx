@@ -1,7 +1,10 @@
 import { memo } from 'react';
+import { useTheme } from 'next-themes';
 
 export const SystemGroupNode = memo(({ data }: any) => {
   const themeColors = ['#3b82f6', '#8b5cf6', '#10b981', '#f59e0b', '#ec4899', '#06b6d4'];
+  const { theme } = useTheme();
+  const isDark = theme !== 'light';
   
   const isLocked = data.lockedby !== undefined
   const colorIndex = (data.label?.length || 0) % themeColors.length;
@@ -36,7 +39,7 @@ export const SystemGroupNode = memo(({ data }: any) => {
       <div 
         className="group-drag-handle absolute -top-5 left-9 flex items-center gap-3 px-5 py-2.5 rounded-xl text-lg font-extrabold tracking-widest uppercase shadow-xl border-2 cursor-grab active:cursor-grabbing"
         style={{ 
-          backgroundColor: '#000000', 
+          backgroundColor: isDark ? '#000000' : '#ffffff', 
           color: themeColor, 
           borderColor: `${themeColor}75`,
         }}
@@ -51,7 +54,7 @@ export const SystemGroupNode = memo(({ data }: any) => {
       <div 
         className="absolute -bottom-4 right-10 px-4 py-1 rounded-lg text-[12px] font-bold tracking-widest uppercase"
         style={{ 
-          backgroundColor: '#000000', 
+          backgroundColor: isDark ? '#000000' : '#ffffff', 
           color: `${themeColor}90`,
           border: `1px solid ${themeColor}55`,
         }}

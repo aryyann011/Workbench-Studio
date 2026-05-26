@@ -4,6 +4,7 @@ import { Handle, Position, NodeProps } from 'reactflow';
 import { lazy, Suspense, useMemo } from 'react';
 import dynamicIconImports from 'lucide-react/dynamicIconImports';
 import { getIconForLabel } from '@/lib/icon-utils'; 
+import { useTheme } from 'next-themes';
 
 interface IconProps {
   name: string;
@@ -50,6 +51,8 @@ function getNodeCategory(label: string): string {
 
 export function SystemNode({ data }: NodeProps) {
   const isLocked = !!data.lockedBy
+  const { theme } = useTheme()
+  const isDark = theme !== 'light'
   
   const resolved = data.icon ? 
     { icon: data.icon, color: data.color || '#64748b' } : 
@@ -71,13 +74,17 @@ export function SystemNode({ data }: NodeProps) {
       
  
       <div 
-        className="relative rounded-2xl overflow-hidden backdrop-blur-md border transition-all duration-300 bg-neutral-950/95 group-hover:bg-neutral-900/95"
+        className="relative rounded-2xl overflow-hidden backdrop-blur-md border border-neutral-200 dark:border-neutral-800 transition-all duration-300 bg-white/95 dark:bg-neutral-950/95 group-hover:bg-neutral-50/95 dark:group-hover:bg-neutral-900/95"
         style={isLocked ? {
           borderColor: 'rgba(99, 102, 241, 0.6)',
-          boxShadow: '0 8px 32px rgba(0,0,0,0.6), 0 0 24px rgba(99, 102, 241, 0.2)'
+          boxShadow: isDark 
+            ? '0 8px 32px rgba(0,0,0,0.6), 0 0 24px rgba(99, 102, 241, 0.2)'
+            : '0 8px 32px rgba(0,0,0,0.06), 0 0 24px rgba(99, 102, 241, 0.1)'
         } : {
-          borderColor: `${resolved.color}65`,
-          boxShadow: `0 8px 32px rgba(0, 0, 0, 0.7), 0 0 24px ${resolved.color}20`
+          borderColor: isDark ? `${resolved.color}65` : `${resolved.color}45`,
+          boxShadow: isDark
+            ? `0 8px 32px rgba(0, 0, 0, 0.7), 0 0 24px ${resolved.color}20`
+            : `0 8px 32px rgba(0, 0, 0, 0.08), 0 0 24px ${resolved.color}15`
         }}
       >
         <div 
@@ -108,7 +115,7 @@ export function SystemNode({ data }: NodeProps) {
             
             <div className="flex flex-col min-w-0 flex-1 gap-1">
               <span 
-                className="font-semibold text-[30px] text-white truncate leading-snug tracking-tight"
+                className="font-semibold text-[30px] text-neutral-900 dark:text-white truncate leading-snug tracking-tight"
                 title={data.label} 
               >
                 {data.label}

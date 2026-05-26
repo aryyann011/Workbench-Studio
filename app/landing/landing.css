@@ -3,7 +3,6 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap');
 
 .landing-root {
-  /* Design Tokens */
   --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   --font-mono: 'JetBrains Mono', 'Fira Code', monospace;
   --font-serif: var(--font-baskerville), 'Libre Baskerville', Georgia, serif;
@@ -86,26 +85,24 @@
   -webkit-mask-image: radial-gradient(ellipse 80% 80% at 50% 50%, black, transparent);
   z-index: 0;
 } */
-/* ═══════ FIX: Tabs Layout (Making it compact and premium) ═══════ */
 .tabs-layout-grid {
   display: grid;
-  grid-template-columns: 1fr 1.2fr; /* Shifts ratio so right side isn't massive */
+  grid-template-columns: 1fr 1.2fr; 
   gap: 40px;
-  align-items: center; /* Vertically centers them so they don't stretch */
+  align-items: center; 
 }
 
-/* This forces the ugly right box to stay sleek and small */
 .tabs-display {
   background: rgba(10, 10, 15, 0.6);
   border-radius: 16px;
   padding: 24px;
   backdrop-filter: blur(20px);
-  max-height: 380px; /* CRITICAL: Stops it from blowing up vertically */
-  aspect-ratio: 16/10; /* Locks it to a cinematic shape */
+  max-height: 380px; 
+  aspect-ratio: 16/10; 
   display: flex;
   flex-direction: column;
   box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.1);
-  overflow: hidden; /* Prevents contents from breaking the box */
+  overflow: hidden; 
 }
 
 .tab-display-body {
@@ -116,11 +113,10 @@
   margin-top: 16px;
 }
 
-/* ═══════ NEW: Premium Bento Grid ═══════ */
 .bento-grid-container {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  grid-template-rows: repeat(2, 280px); /* Locks heights perfectly */
+  grid-template-rows: repeat(2, 280px);
   gap: 20px;
   width: 100%;
 }
@@ -137,8 +133,6 @@
   box-shadow: inset 0 0 20px rgba(255, 255, 255, 0.02);
   transition: transform 0.3s ease;
 }
-
-/* Bento Grid Spanning Rules */
 .bento-large {
   grid-column: span 2;
   grid-row: span 1;
@@ -159,7 +153,6 @@
   z-index: 2;
 }
 
-/* Ambient Glows inside the Bento Boxes */
 .bento-glow {
   position: absolute;
   width: 300px;
@@ -174,7 +167,7 @@
 }
 
 .bento-card:hover .bento-glow {
-  opacity: 0.3; /* Brightens when you hover over the box */
+  opacity: 0.3; 
 }
 
 .cyan-glow { background: #22d3ee; }
@@ -182,7 +175,6 @@
 .amber-glow { background: #f59e0b; }
 .blue-glow { background: #3b82f6; }
 
-/* Bento Grid Premium Mock UIs */
 .mock-editor-window {
   background: var(--bg-secondary) !important;
   border: 1px solid var(--border-primary) !important;
@@ -199,13 +191,12 @@
   color: var(--text-primary) !important;
 }
 :is(.light) .mock-editor-code span.text-\[\#79c0ff\] {
-  color: #0550ae !important; /* Dark blue for nodes in light mode */
-}
+  color: #0550ae !important; 
 :is(.light) .mock-editor-code span.text-\[\#ff7b72\] {
-  color: #cf222e !important; /* Dark red for arrows in light mode */
+  color: #cf222e !important; 
 }
 :is(.light) .mock-editor-code span.text-\[\#f97583\] {
-  color: #cf222e !important; /* Dark red for brackets in light mode */
+  color: #cf222e !important; 
 }
 :is(.light) .mock-editor-code {
   color: #24292f !important;
@@ -234,7 +225,7 @@
 .mock-sharing-panel input {
   background: rgba(255, 255, 255, 0.02) !important;
   border: 1px solid var(--border-primary) !important;
-  color: #22d3ee !important; /* Cyan glow color for tokens */
+  color: #22d3ee !important; 
 }
 :is(.light) .mock-sharing-panel input {
   background: rgba(0, 0, 0, 0.02) !important;
@@ -249,7 +240,6 @@
   background: rgba(0, 0, 0, 0.05) !important;
 }
 
-/* Responsive break for mobile */
 @media (max-width: 900px) {
   .tabs-layout-grid {
     grid-template-columns: 1fr;
@@ -295,17 +285,15 @@
   transition: all 0.3s ease;
 }
 
-/* This creates the sleek frosted glass effect when you scroll down */
 .landing-header.scrolled {
-  background: rgba(5, 5, 5, 0.85); /* Dark semi-transparent background */
-  backdrop-filter: blur(12px);     /* Blurs the text sliding underneath it */
+  background: rgba(5, 5, 5, 0.85);
+  backdrop-filter: blur(12px);     
   -webkit-backdrop-filter: blur(12px);
   border-bottom: 1px solid rgba(255, 255, 255, 0.05);
   padding-top: 4px;
   padding-bottom: 4px;
 }
 
-/* Ensure your sections have enough space at the top so they don't hide under the header */
 .landing-section {
   padding-top: 120px; 
 }
@@ -1576,3 +1564,87 @@
   color: #ffffff;
 }
 
+/* Native Mobile Responsiveness Overrides */
+@media (max-width: 768px) {
+  .isometric-container {
+    transform: none !important;
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.4) !important;
+  }
+  .mock-editor-code {
+    overflow-x: auto !important;
+  }
+  .preview-workspace-split {
+    grid-template-columns: 1fr !important;
+  }
+  .nav-pill {
+    width: calc(100% - 24px) !important;
+    margin: 8px auto !important;
+    padding: 0 8px 0 12px !important;
+  }
+}
+
+/* Additional Light Mode Fine-Tuning */
+:is(.light) .hero-heading {
+  background: linear-gradient(180deg, #111827 40%, #4b5563 100%) !important;
+  -webkit-background-clip: text !important;
+  -webkit-text-fill-color: transparent !important;
+}
+
+:is(.light) .landing-header.scrolled {
+  background: rgba(255, 255, 255, 0.85) !important;
+  backdrop-filter: blur(12px) !important;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.05) !important;
+}
+
+:is(.light) .bento-card {
+  background: #f9fafb !important;
+  border-color: rgba(0, 0, 0, 0.08) !important;
+  box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.01) !important;
+}
+
+:is(.light) .bento-card h3 {
+  color: #111827 !important;
+}
+
+:is(.light) .bento-card p {
+  color: #4b5563 !important;
+}
+
+:is(.light) .preview-canvas-pane {
+  background: #f9fafb !important;
+  border-left-color: rgba(0, 0, 0, 0.06) !important;
+}
+
+:is(.light) .preview-canvas-pane foreignObject > div {
+  background-color: rgba(255, 255, 255, 0.95) !important;
+  border-color: rgba(0, 0, 0, 0.08) !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04) !important;
+}
+
+:is(.light) .preview-canvas-pane foreignObject span.text-slate-200 {
+  color: #111827 !important;
+}
+
+:is(.light) .preview-canvas-pane foreignObject span.text-slate-500 {
+  color: #6b7280 !important;
+}
+
+:is(.light) .preview-canvas-pane svg path {
+  stroke: rgba(0, 0, 0, 0.15) !important;
+}
+
+:is(.light) .landing-footer {
+  background: #ffffff !important;
+  border-top: 1px solid rgba(0, 0, 0, 0.08) !important;
+}
+
+:is(.light) .footer-left span {
+  color: #111827 !important;
+}
+
+:is(.light) .mild-grid::before {
+  background-image: 
+    linear-gradient(to right, rgba(0, 0, 0, 0.06) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(0, 0, 0, 0.06) 1px, transparent 1px) !important;
+}
+}

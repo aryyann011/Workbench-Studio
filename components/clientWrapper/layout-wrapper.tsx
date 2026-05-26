@@ -2,7 +2,7 @@
 
 import * as React from "react"
 import { usePathname } from "next/navigation"
-import { SidebarProvider } from "@/components/ui/sidebar"
+import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar"
 import { AppSidebar } from "@/components/sidebar"
 import { ThemeProvider } from "@/components/Mode/themeProvider"
 import { ModeToggle } from "@/components/Mode/modeToggle"
@@ -38,6 +38,7 @@ export function LayoutWrapper({ children }: { children: React.ReactNode }) {
       
             <div className="px-4 py-2 border-b border-border flex items-center justify-between bg-slate-50 dark:bg-[#07070a] h-12 shrink-0">
               <div className="flex items-center gap-2 select-none">
+                <SidebarTrigger className="md:hidden text-foreground hover:bg-slate-200 dark:hover:bg-neutral-850 mr-1.5 size-7 shrink-0" />
                 <span className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Workspace</span>
                 <span className="text-[10px] font-bold text-slate-700">/</span>
                 <span className="text-[10px] font-bold text-blue-500 dark:text-blue-400 uppercase tracking-widest">{section}</span>

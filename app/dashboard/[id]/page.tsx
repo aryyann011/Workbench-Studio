@@ -161,10 +161,68 @@ export default function ResizableDemo() {
     setIsSaving(false);
   }
   
+  useEffect(() => {
+    const handleResize = () => {
+      if (window.innerWidth < 768 && viewMode === "both") {
+        setViewMode("canvas")
+      }
+    }
+    window.addEventListener("resize", handleResize)
+    handleResize() 
+    return () => window.removeEventListener("resize", handleResize)
+  }, [viewMode])
+
   return (
-    <div className="flex flex-col w-full h-[calc(100vh-64px)] relative bg-background overflow-hidden">
+    <div className="flex flex-col w-full h-full relative bg-background overflow-hidden">
       
-      <div className="absolute top-0 left-1/2 -translate-x-1/2 z-50 flex items-center bg-background/80 backdrop-blur-md border border-border p-1 rounded-lg shadow-sm">
+      <div className="flex md:hidden items-center justify-between px-3 py-1.5 border-b border-border bg-[#07070a] h-12 shrink-0 z-40 select-none">
+        <div className="flex items-center bg-white/5 p-0.5 rounded-lg border border-white/5">
+          <button 
+            onClick={() => setViewMode("code")} 
+            className={`px-3 py-1 rounded text-xs transition-colors font-medium ${viewMode === 'code' ? 'bg-primary text-primary-foreground font-semibold shadow-sm' : 'hover:bg-muted text-muted-foreground'}`}
+          >
+            Code
+          </button>
+          <button 
+            onClick={() => setViewMode("canvas")} 
+            className={`px-3 py-1 rounded text-xs transition-colors font-medium ${viewMode === 'canvas' ? 'bg-primary text-primary-foreground font-semibold shadow-sm' : 'hover:bg-muted text-muted-foreground'}`}
+          >
+            Canvas
+          </button>
+        </div>
+
+        <div className="flex items-center gap-1.5">
+          <WorkspaceShare 
+            workspaceId={workspaceId === "new" ? "" : workspaceId}
+            workspaceName={workspaceName}
+            iconOnly={true}
+          />
+          <button
+            onClick={handleRun}
+            title="Run compiler"
+            className="p-1.5 bg-secondary hover:bg-secondary/80 text-secondary-foreground rounded-md border border-border transition-colors flex items-center justify-center size-8 shrink-0"
+          >
+            <Play className="w-4 h-4" />
+          </button>
+          <button
+            onClick={handleSaveWorkspace}
+            disabled={isSaving || !code}
+            title="Save architecture"
+            className="p-1.5 bg-blue-600 hover:bg-blue-700 text-white rounded-md transition-colors flex items-center justify-center size-8 shrink-0 disabled:opacity-50"
+          >
+            <Save className="w-4 h-4"/>
+          </button>
+          <button
+            onClick={() => setIsAIOpen(!isAIOpen)}
+            title="AI Chat"
+            className={`p-1.5 rounded-md border transition-colors flex items-center justify-center size-8 shrink-0 ${isAIOpen ? 'bg-blue-600/10 text-blue-500 border-blue-500/50' : 'bg-secondary hover:bg-secondary/80 text-secondary-foreground border-border'}`}
+          >
+            <Sparkles className="w-4 h-4" />
+          </button>
+        </div>
+      </div>
+
+      <div className="hidden md:flex absolute top-3 left-1/2 -translate-x-1/2 z-50 items-center bg-background/80 backdrop-blur-md border border-border p-1 rounded-lg shadow-sm">
         <button 
           onClick={() => setViewMode("code")} 
           className={`px-3 py-1.5 rounded-md flex items-center gap-2 text-sm transition-colors ${viewMode === 'code' ? 'bg-primary text-primary-foreground shadow' : 'hover:bg-muted text-muted-foreground'}`}
@@ -185,7 +243,7 @@ export default function ResizableDemo() {
         </button>
       </div>
 
-      <div className="absolute top-4 right-4 z-50 flex items-center gap-2">
+      <div className="hidden md:flex absolute top-3 right-4 z-50 items-center gap-2">
         <WorkspaceShare 
           workspaceId={workspaceId === "new" ? "" : workspaceId}
           workspaceName={workspaceName}
@@ -217,7 +275,7 @@ export default function ResizableDemo() {
       </div>
 
       <div 
-        className={`absolute top-0 right-0 h-full w-80 z-50 transform transition-transform duration-300 ease-in-out ${isAIOpen ? 'translate-x-0' : 'translate-x-full'}`}
+        className={`absolute top-0 right-0 h-full w-[85vw] max-w-sm md:w-80 z-50 transform transition-transform duration-300 ease-in-out ${isAIOpen ? 'translate-x-0' : 'translate-x-full'}`}
       >
         <button 
           className="absolute top-4 right-4 z-50 p-1 bg-muted hover:bg-muted-foreground/20 rounded-md text-muted-foreground transition-colors"

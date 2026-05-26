@@ -71,7 +71,7 @@ export function AppSidebar() {
                       <Link
                         href={item.url}
                         className={`flex items-center rounded-lg transition-all duration-200 group
-                          ${isCollapsed ? "justify-center p-0 gap-0 w-7 h-7 mx-auto" : "gap-3 px-3 py-2 w-full"}
+                          ${isCollapsed ? "justify-center p-0 gap-0 w-7 h-7 mx-auto" : "gap-3 px-4 py-3 w-full"}
                           ${isActive
                             ? "bg-slate-200/60 dark:bg-white/5 border border-slate-300 dark:border-white/10 text-neutral-900 dark:text-white font-semibold shadow-inner"
                             : "text-neutral-500 dark:text-muted-foreground hover:text-neutral-900 dark:hover:text-white hover:bg-slate-200/30 dark:hover:bg-white/[0.02] border border-transparent"

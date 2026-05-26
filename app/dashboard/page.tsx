@@ -62,7 +62,6 @@ export default async function DashboardPage() {
           </Link>
         ))}
 
-        {/* Plus Card Option at the End */}
         <Link 
           href="/dashboard/new"
           className="flex flex-col items-center justify-center p-4 border border-dashed border-white/10 hover:border-blue-500/50 bg-white/[0.01] hover:bg-blue-500/[0.02] hover:shadow-[0_0_20px_rgba(59,130,246,0.05)] rounded-xl min-h-[132px] transition-all duration-300 group cursor-pointer"

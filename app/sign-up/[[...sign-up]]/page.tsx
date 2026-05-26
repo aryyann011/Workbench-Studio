@@ -24,7 +24,6 @@ export default function SignUpPage() {
     );
   }
 
-  // Handle credentials form submit (creating the account)
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!email || !password) return;
@@ -38,7 +37,6 @@ export default function SignUpPage() {
         password,
       });
 
-      // Send verification email code
       await signUp.prepareEmailAddressVerification({ strategy: "email_code" });
       setPendingVerification(true);
     } catch (err: any) {
@@ -48,7 +46,6 @@ export default function SignUpPage() {
     }
   };
 
-  // Handle confirmation code submit (verifying email code)
   const handleVerifySubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!code) return;
@@ -75,7 +72,6 @@ export default function SignUpPage() {
     }
   };
 
-  // Google OAuth sign up
   const handleGoogleSignUp = async () => {
     setError("");
     try {
@@ -91,13 +87,10 @@ export default function SignUpPage() {
 
   return (
     <div className="relative min-h-screen w-full bg-black flex flex-col items-center justify-center overflow-hidden">
-      {/* Background Spotlight (Monochromatic) */}
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_-20%,rgba(255,255,255,0.12),transparent_75%)] pointer-events-none z-0" />
 
-      {/* Grid Pattern */}
       <div className="absolute inset-0 pointer-events-none opacity-30 z-0 bg-[linear-gradient(to_right,#242426_1px,transparent_1px),linear-gradient(to_bottom,#242426_1px,transparent_1px)] bg-[size:4rem_4rem]" />
 
-      {/* Floating System Design Cards in Background */}
       <div className="absolute left-[8%] top-[20%] opacity-40 hidden xl:flex flex-col p-4 border border-neutral-800 rounded-xl bg-neutral-950/40 pointer-events-none select-none z-0 border-l-neutral-700/30">
         <div className="flex items-center gap-3">
           <div className="p-2 bg-neutral-900 rounded-lg text-neutral-400">
@@ -146,21 +139,17 @@ export default function SignUpPage() {
         </div>
       </div>
 
-      {/* Header back button */}
       <div className="absolute top-8 left-8 z-10">
         <Link href="/" className="flex items-center gap-2 text-sm text-neutral-400 hover:text-white transition-colors">
           ← Back to landing
         </Link>
       </div>
 
-      {/* Auth Component Container */}
       <div className="relative z-10 w-full max-w-md p-4">
         <div className="bg-neutral-950/80 border border-neutral-900 rounded-2xl p-8 shadow-2xl backdrop-blur-xl flex flex-col gap-6">
           
           {!pendingVerification ? (
-            // Sign Up Form Page
             <>
-              {/* Headings */}
               <div className="flex flex-col items-center text-center gap-2">
                 <div className="w-10 h-10 rounded-full bg-white text-black flex items-center justify-center font-black text-lg mb-2">
                   W
@@ -173,7 +162,6 @@ export default function SignUpPage() {
                 </p>
               </div>
 
-              {/* Error Alert */}
               {error && (
                 <div className="flex gap-2 items-start bg-red-500/10 border border-red-500/30 p-3 rounded-lg text-red-400 text-xs leading-normal">
                   <AlertCircle className="w-4 h-4 shrink-0 mt-0.5" />
@@ -322,7 +310,6 @@ export default function SignUpPage() {
                 </button>
               </form>
 
-              {/* Back to sign up */}
               <div className="text-center pt-2">
                 <button
                   onClick={() => setPendingVerification(false)}

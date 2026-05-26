@@ -12,7 +12,6 @@ export default async function SettingsPage() {
       </div>
 
       <div className="space-y-8">
-        {/* Profile Settings */}
         {user && (
           <div className="border border-border bg-card rounded-xl p-6">
             <div className="flex items-center gap-3 mb-6 pb-4 border-b border-border">
@@ -38,7 +37,6 @@ export default async function SettingsPage() {
           </div>
         )}
 
-        {/* Editor Configuration */}
         <div className="border border-border bg-card rounded-xl p-6">
           <div className="flex items-center gap-3 mb-6 pb-4 border-b border-border">
             <Sliders className="w-5 h-5 text-purple-500" />
@@ -88,7 +86,6 @@ export default async function SettingsPage() {
           </div>
         </div>
 
-        {/* API Credentials */}
         <div className="border border-border bg-card rounded-xl p-6">
           <div className="flex items-center gap-3 mb-6 pb-4 border-b border-border">
             <KeyRound className="w-5 h-5 text-amber-500" />

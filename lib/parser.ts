@@ -90,8 +90,6 @@ export const parseCode = (input: string) => {
             parentNode.type = 'group';
             parentNode.zIndex = 0;
             parentNode.draggable = true;
-            // dragHandle restricts group dragging to only the label element
-            parentNode.dragHandle = '.group-drag-handle';
             parentNode.style = { 
               backgroundColor: 'rgba(241, 245, 249, 0.05)', 
               border: '2px dashed #64748b', 

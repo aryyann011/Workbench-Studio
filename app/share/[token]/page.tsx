@@ -79,7 +79,6 @@ export default function SharedWorkspacePage() {
     }
   }, [shareToken])
 
-  // Auto-save for collaborators
   useEffect(() => {
     if (!canEdit || !code || nodes.length === 0 || !workspaceId) return
 
@@ -143,7 +142,6 @@ export default function SharedWorkspacePage() {
 
   return (
     <div className="flex flex-col h-screen bg-background">
-      {/* Header */}
       <div className="border-b bg-card/50 backdrop-blur-sm px-4 py-3 flex items-center justify-between">
         <div className="flex items-center gap-3">
           <h1 className="text-lg font-semibold truncate">{workspaceName}</h1>
@@ -181,7 +179,6 @@ export default function SharedWorkspacePage() {
         </div>
       </div>
 
-      {/* Main Editor Area */}
       <div className="flex-1 overflow-hidden">
         {viewMode === "both" && canEdit ? (
           <ResizablePanelGroup orientation="horizontal">
@@ -200,7 +197,6 @@ export default function SharedWorkspacePage() {
         )}
       </div>
 
-      {/* Footer */}
       <div className="border-t bg-card/50 backdrop-blur-sm px-4 py-3 flex items-center justify-between gap-4">
         {canEdit && (
           <button

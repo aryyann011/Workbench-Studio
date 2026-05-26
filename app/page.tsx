@@ -25,7 +25,6 @@ import {
 import "./landing/landing.css"
 import { ModeToggle } from "@/components/Mode/modeToggle"
 
-// Initialize Premium Fonts
 const spaceGrotesk = Space_Grotesk({ subsets: ["latin"], weight: ["500", "700"] })
 const inter = Inter({ subsets: ["latin"] })
 
@@ -51,7 +50,7 @@ export default function LandingPage() {
             <span className={`logo-text ${spaceGrotesk.className}`}>Workbench Studio</span>
           </Link>
 
-          <nav className="nav-links">
+          <nav className="nav-links hidden md:flex">
             <a href="#features" className="nav-item">Features</a>
             <a href="#flowchart" className="nav-item">Pipeline</a>
             <a href="#editor-showcase" className="nav-item">Platform</a>
@@ -163,13 +162,10 @@ export default function LandingPage() {
                 </div>
               </div>
 
-              {/* Right Pane: Diagram View (Fixed Coordinate System) */}
               <div className="preview-canvas-pane relative overflow-hidden bg-[#060608] border-l border-white/5 flex items-center justify-center min-h-[350px]">
                 
-                {/* SVG Coordinate Space locks lines and nodes together permanently */}
                 <svg className="w-full h-full absolute inset-0" viewBox="0 0 600 400" preserveAspectRatio="xMidYMid meet">
                   
-                  {/* Define the arrowheads so they actually render */}
                   <defs>
                     <marker id="arrow-cyan" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse">
                       <path d="M 0 0 L 10 5 L 0 10 z" fill="rgba(34, 211, 238, 0.4)" />
@@ -182,19 +178,12 @@ export default function LandingPage() {
                     </marker>
                   </defs>
 
-                  {/* 1. The Connection Lines (Rendered behind the nodes) */}
-                  {/* Client to API Gateway */}
                   <path d="M 181 100 L 405 100" fill="none" stroke="rgba(34, 211, 238, 0.2)" strokeWidth="1.5" strokeDasharray="4 4" markerEnd="url(#arrow-cyan)" />
                   
-                  {/* API Gateway to Auth Service (Curved routing) */}
                   <path d="M 483 125 C 483 190, 113 190, 113 247" fill="none" stroke="rgba(251, 191, 36, 0.2)" strokeWidth="1.5" markerEnd="url(#arrow-amber)" />
                   
-                  {/* Auth Service to Collab Engine */}
                   <path d="M 181 280 L 405 280" fill="none" stroke="rgba(52, 211, 153, 0.2)" strokeWidth="1.5" markerEnd="url(#arrow-emerald)" />
 
-                  {/* 2. The Nodes (HTML embedded perfectly inside SVG coordinates) */}
-                  
-                  {/* Client App Node */}
                   <foreignObject x="45" y="75" width="136" height="50">
                     <div className="w-full h-full bg-[#08080a]/90 border border-white/[0.06] rounded-xl shadow-lg flex items-center p-2 gap-2.5 border-l-[3px] border-l-cyan-400/70">
                       <div className="bg-cyan-500/5 p-1 rounded border border-cyan-500/10 flex items-center justify-center"><Smartphone className="w-3.5 h-3.5 text-cyan-400/80"/></div>
@@ -205,7 +194,6 @@ export default function LandingPage() {
                     </div>
                   </foreignObject>
 
-                  {/* API Gateway Node */}
                   <foreignObject x="415" y="75" width="136" height="50">
                     <div className="w-full h-full bg-[#08080a]/90 border border-white/[0.06] rounded-xl shadow-lg flex items-center p-2 gap-2.5 border-l-[3px] border-l-emerald-400/70">
                       <div className="bg-emerald-500/5 p-1 rounded border border-emerald-500/10 flex items-center justify-center"><Server className="w-3.5 h-3.5 text-emerald-400/80"/></div>
@@ -216,7 +204,6 @@ export default function LandingPage() {
                     </div>
                   </foreignObject>
 
-                  {/* Auth Service Node */}
                   <foreignObject x="45" y="255" width="136" height="50">
                     <div className="w-full h-full bg-[#08080a]/90 border border-white/[0.06] rounded-xl shadow-lg flex items-center p-2 gap-2.5 border-l-[3px] border-l-amber-500/70">
                       <div className="bg-amber-500/5 p-1 rounded border border-amber-500/10 flex items-center justify-center"><Shield className="w-3.5 h-3.5 text-amber-500/80"/></div>
@@ -227,7 +214,6 @@ export default function LandingPage() {
                     </div>
                   </foreignObject>
 
-                  {/* Collab Engine Node */}
                   <foreignObject x="415" y="255" width="136" height="50">
                     <div className="w-full h-full bg-[#08080a]/90 border border-white/[0.06] rounded-xl shadow-lg flex items-center p-2 gap-2.5 border-l-[3px] border-l-blue-500/70">
                       <div className="bg-blue-500/5 p-1 rounded border border-blue-500/10 flex items-center justify-center"><Layers className="w-3.5 h-3.5 text-blue-500/80"/></div>
@@ -245,7 +231,6 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* ═══════ The Premium Bento Grid (Replacement Section) ═══════ */}
       <section className="landing-section bento-sec">
         <div className="section-inner">
           
@@ -258,7 +243,6 @@ export default function LandingPage() {
 
           <div className="bento-grid-container">
             
-            {/* Bento Box 1: The DSL */}
             <div className="bento-card bento-large border-glow-hover bg-slate-900/40 flex flex-col md:flex-row items-center gap-6">
               <div className="bento-content flex-1 text-left">
                 <Code2 className="w-6 h-6 text-cyan-400 mb-4" />
@@ -267,7 +251,7 @@ export default function LandingPage() {
                   Why drag and drop when you can type? Our custom Domain Specific Language lets you map out complex microservices as fast as you can think.
                 </p>
               </div>
-              <div className="flex-1 w-full max-w-[360px]">
+              <div className="flex-1 w-full max-w-full md:max-w-[360px]">
                 <div className="mock-editor-window text-left bg-[#08080a] border border-white/[0.06] rounded-xl overflow-hidden shadow-2xl">
                   <div className="mock-editor-header flex items-center gap-1.5 px-3 py-2 border-b border-white/[0.04] bg-[#0c0c0f]">
                     <span className="editor-dot red w-2 h-2 rounded-full bg-[#ff5f56]" />
@@ -287,7 +271,6 @@ export default function LandingPage() {
               <div className="bento-glow cyan-glow" />
             </div>
 
-            {/* Bento Box 2: Instant Export */}
             <div className="bento-card bento-small border-glow-hover bg-slate-900/40">
               <div className="bento-content text-left">
                 <FolderUp className="w-6 h-6 text-emerald-400 mb-4" />
@@ -309,7 +292,6 @@ export default function LandingPage() {
               <div className="bento-glow emerald-glow" />
             </div>
 
-            {/* Bento Box 3: Smart Layouts */}
             <div className="bento-card bento-small border-glow-hover bg-slate-900/40">
               <div className="bento-content text-left">
                 <Layers className="w-6 h-6 text-amber-400 mb-4" />
@@ -333,7 +315,6 @@ export default function LandingPage() {
               <div className="bento-glow amber-glow" />
             </div>
 
-            {/* Bento Box 4: Clerk Security */}
             <div className="bento-card bento-large border-glow-hover bg-slate-900/40 flex flex-col md:flex-row items-center gap-6">
               <div className="bento-content flex-1 text-left">
                 <Shield className="w-6 h-6 text-blue-400 mb-4" />
@@ -342,7 +323,7 @@ export default function LandingPage() {
                   Secured by Clerk authentication. Generate cryptographic 32-character hex tokens for read-only or collaborative sharing. Revoke access with a single click.
                 </p>
               </div>
-              <div className="flex-1 w-full max-w-[340px]">
+              <div className="flex-1 w-full max-w-full md:max-w-[340px]">
                 <div className="mock-sharing-panel bg-[#08080a] border border-white/[0.06] rounded-xl p-3.5 text-left shadow-xl">
                   <div className="text-[10px] font-bold text-slate-400 mb-3 uppercase tracking-wider">Access Control</div>
                   <div className="flex flex-col gap-2.5">
@@ -379,7 +360,6 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* ═══════ Mirai-Inspired Feature Grid ═══════ */}
       <section className="landing-section features-grid-sec" id="features">
         <div className="section-inner">
 
@@ -435,14 +415,13 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* ═══════ Thrive-Inspired Vertical Tabs ═══════ */}
       <section className="landing-section tabs-showcase-sec" id="editor-showcase">
         <div className="section-inner">
           <div className="tabs-layout-grid">
             
             <div className="tabs-sidebar">
               <span className="section-label text-cyan-400" style={{ alignSelf: "flex-start" }}>Interactive Demo</span>
-              <h2 className={spaceGrotesk.className} style={{ fontSize: "36px", marginBottom: "16px", color: "#fff" }}>
+              <h2 className={spaceGrotesk.className} style={{ fontSize: "36px", marginBottom: "16px", color: "var(--text-primary)" }}>
                 Built for active collaboration
               </h2>
               
@@ -499,7 +478,7 @@ export default function LandingPage() {
                 )}
 
                 {activeTab === "editor" && (
-                  <div className="w-full text-left font-mono" style={{ fontSize: "13px", color: "#a1a1aa", background: "#060608", padding: "20px", borderRadius: "8px", border: "1px solid rgba(255,255,255,0.04)" }}>
+                  <div className="w-full text-left font-mono" style={{ fontSize: "13px", color: "var(--text-secondary)", background: "var(--bg-secondary)", padding: "20px", borderRadius: "8px", border: "1px solid var(--border-primary)" }}>
                     {/* <div style={{ color: "#71717a" }}>{"// Canvas changes synchronize in code pane automatically"}</div> */}
                     <div><span style={{ color: "#ff7b72" }}>[</span>Client Application<span style={{ color: "#ff7b72" }}>]</span> → <span style={{ color: "#ff7b72" }}>[</span>API Gateway<span style={{ color: "#ff7b72" }}>]</span></div>
                     <div><span style={{ color: "#ff7b72" }}>[</span>API Gateway<span style={{ color: "#ff7b72" }}>]</span> → <span style={{ color: "#ff7b72" }}>[</span>Auth Service<span style={{ color: "#ff7b72" }}>]</span></div>
@@ -543,7 +522,6 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* ═══════ CTA Section ═══════ */}
       <section className="cta-sec">
         <div className="cta-glow-orb hero-orb-cyan opacity-20" />
         <div className="cta-content">
@@ -557,12 +535,11 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* ═══════ Footer ═══════ */}
       <footer className="landing-footer border-t border-white/5">
         <div className="section-inner footer-flex">
           <div className="footer-left">
             <div className="footer-logo">W</div>
-            <span className={`${spaceGrotesk.className}`} style={{ fontWeight: 700, color: "#fff" }}>Workbench Studio</span>
+            <span className={`${spaceGrotesk.className}`} style={{ fontWeight: 700, color: "var(--text-primary)" }}>Workbench Studio</span>
           </div>
 
           <div className="footer-links">
