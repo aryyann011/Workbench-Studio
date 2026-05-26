@@ -55,6 +55,7 @@ export function WorkspaceActions({ workspaceId }: { workspaceId: string }) {
       <WorkspaceShare 
         workspaceId={workspaceId}
         workspaceName="Workspace"
+        iconOnly={true}
       />
       
       <button

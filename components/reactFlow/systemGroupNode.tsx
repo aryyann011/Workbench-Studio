@@ -1,7 +1,10 @@
 import { memo } from 'react';
+import { useTheme } from 'next-themes';
 
 export const SystemGroupNode = memo(({ data }: any) => {
   const themeColors = ['#3b82f6', '#8b5cf6', '#10b981', '#f59e0b', '#ec4899', '#06b6d4'];
+  const { theme } = useTheme();
+  const isDark = theme !== 'light';
   
   const isLocked = data.lockedby !== undefined
   const colorIndex = (data.label?.length || 0) % themeColors.length;
@@ -10,10 +13,11 @@ export const SystemGroupNode = memo(({ data }: any) => {
   return (
     
     <div 
-      className="w-full h-full border-[3px] border-dashed rounded-3xl relative"
+      className="w-full h-full border-[3px] border-dashed rounded-3xl relative animate-fade-in"
       style={{ 
-        backgroundColor: `${themeColor}08`, 
-        borderColor: `${themeColor}35`,
+        backgroundColor: `${themeColor}05`, 
+        borderColor: `${themeColor}65`,
+        boxShadow: `inset 0 0 40px ${themeColor}08`
       }}
     >
       {/* Top accent line */}
@@ -35,9 +39,9 @@ export const SystemGroupNode = memo(({ data }: any) => {
       <div 
         className="group-drag-handle absolute -top-5 left-9 flex items-center gap-3 px-5 py-2.5 rounded-xl text-lg font-extrabold tracking-widest uppercase shadow-xl border-2 cursor-grab active:cursor-grabbing"
         style={{ 
-          backgroundColor: '#0f172a', 
+          backgroundColor: isDark ? '#000000' : '#ffffff', 
           color: themeColor, 
-          borderColor: `${themeColor}60`,
+          borderColor: `${themeColor}75`,
         }}
       >
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ color: themeColor }}>
@@ -50,9 +54,9 @@ export const SystemGroupNode = memo(({ data }: any) => {
       <div 
         className="absolute -bottom-4 right-10 px-4 py-1 rounded-lg text-[12px] font-bold tracking-widest uppercase"
         style={{ 
-          backgroundColor: '#0f172a', 
+          backgroundColor: isDark ? '#000000' : '#ffffff', 
           color: `${themeColor}90`,
-          border: `1px solid ${themeColor}30`,
+          border: `1px solid ${themeColor}55`,
         }}
       >
         Phase

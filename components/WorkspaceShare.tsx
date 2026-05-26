@@ -40,9 +40,10 @@ const SHARE_OPTIONS: ShareOption[] = [
 interface WorkspaceShareProps {
   workspaceId: string
   workspaceName?: string
+  iconOnly?: boolean
 }
 
-export function WorkspaceShare({ workspaceId, workspaceName = "Workspace" }: WorkspaceShareProps) {
+export function WorkspaceShare({ workspaceId, workspaceName = "Workspace", iconOnly = false }: WorkspaceShareProps) {
   const [isOpen, setIsOpen] = useState(false)
   const [selectedRole, setSelectedRole] = useState<WorkspaceRole>("READER")
   const [inviteeEmail, setInviteeEmail] = useState("")
@@ -127,15 +128,25 @@ export function WorkspaceShare({ workspaceId, workspaceName = "Workspace" }: Wor
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>
-        <Button
-          variant="ghost"
-          size="sm"
-          className="flex items-center gap-2"
-          onClick={handleOpenDialog}
-        >
-          <Share2 className="w-4 h-4" />
-          Share
-        </Button>
+        {iconOnly ? (
+          <button
+            onClick={handleOpenDialog}
+            title="Share architecture"
+            className="p-1.5 bg-background/50 hover:bg-muted text-muted-foreground hover:text-foreground border border-border rounded-md transition-colors shadow-sm shrink-0"
+          >
+            <Share2 className="w-4 h-4" />
+          </button>
+        ) : (
+          <Button
+            variant="ghost"
+            size="sm"
+            className="flex items-center gap-2"
+            onClick={handleOpenDialog}
+          >
+            <Share2 className="w-4 h-4" />
+            Share
+          </Button>
+        )}
       </DialogTrigger>
 
       <DialogContent className="max-w-2xl">

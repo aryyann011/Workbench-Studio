@@ -21,6 +21,7 @@ import { useWorkspaceSocket } from '@/hooks/useWorkspaceSocket';
 import { useParams } from 'next/navigation';
 import { useAuth } from '@clerk/nextjs';
 import { toPng } from 'html-to-image';
+import { useTheme } from 'next-themes';
 
 const nodeTypes = {
   system: SystemNode,
@@ -38,6 +39,7 @@ type dragState = {
 
 const EditorContent = () => {
   const params = useParams()
+  const { theme } = useTheme()
   const [menuState, setMenuState] = useState<{
     isOpen: boolean;
     x: number;
@@ -184,8 +186,9 @@ const EditorContent = () => {
     const element = document.querySelector('.react-flow__viewport') as HTMLElement;
     if (!element) return;
 
+    const isDark = theme === 'dark';
     toPng(element, {
-      backgroundColor: '#000000', 
+      backgroundColor: isDark ? '#000000' : '#ffffff', 
       pixelRatio: 3,
       quality: 1, 
     })
