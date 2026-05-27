@@ -192,6 +192,7 @@
 }
 :is(.light) .mock-editor-code span.text-\[\#79c0ff\] {
   color: #0550ae !important; 
+}
 :is(.light) .mock-editor-code span.text-\[\#ff7b72\] {
   color: #cf222e !important; 
 }
@@ -1646,5 +1647,4 @@
   background-image: 
     linear-gradient(to right, rgba(0, 0, 0, 0.06) 1px, transparent 1px),
     linear-gradient(to bottom, rgba(0, 0, 0, 0.06) 1px, transparent 1px) !important;
-}
 }
