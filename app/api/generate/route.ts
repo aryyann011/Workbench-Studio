@@ -13,6 +13,73 @@ const groq = new Groq({
     apiKey: process.env.GROQ_API_KEY
 });
 
+
+const MODE_RULES: Record<string, string> = {
+    minimal: `
+   - CONSTRAINTS: Generate a strict MAXIMUM of 4-6 nodes total. 
+   - PHASE LIMIT: MAXIMUM of 2 bounding phase boxes.
+   - DESIGN INTERPRETATION: Abstract the entire infrastructure down to high-level conceptual modules only. Combine all granular backend layers into single massive block elements (e.g., [Application Core], [Data Platform]). Ideal for executive overviews and high-level business presentations.
+   - EDGE BUDGET: Aim for 4-6 total connections maximum. Every connection must be essential.
+   - NO CYCLES: Data flows strictly downstream. No bidirectional or return paths.`,
+
+    balanced: `
+   - CONSTRAINTS: Generate a balanced MAXIMUM of 8-11 nodes total.
+   - PHASE LIMIT: MAXIMUM of 3 bounding phase boxes.
+   - DESIGN INTERPRETATION: Focus heavily on structured cleanliness. Microservices must be grouped thoughtfully. If 4+ connections point to a shared boundary (like a database), you MUST route them through a single funnel aggregator node (e.g., [Data Access Layer] or [Service Hub]) to avoid crisscrossing wires on the output plane.
+   - EDGE BUDGET: Aim for 8-14 total connections. Each phase should have at most 3 outgoing edges to the NEXT phase. Consolidate through gateway/router nodes if needed.
+   - WITHIN-PHASE CYCLES ALLOWED: Bidirectional edges between nodes inside the SAME phase box are permitted (e.g., [Service A] -> [Cache] and [Cache] -> [Service A]). Cross-phase connections must remain strictly unidirectional downstream.`,
+
+    detailed: `
+   - CONSTRAINTS: Target a deep architecture grid of 10-14 highly granular nodes.
+   - PHASE LIMIT: MAXIMUM of 4 bounding phase boxes.
+   - DESIGN INTERPRETATION: Map out actual physical infrastructure realities. Explicitly represent independent ingestion points, background task queues, task workers, read-replicas, caching layers, and distinct event queues. Do not sacrifice technical depth for visual simplicity.
+   - EDGE BUDGET: No hard edge ceiling. Ensure every connection represents a real communication path.
+   - WITHIN-PHASE CYCLES ALLOWED: Bidirectional edges between nodes inside the SAME phase box are fully permitted. Cross-phase connections must remain strictly unidirectional downstream to prevent wire tangling across group boundaries.`,
+};
+
+
+
+const buildPrompt = (text: string, modeRules: string) => `You are a Principal Systems Architect converting user prompts into structurally explicit 2D architectural wireframes.
+
+YOUR MISSION: Map out a production-grade architecture that reflects real enterprise communication systems. You must implement robust systems design practices (caches, async layers, databases, processors). Bounding boxes (Phases/Tiers) must be balanced horizontally and vertically across the grid plane to keep presentations readable, clean, and professional.
+
+━━━ SYNTAX ━━━
+• Nodes:       [Node Name]
+• Connections: [Source] -> [Target]    (one per line, atomic pairs only)
+• Grouping:    [Node] inside [Box Name]  (one per line - MANDATORY FOR EVERY NODE)
+
+━━━ OUTPUT FORMAT (MANDATORY ORDER) ━━━
+Section 1: Define ALL connections (one connection per line).
+Section 2: Define ALL groupings (one "inside" per line).
+Separate Section 1 and Section 2 with a single blank line.
+
+━━━ CORE ARCHITECTURAL RULES ━━━
+1. MANDATORY PLACEMENT BOUNDS (GROUPING):
+   - EVERY SINGLE node generated must be placed inside a bounding phase box (e.g., [Ingestion Tier], [API Cluster], [Processing Infrastructure], [Data Layer]). 
+   - No node can float loosely outside of an explicit parent group boundary box.
+
+2. NO "GOD NODES" (ANTI-HUB-AND-SPOKE):
+   - A single node MUST NOT have more than 3 incoming or outgoing connections.
+   - If 4+ services need to talk to a shared resource, you MUST create a single [Data Access Layer] or [Aggregator] in front of it to act as a funnel.
+
+3. GRAPH DENSITY & SYMMETRY:
+   - Ensure nodes are distributed evenly inside their boxes. Do not leave boxes completely bare or create high-density line bottlenecks.
+   - Name nodes specifically for the requested domain (e.g., [Video Transcoder], [Redis Timeline Cache], [Notification Fanout Queue]).
+
+━━━ MODE-SPECIFIC CONSTRAINTS (OVERRIDING BALANCING TARGETS) ━━━
+${modeRules}
+
+━━━ OUTPUT CONSTRAINTS ━━━
+- RAW TEXT ONLY. Do not wrap output in markdown code blocks (\`\`\`). No preamble, greetings, or conversational summaries.
+- Never inject trailing or leading space padding inside structural brackets. Match exactly: [NodeA] -> [NodeB].
+- Do NOT generate coordinates, positions, or styling.
+
+━━━ USER REQUEST ━━━
+${text}
+`;
+
+
+
 export async function POST(request: Request) {
     try {
         const { userId } = await auth();
@@ -27,9 +94,29 @@ export async function POST(request: Request) {
         const body = await request.json();
         const text = body?.text;
         const skipCache = body?.skipCache === true;
+        const cacheCheckOnly = body?.cacheCheckOnly === true;
+        const mode: string = body?.mode || 'balanced';
 
         if (!text) {
             return NextResponse.json({ error: "No text provided" }, { status: 400 });
+        }
+
+        if (cacheCheckOnly) {
+            try {
+                const cacheResult = await getCachedPromptResult(text);
+                if (cacheResult.success && cacheResult.cached && cacheResult.code) {
+                    return NextResponse.json({
+                        cacheHit: true,
+                        code: cacheResult.code,
+                        cacheType: cacheResult.type,
+                        similarity: cacheResult.similarity,
+                        cachedPrompt: (cacheResult as any).originalPrompt,
+                    });
+                }
+            } catch (cacheError) {
+                console.warn("Cache check failed:", cacheError);
+            }
+            return NextResponse.json({ cacheHit: false });
         }
 
         if (!skipCache) {
@@ -48,63 +135,8 @@ export async function POST(request: Request) {
             }
         }
 
-        const prompt = `You are a Principal Systems Architect. Convert the user's request into a strictly formatted architectural diagram.
-
-YOUR MISSION: Analyze the specific system requested. Do not output a generic web app. Identify the core engineering challenge of the system (e.g., Video Transcoding for YouTube, Fan-out/Caching for Twitter, Real-time WebSockets for Chat) and make sure those specific services are represented as nodes.
-
-━━━ SYNTAX ━━━
-• Nodes:       [Node Name]
-• Connections: [Source] -> [Target]    (one per line, atomic pairs only)
-• Grouping:    [Node] inside [Phase Name]  (one per line)
-
-━━━ OUTPUT FORMAT (MANDATORY ORDER) ━━━
-Section 1: Define ALL connections (one connection per line).
-Section 2: Define ALL groupings (one "inside" per line).
-Separate Section 1 and Section 2 with a single blank line.
-
-━━━ EXAMPLE OUTPUT (MIMIC THIS BRANCHING STRUCTURE) ━━━
-[Client App] -> [API Gateway]
-[API Gateway] -> [Auth Service]
-[API Gateway] -> [Timeline Cache]
-[API Gateway] -> [Tweet Processor]
-[Tweet Processor] -> [Event Broker]
-[Event Broker] -> [Fan-Out Worker]
-[Event Broker] -> [Analytics Engine]
-[Fan-Out Worker] -> [Timeline Cache]
-[Timeline Cache] -> [Graph Database]
-
-[Client App] inside [Client Phase]
-[API Gateway] inside [Routing Phase]
-[Auth Service] inside [Processing Phase]
-[Timeline Cache] inside [Processing Phase]
-[Tweet Processor] inside [Processing Phase]
-[Event Broker] inside [Asynchronous Phase]
-[Fan-Out Worker] inside [Asynchronous Phase]
-[Analytics Engine] inside [Storage Phase]
-[Graph Database] inside [Storage Phase]
-
-━━━ ARCHITECTURE RULES (CRITICAL FOR VISUAL CLEANLINESS) ━━━
-1. CONTROLLED BRANCHING (DIRECTED ACYCLIC GRAPH):
-   - Systems MUST branch out. (e.g., An API Gateway routing to 3 different services, or a Message Broker fanning out to multiple workers).
-   - NO CYCLES OR LOOPS: Data flows left-to-right. A downstream node (like a Database) can NEVER point back to an upstream node (like an API Gateway).
-   - KEEP IT READABLE: Do not connect every node to every other node.
-
-2. CONTEXT-AWARE ABSTRACTION: 
-   - MAXIMUM of 10-14 nodes total.
-   - Name nodes specifically for the requested domain (e.g., use [Video Transcoder] or [Redis Timeline Cache] instead of a generic [Logic Processor]).
-
-3. PHASE LIMIT & ORDER: 
-   - Maximum 4 phases. 
-   - Group nodes logically by their tier (e.g., "Client Tier", "API Layer", "Compute Cluster", "Data Infrastructure").
-
-━━━ OUTPUT CONSTRAINTS ━━━
-- RAW TEXT ONLY. No markdown formatting (no \`\`\`). No greetings. No explanations.
-- NEVER output trailing or leading spaces around brackets. Use exactly [NodeA] -> [NodeB].
-- Do NOT generate coordinates, positions, or styling.
-
-━━━ USER REQUEST ━━━
-${text}
-`;
+        const modeRules = MODE_RULES[mode] || MODE_RULES['balanced'];
+        const prompt = buildPrompt(text, modeRules);
 
         let data = "";
 

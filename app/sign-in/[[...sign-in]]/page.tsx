@@ -119,11 +119,11 @@ export default function SignInPage() {
       </div>
 
       {/* Header back button */}
-      <div className="absolute top-8 left-8 z-10">
+      {/* <div className="absolute top-8 left-8 z-10">
         <Link href="/" className="flex items-center gap-2 text-sm text-neutral-400 hover:text-white transition-colors">
           ← Back to landing
         </Link>
-      </div>
+      </div> */}
 
       {/* Sign In Component Box */}
       <div className="relative z-10 w-full max-w-[420px] p-4">

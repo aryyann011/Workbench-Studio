@@ -31,10 +31,6 @@ export default function SharedWorkspacePage() {
   const [isSaving, setIsSaving] = useState<boolean>(false)
   const [workspaceId, setWorkspaceId] = useState<string>("")
 
-  // Connect to the SAME Supabase realtime channel as the owner's dashboard.
-  // This reuses your existing useWorkspaceSocket hook — all events (cursor-move, 
-  // node-move, node-start, node-stop, edge-create, node-delete, sync-timeline)
-  // are already handled inside the hook.
   const { isConnected } = useWorkspaceSocket(workspaceId)
 
   useEffect(() => {

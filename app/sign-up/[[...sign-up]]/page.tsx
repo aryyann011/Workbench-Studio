@@ -139,11 +139,11 @@ export default function SignUpPage() {
         </div>
       </div>
 
-      <div className="absolute top-8 left-8 z-10">
+      {/* <div className="absolute top-8 left-8 z-10">
         <Link href="/" className="flex items-center gap-2 text-sm text-neutral-400 hover:text-white transition-colors">
           ← Back to landing
         </Link>
-      </div>
+      </div> */}
 
       <div className="relative z-10 w-full max-w-md p-4">
         <div className="bg-neutral-950/80 border border-neutral-900 rounded-2xl p-8 shadow-2xl backdrop-blur-xl flex flex-col gap-6">
