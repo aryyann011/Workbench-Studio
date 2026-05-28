@@ -13,9 +13,10 @@ import { BaseEditor } from "@/components/reactFlow/diagramCanvas"
 import { useAppStore } from "@/lib/store"
 import { Code2, SquareSplitHorizontal, LayoutDashboard, Save, Play, Sparkles, X } from "lucide-react"
 import { WorkspaceShare } from "@/components/WorkspaceShare"
-import PromptBar, { ChatMessage } from "@/components/editor/prompt-input"
+import PromptBar, { ChatMessage, ArchitectMode } from "@/components/editor/prompt-input"
 import { toast } from "sonner"
 import { Node, Edge } from "reactflow"
+import { useWorkspaceSocket } from "@/hooks/useWorkspaceSocket"
 
 type ViewMode = "code" | "both" | "canvas";
 
@@ -33,7 +34,8 @@ export default function ResizableDemo() {
   const [messages, setMessages] = useState<ChatMessage[]>([])
   
   const [viewMode, setViewMode] = useState<ViewMode>("both")
-  const [aiMode, setAiMode] = useState<'simple' | 'detailed'>('detailed')
+
+  const { broadcastSync } = useWorkspaceSocket(workspaceId)
 
   useEffect(() => {
     if (workspaceId === "new") {
@@ -87,32 +89,76 @@ export default function ResizableDemo() {
     setPrompt("");
     
     setMessages(prev => [...prev, { role: "user", content: userText }]);
+
+    try {
+      const cacheRes = await fetch('/api/generate', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ text: userText, cacheCheckOnly: true }),
+      });
+      const cacheData = await cacheRes.json();
+
+      if (cacheData.cacheHit) {
+        setMessages(prev => [...prev, {
+          role: "cache-hit",
+          content: "",
+          cacheType: cacheData.cacheType,
+          similarity: cacheData.similarity,
+          cachedCode: cacheData.code,
+          cachedPrompt: cacheData.cachedPrompt,
+          pendingPrompt: userText,
+        }]);
+        return;
+      }
+    } catch (err) {
+      console.warn("Cache check failed, proceeding to mode select:", err);
+    }
+
+    setMessages(prev => [...prev, { role: "mode-select", content: "", pendingPrompt: userText }]);
+  }
+
+  const handleCacheDecision = async (decision: "use" | "new", promptText: string, cachedCode?: string) => {
+    setMessages(prev => prev.map(msg =>
+      msg.role === "cache-hit" && msg.pendingPrompt === promptText && !msg.cacheDecision
+        ? { ...msg, cacheDecision: decision }
+        : msg
+    ));
+
+    if (decision === "use" && cachedCode) {
+      setCode(cachedCode);
+      setTimeout(() => {
+        generateGraph();
+        setTimeout(() => broadcastSync(), 100);
+      }, 0);
+      setMessages(prev => [...prev, { role: "ai", content: "Architecture loaded from cache." }]);
+    } else {
+      setMessages(prev => [...prev, { role: "mode-select", content: "", pendingPrompt: promptText }]);
+    }
+  }
+
+  const handleModeSelected = async (mode: ArchitectMode, promptText: string) => {
+    setMessages(prev => prev.map(msg => 
+      msg.role === "mode-select" && msg.pendingPrompt === promptText && !msg.selectedMode
+        ? { ...msg, selectedMode: mode }
+        : msg
+    ));
     setIsLoading(true);
 
     try {
       const response = await fetch('/api/generate', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ text: userText, mode: aiMode }),
+        body: JSON.stringify({ text: promptText, skipCache: true, mode }),
       });
 
       const data = await response.json()
       if(data.code){
         setCode(data.code);
-        setTimeout(() => generateGraph(), 0);
-        
-        if (data.fromCache) {
-          setMessages(prev => [...prev, { 
-            role: "ai", 
-            content: "Architecture loaded from cache.", 
-            fromCache: true,
-            cacheType: data.cacheType,
-            similarity: data.similarity,
-            originalPrompt: userText
-          }]);
-        } else {
-          setMessages(prev => [...prev, { role: "ai", content: "Architecture updated successfully." }]);
-        }
+        setTimeout(() => {
+          generateGraph();
+          setTimeout(() => broadcastSync(), 100);
+        }, 0);
+        setMessages(prev => [...prev, { role: "ai", content: "Architecture generated successfully." }]);
       }
     } catch (error) {
       console.error("Failed to call api", error);
@@ -123,28 +169,11 @@ export default function ResizableDemo() {
   }
 
   const handleRegenerateNew = async (promptText: string) => {
-    setMessages(prev => [...prev, { role: "user", content: `🔄 Regenerating: ${promptText}` }]);
-    setIsLoading(true);
-
-    try {
-      const response = await fetch('/api/generate', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ text: promptText, skipCache: true, mode: aiMode }),
-      });
-
-      const data = await response.json();
-      if (data.code) {
-        setCode(data.code);
-        setTimeout(() => generateGraph(), 0);
-        setMessages(prev => [...prev, { role: "ai", content: "Fresh architecture generated successfully!" }]);
-      }
-    } catch (error) {
-      console.error("Failed to regenerate", error);
-      setMessages(prev => [...prev, { role: "ai", content: "Failed to regenerate. Please try again." }]);
-    } finally {
-      setIsLoading(false);
-    }
+    setMessages(prev => [
+      ...prev,
+      { role: "user", content: `🔄 Regenerating: ${promptText}` },
+      { role: "mode-select", content: "", pendingPrompt: promptText }
+    ]);
   }
 
   const handleSaveWorkspace = async () => {
@@ -198,13 +227,6 @@ export default function ResizableDemo() {
         </div>
 
         <div className="flex items-center gap-1.5">
-          <button
-            onClick={() => setAiMode(prev => prev === 'simple' ? 'detailed' : 'simple')}
-            title={aiMode === 'simple' ? 'Simple Mode' : 'Detailed Mode'}
-            className={`p-1.5 rounded-md border transition-colors flex items-center justify-center size-8 shrink-0 text-xs font-bold ${aiMode === 'simple' ? 'bg-emerald-600/10 text-emerald-500 border-emerald-500/50' : 'bg-secondary hover:bg-secondary/80 text-secondary-foreground border-border'}`}
-          >
-            {aiMode === 'simple' ? '⚡' : '🔬'}
-          </button>
           <WorkspaceShare 
             workspaceId={workspaceId === "new" ? "" : workspaceId}
             workspaceName={workspaceName}
@@ -261,13 +283,7 @@ export default function ResizableDemo() {
           workspaceId={workspaceId === "new" ? "" : workspaceId}
           workspaceName={workspaceName}
         />
-        
-        <button
-          onClick={() => setAiMode(prev => prev === 'simple' ? 'detailed' : 'simple')}
-          className={`flex items-center gap-2 px-4 py-2 rounded-md text-sm font-semibold transition-colors border ${aiMode === 'simple' ? 'bg-emerald-600/10 text-emerald-500 border-emerald-500/50' : 'bg-secondary hover:bg-secondary/80 text-secondary-foreground border-border'}`}
-        >
-          {aiMode === 'simple' ? '⚡ Simple' : '🔬 Detailed'}
-        </button>
+
 
         <button
           onClick={handleRun}
@@ -308,6 +324,8 @@ export default function ResizableDemo() {
           setPrompt={setPrompt} 
           onPromptRun={handlePromptRun} 
           onRegenerateNew={handleRegenerateNew}
+          onModeSelected={(mode, pendingPrompt) => handleModeSelected(mode, pendingPrompt)}
+          onCacheDecision={(decision, promptText, cachedCode) => handleCacheDecision(decision, promptText, cachedCode)}
           isloading={isLoading}
           messages={messages} 
         />
