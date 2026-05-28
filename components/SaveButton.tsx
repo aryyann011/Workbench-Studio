@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { useAppStore } from '@/lib/store';
 import { saveArchitecture } from '@/actions/workspace';
+import { toast } from 'sonner';
 
 export function SaveButton() {
   const code = useAppStore((state) => state.code);
@@ -18,9 +19,9 @@ export function SaveButton() {
     const result = await saveArchitecture(code, nodes, edges);
     
     if (result.success) {
-      alert(`Success! Saved securely to Neon. Database ID: ${result.id}`);
+      toast.success(`Success! Saved securely to database (ID: ${result.id})`);
     } else {
-      alert(`Error: ${result.error}`);
+      toast.error(`Error: ${result.error}`);
     }
     
     setIsSaving(false);

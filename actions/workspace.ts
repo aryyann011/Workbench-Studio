@@ -5,9 +5,7 @@ import { auth } from '@clerk/nextjs/server';
 import { revalidatePath } from 'next/cache';
 import { Edge, Node } from 'reactflow';
 
-/**
- * Original getWorkspace - only for owner's own workspaces
- */
+
 export async function getWorkspace(id: string) {
   const { userId } = await auth();
   if (!userId) return null;
@@ -21,10 +19,7 @@ export async function getWorkspace(id: string) {
   }
 }
 
-/**
- * Enhanced workspace access with sharing support
- * Returns workspace if user is owner OR has share access
- */
+
 export async function getAccessibleWorkspace(
   workspaceId: string,
   shareToken?: string
@@ -40,7 +35,6 @@ export async function getAccessibleWorkspace(
       return { success: false, error: "Workspace not found", canAccess: false };
     }
 
-    // Check if owner
     if (workspace.userId === userId) {
       return {
         success: true,
@@ -51,7 +45,6 @@ export async function getAccessibleWorkspace(
       };
     }
 
-    // Check share token if provided
     if (shareToken) {
       const share = await prisma.workspaceShare.findUnique({
         where: { shareToken }
@@ -61,7 +54,6 @@ export async function getAccessibleWorkspace(
         return { success: false, error: "Invalid share link", canAccess: false };
       }
 
-      // Check if expired
       if (share.expiresAt && new Date() > share.expiresAt) {
         return { success: false, error: "Share link has expired", canAccess: false };
       }
@@ -75,7 +67,6 @@ export async function getAccessibleWorkspace(
       };
     }
 
-    // Check direct user invite
     if (userId) {
       const share = await prisma.workspaceShare.findUnique({
         where: {
@@ -133,7 +124,6 @@ export async function saveArchitecture(code: string, nodes : Node[], edges : Edg
     if (!userId) return { success: false, error: "Unauthorized" };
 
     if (existingId && existingId !== "new") {
-      // Check if user has permission to edit
       const workspace = await prisma.workspace.findUnique({
         where: { id: existingId }
       });
@@ -142,12 +132,10 @@ export async function saveArchitecture(code: string, nodes : Node[], edges : Edg
         return { success: false, error: "Workspace not found" };
       }
 
-      // Owner can always save
       const isOwner = workspace.userId === userId;
       
       let canEdit = isOwner;
 
-      // Check collaborator access if not owner
       if (!isOwner && shareToken) {
         const share = await prisma.workspaceShare.findUnique({
           where: { shareToken }

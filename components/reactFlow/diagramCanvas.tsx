@@ -12,7 +12,7 @@ import ReactFlow, {
   NodeChange,
   Panel
 } from 'reactflow';
-import React, { useCallback, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import 'reactflow/dist/style.css';
 import { SystemNode } from './systemNode';
 import { useAppStore } from '@/lib/store';
@@ -56,12 +56,24 @@ const EditorContent = () => {
   const workspaceId = params.id as string 
   const {nodes, edges, onNodesChange, onEdgesChange,onConnect, deleteNode, undoTheActiion, RedoTheAction, NodeMovementTracker} = useAppStore()
   
-  const {screenToFlowPosition, flowToScreenPosition} = useReactFlow()
+  const {screenToFlowPosition, flowToScreenPosition, fitView} = useReactFlow()
   const { isConnected, channel, cursors } = useWorkspaceSocket(workspaceId);
 
-  //const myUserId = useRef(`user_${Math.floor(Math.random() * 10000)}`).current;
-  
   const lastUpdate = useRef<number>(0);
+  const prevNodeCount = useRef<number>(nodes.length);
+
+  // Auto-fit the view when node count changes (new architecture generated)
+  useEffect(() => {
+    if (nodes.length > 0 && nodes.length !== prevNodeCount.current) {
+      prevNodeCount.current = nodes.length;
+      // Delay to let ReactFlow render the new nodes before fitting
+      const timer = setTimeout(() => {
+        fitView({ padding: 0.15, duration: 300 });
+      }, 200);
+      return () => clearTimeout(timer);
+    }
+    prevNodeCount.current = nodes.length;
+  }, [nodes.length, fitView]);
 
   const handlePointerMove = (e: React.MouseEvent) => {
       if (!isConnected || !channel) return;

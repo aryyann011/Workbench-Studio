@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useCallback } from "react"
 import { supabase } from "@/lib/supabase"
 import { RealtimeChannel } from "@supabase/supabase-js"
 import { useAppStore } from "@/lib/store"
@@ -10,6 +10,17 @@ export function useWorkspaceSocket(workspaceId: string) {
  
     const [channel, setChannel] = useState<RealtimeChannel | null>(null)
     const [cursors, setCursors] = useState<Record<string, {x : number, y : number}>>({})
+
+    // Broadcast full state to all connected clients (for AI generation, code changes, etc.)
+    const broadcastSync = useCallback(() => {
+        if (!channel || !isConnected) return;
+        const { nodes, edges } = useAppStore.getState();
+        channel.send({
+            type: 'broadcast',
+            event: 'sync-timeline',
+            payload: { nodes, edges }
+        });
+    }, [channel, isConnected]);
 
     useEffect(() => {
         if (!workspaceId || workspaceId === "new") return;
@@ -106,5 +117,5 @@ export function useWorkspaceSocket(workspaceId: string) {
         }
     }, [workspaceId])
 
-    return { isConnected, channel, cursors };
+    return { isConnected, channel, cursors, broadcastSync };
 }

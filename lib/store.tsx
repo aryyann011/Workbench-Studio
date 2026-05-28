@@ -100,7 +100,10 @@ export const useAppStore = create<AppState>((set, get) => ({
     const mergedNodes = newNodes.map((newNode) => {
     const existingNode = currentNodes.find((n) => n.id === newNode.id);
 
-      if(existingNode){
+      // Only preserve position if the node existed AND its parent group hasn't changed.
+      // If parentNode changed (regrouped), the old position is stale and will render 
+      // the node outside its new group box until touched.
+      if(existingNode && existingNode.parentNode === newNode.parentNode){
         return {
           ...newNode,
           position : existingNode.position

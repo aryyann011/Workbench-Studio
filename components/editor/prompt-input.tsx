@@ -1,15 +1,23 @@
 "use client"
 
-import { ArrowUp, Loader2, Bot, User, RefreshCw, Database } from "lucide-react"
+import { ArrowUp, Loader2, Bot, User, RefreshCw, Database, Zap, Scale, Microscope, CheckCircle2, Sparkles } from "lucide-react"
 import { useEffect, useRef } from "react"
 
+export type ArchitectMode = "minimal" | "balanced" | "detailed";
+
 export type ChatMessage = {
-  role: "user" | "ai";
+  role: "user" | "ai" | "mode-select" | "cache-hit";
   content: string;
   fromCache?: boolean;
   cacheType?: string;
   similarity?: number;
   originalPrompt?: string;
+  pendingPrompt?: string;
+  selectedMode?: ArchitectMode;
+  // cache-hit specific
+  cachedCode?: string;
+  cachedPrompt?: string;
+  cacheDecision?: "use" | "new";
 }
 
 interface CodeEditorProps {
@@ -17,25 +25,46 @@ interface CodeEditorProps {
   setPrompt: React.Dispatch<React.SetStateAction<string>>
   onPromptRun: () => void
   onRegenerateNew?: (promptText: string) => void
+  onModeSelected?: (mode: ArchitectMode, promptText: string) => void
+  onCacheDecision?: (decision: "use" | "new", promptText: string, cachedCode?: string) => void
   isloading: boolean
   messages: ChatMessage[] 
 }
 
-export default function PromptBar({ prompt, setPrompt, onPromptRun, onRegenerateNew, isloading, messages }: CodeEditorProps) {
+const MODE_CONFIG: Record<ArchitectMode, { icon: React.ReactNode; label: string; desc: string; color: string; bg: string; border: string }> = {
+  minimal: {
+    icon: <Zap className="w-3.5 h-3.5" />,
+    label: "Minimal",
+    desc: "4-6 nodes · Executive overview",
+    color: "text-emerald-400",
+    bg: "bg-emerald-500/10 hover:bg-emerald-500/20",
+    border: "border-emerald-500/20 hover:border-emerald-500/40",
+  },
+  balanced: {
+    icon: <Scale className="w-3.5 h-3.5" />,
+    label: "Balanced",
+    desc: "8-11 nodes · Clean architecture",
+    color: "text-blue-400",
+    bg: "bg-blue-500/10 hover:bg-blue-500/20",
+    border: "border-blue-500/20 hover:border-blue-500/40",
+  },
+  detailed: {
+    icon: <Microscope className="w-3.5 h-3.5" />,
+    label: "Detailed",
+    desc: "10-14 nodes · Deep infrastructure",
+    color: "text-purple-400",
+    bg: "bg-purple-500/10 hover:bg-purple-500/20",
+    border: "border-purple-500/20 hover:border-purple-500/40",
+  },
+};
+
+export default function PromptBar({ prompt, setPrompt, onPromptRun, onRegenerateNew, onModeSelected, onCacheDecision, isloading, messages }: CodeEditorProps) {
   const MAX_HEIGHT = 150
   const messagesEndRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" })
   }, [messages, isloading])
-
-  // Find the user message right before a cached AI message
-  const findUserPromptBefore = (aiIndex: number): string => {
-    for (let i = aiIndex - 1; i >= 0; i--) {
-      if (messages[i].role === "user") return messages[i].content;
-    }
-    return "";
-  }
 
   return (
     <div className="flex flex-col h-full w-full bg-card shadow-2xl border-l border-border">
@@ -52,48 +81,133 @@ export default function PromptBar({ prompt, setPrompt, onPromptRun, onRegenerate
             <p className="text-xs">Describe your architecture.</p>
           </div>
         ) : (
-          messages.map((msg, index) => (
-            <div key={index} className="flex flex-col gap-1.5">
-              <div className={`flex gap-3 ${msg.role === "user" ? "flex-row-reverse" : "flex-row"}`}>
-                <div className={`w-6 h-6 rounded-full flex items-center justify-center shrink-0 ${msg.role === "user" ? "bg-blue-600 text-white" : "bg-muted border border-border"}`}>
-                  {msg.role === "user" ? <User className="w-4 h-4" /> : <Bot className="w-4 h-4" />}
-                </div>
-                <div className="flex flex-col gap-1.5 max-w-[85%]">
-                  <div className={`px-3 py-2 rounded-lg text-sm ${msg.role === "user" ? "bg-blue-600 text-white rounded-tr-none" : "bg-muted border border-border rounded-tl-none"}`}>
-                    {msg.content}
-                  </div>
+          messages.map((msg, index) => {
 
-                  {/* Cache indicator badge + Create New button */}
-                  {msg.role === "ai" && msg.fromCache && (
-                    <div className="flex items-center gap-2 ml-0.5">
-                      <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-medium bg-amber-500/10 text-amber-400 border border-amber-500/20">
-                        <Database className="w-3 h-3" />
-                        {msg.cacheType === 'EXACT' ? 'Cached' : `${msg.similarity}% match`}
+            // ── Cache hit decision card ──
+            if (msg.role === "cache-hit") {
+              return (
+                <div key={index} className="flex gap-3 flex-row">
+                  <div className="w-6 h-6 rounded-full bg-muted border border-border flex items-center justify-center shrink-0">
+                    <Bot className="w-4 h-4 text-muted-foreground" />
+                  </div>
+                  <div className="flex flex-col gap-2 max-w-[85%]">
+                    <div className="px-3 py-2 rounded-lg text-sm bg-muted border border-border rounded-tl-none">
+                      <span className="text-muted-foreground">Found a </span>
+                      <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-semibold bg-amber-500/10 text-amber-400 border border-amber-500/20">
+                        <Database className="w-2.5 h-2.5" />
+                        {msg.cacheType === 'EXACT' ? 'exact' : `${msg.similarity}%`} match
                       </span>
-                      <button
-                        onClick={() => {
-                          const userPrompt = msg.originalPrompt || findUserPromptBefore(index);
-                          if (userPrompt && onRegenerateNew) {
-                            onRegenerateNew(userPrompt);
-                          }
-                        }}
-                        disabled={isloading}
-                        className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-semibold
-                          bg-gradient-to-r from-blue-600/20 to-purple-600/20 text-blue-400 
-                          border border-blue-500/30 hover:border-blue-400/60 
-                          hover:from-blue-600/30 hover:to-purple-600/30 hover:text-blue-300
-                          disabled:opacity-40 disabled:cursor-not-allowed
-                          transition-all duration-200 cursor-pointer group"
-                      >
-                        <RefreshCw className="w-3 h-3 group-hover:rotate-180 transition-transform duration-500" />
-                        Create New
-                      </button>
+                      {msg.cachedPrompt && (
+                        <span className="text-muted-foreground text-xs block mt-1 italic opacity-70">
+                          from: &quot;{msg.cachedPrompt.length > 50 ? msg.cachedPrompt.slice(0, 50) + '...' : msg.cachedPrompt}&quot;
+                        </span>
+                      )}
                     </div>
-                  )}
+                    {msg.cacheDecision ? (
+                      <div className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold border opacity-70 ${
+                        msg.cacheDecision === 'use' 
+                          ? 'bg-amber-500/10 border-amber-500/20 text-amber-400' 
+                          : 'bg-blue-500/10 border-blue-500/20 text-blue-400'
+                      }`}>
+                        {msg.cacheDecision === 'use' ? (
+                          <><CheckCircle2 className="w-3 h-3" /> Using cached result</>
+                        ) : (
+                          <><Sparkles className="w-3 h-3" /> Generating fresh</>
+                        )}
+                      </div>
+                    ) : (
+                      <div className="flex gap-2">
+                        <button
+                          disabled={isloading}
+                          onClick={() => onCacheDecision?.("use", msg.pendingPrompt || "", msg.cachedCode)}
+                          className="flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-semibold transition-all duration-200 border cursor-pointer
+                            bg-amber-500/10 hover:bg-amber-500/20 border-amber-500/20 hover:border-amber-500/40 text-amber-400
+                            disabled:opacity-40 disabled:cursor-not-allowed"
+                        >
+                          <CheckCircle2 className="w-3.5 h-3.5" />
+                          Use Cached
+                        </button>
+                        <button
+                          disabled={isloading}
+                          onClick={() => onCacheDecision?.("new", msg.pendingPrompt || "")}
+                          className="flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-semibold transition-all duration-200 border cursor-pointer
+                            bg-blue-500/10 hover:bg-blue-500/20 border-blue-500/20 hover:border-blue-500/40 text-blue-400
+                            disabled:opacity-40 disabled:cursor-not-allowed"
+                        >
+                          <Sparkles className="w-3.5 h-3.5" />
+                          Generate New
+                        </button>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              );
+            }
+
+            // ── Mode selection card ──
+            if (msg.role === "mode-select") {
+              return (
+                <div key={index} className="flex gap-3 flex-row">
+                  <div className="w-6 h-6 rounded-full bg-muted border border-border flex items-center justify-center shrink-0">
+                    <Bot className="w-4 h-4 text-muted-foreground" />
+                  </div>
+                  <div className="flex flex-col gap-2 max-w-[85%]">
+                    <div className="px-3 py-2 rounded-lg text-sm bg-muted border border-border rounded-tl-none text-muted-foreground">
+                      Choose detail level:
+                    </div>
+                    {msg.selectedMode ? (
+                      <div className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold border ${MODE_CONFIG[msg.selectedMode].bg} ${MODE_CONFIG[msg.selectedMode].border} ${MODE_CONFIG[msg.selectedMode].color} opacity-70`}>
+                        {MODE_CONFIG[msg.selectedMode].icon}
+                        {MODE_CONFIG[msg.selectedMode].label} selected
+                      </div>
+                    ) : (
+                      <div className="flex flex-col gap-1.5">
+                        {(["minimal", "balanced", "detailed"] as ArchitectMode[]).map((mode) => {
+                          const cfg = MODE_CONFIG[mode];
+                          return (
+                            <button
+                              key={mode}
+                              disabled={isloading}
+                              onClick={() => {
+                                if (onModeSelected && msg.pendingPrompt) {
+                                  onModeSelected(mode, msg.pendingPrompt);
+                                }
+                              }}
+                              className={`flex items-center gap-2.5 px-3 py-2 rounded-lg text-left transition-all duration-200 border cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed ${cfg.bg} ${cfg.border} group`}
+                            >
+                              <span className={`${cfg.color} transition-transform group-hover:scale-110`}>
+                                {cfg.icon}
+                              </span>
+                              <div className="flex flex-col">
+                                <span className={`text-xs font-semibold ${cfg.color}`}>{cfg.label}</span>
+                                <span className="text-[10px] text-muted-foreground">{cfg.desc}</span>
+                              </div>
+                            </button>
+                          );
+                        })}
+                      </div>
+                    )}
+                  </div>
+                </div>
+              );
+            }
+
+            // ── Regular user/AI messages ──
+            return (
+              <div key={index} className="flex flex-col gap-1.5">
+                <div className={`flex gap-3 ${msg.role === "user" ? "flex-row-reverse" : "flex-row"}`}>
+                  <div className={`w-6 h-6 rounded-full flex items-center justify-center shrink-0 ${msg.role === "user" ? "bg-blue-600 text-white" : "bg-muted border border-border"}`}>
+                    {msg.role === "user" ? <User className="w-4 h-4" /> : <Bot className="w-4 h-4" />}
+                  </div>
+                  <div className="flex flex-col gap-1.5 max-w-[85%]">
+                    <div className={`px-3 py-2 rounded-lg text-sm ${msg.role === "user" ? "bg-blue-600 text-white rounded-tr-none" : "bg-muted border border-border rounded-tl-none"}`}>
+                      {msg.content}
+                    </div>
+                  </div>
                 </div>
               </div>
-            </div>
-          ))
+            );
+          })
         )}
 
         {isloading && (

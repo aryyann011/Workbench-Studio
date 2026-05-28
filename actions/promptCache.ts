@@ -12,22 +12,29 @@ function hashPrompt(prompt: string): string {
 }
 
 /**
- * Calculates similarity between two strings (0-1)
- * Using simple character-based similarity
+ * Calculates similarity between two prompts using word-level Jaccard similarity.
+ * Character-level matching is garbage for prompts — "youtube" vs "whatsapp" 
+ * would score 90%+ because only 1 word differs in a long sentence.
+ * Word-level Jaccard correctly penalizes domain keyword changes.
  */
 function calculateSimilarity(str1: string, str2: string): number {
-  const len1 = str1.length;
-  const len2 = str2.length;
-  const maxLen = Math.max(len1, len2);
+  // Extract meaningful words (3+ chars, lowercased, deduplicated)
+  const extractWords = (s: string) => 
+    new Set(s.toLowerCase().match(/[a-z0-9]{3,}/g) || []);
 
-  if (maxLen === 0) return 1;
+  const words1 = extractWords(str1);
+  const words2 = extractWords(str2);
 
-  let matches = 0;
-  for (let i = 0; i < Math.min(len1, len2); i++) {
-    if (str1[i] === str2[i]) matches++;
+  if (words1.size === 0 && words2.size === 0) return 1;
+  if (words1.size === 0 || words2.size === 0) return 0;
+
+  let intersection = 0;
+  for (const word of words1) {
+    if (words2.has(word)) intersection++;
   }
 
-  return matches / maxLen;
+  const union = new Set([...words1, ...words2]).size;
+  return intersection / union;
 }
 
 /**
@@ -36,7 +43,7 @@ function calculateSimilarity(str1: string, str2: string): number {
  */
 export async function getCachedPromptResult(
   promptText: string,
-  similarityThreshold: number = 0.7
+  similarityThreshold: number = 0.9
 ) {
   try {
     const { userId } = await auth();
