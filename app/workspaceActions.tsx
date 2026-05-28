@@ -5,6 +5,7 @@ import { MoreVertical, Trash, ExternalLink, Loader2, Share2 } from "lucide-react
 import { deleteArchitecture } from "@/actions/workspace"
 import { useRouter } from "next/navigation"
 import { WorkspaceShare } from "@/components/WorkspaceShare"
+import { toast } from "sonner"
 
 export function WorkspaceActions({ workspaceId }: { workspaceId: string }) {
   const [isOpen, setIsOpen] = useState(false)
@@ -42,11 +43,12 @@ export function WorkspaceActions({ workspaceId }: { workspaceId: string }) {
 
     const cnfirm = await deleteArchitecture(workspaceId)
     if (!cnfirm.success) {
-      alert(cnfirm.error || "Something went wrong");
+      toast.error(cnfirm.error || "Something went wrong");
       setIsDeleting(false);
       return;
     }
 
+    toast.success("Workspace deleted successfully");
     setIsDeleting(false)
   }
 

@@ -42,6 +42,7 @@
     "react-resizable-panels": "^4.4.1",
     "react-textarea-autosize": "^8.5.9",
     "reactflow": "^11.11.4",
+    "sonner": "^2.0.7",
     "tailwind-merge": "^3.4.0"
   },
   "devDependencies": {

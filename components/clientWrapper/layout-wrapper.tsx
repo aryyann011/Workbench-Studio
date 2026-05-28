@@ -6,6 +6,27 @@ import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar"
 import { AppSidebar } from "@/components/sidebar"
 import { ThemeProvider } from "@/components/Mode/themeProvider"
 import { ModeToggle } from "@/components/Mode/modeToggle"
+import { Toaster } from "sonner"
+import { useTheme } from "next-themes"
+import { Check, AlertCircle } from "lucide-react"
+
+function ThemeToaster() {
+  const { theme } = useTheme()
+  return (
+    <Toaster
+      theme={theme as 'light' | 'dark' | 'system'}
+      position="top-right"
+      closeButton
+      icons={{
+        success: <Check className="h-4 w-4 text-neutral-950 dark:text-neutral-50" />,
+        error: <AlertCircle className="h-4 w-4 text-red-500" />
+      }}
+      toastOptions={{
+        className: "border border-border bg-background text-foreground rounded-xl shadow-lg font-sans",
+      }}
+    />
+  )
+}
 
 export function LayoutWrapper({ children }: { children: React.ReactNode }) {
   const pathname = usePathname()
@@ -30,6 +51,7 @@ export function LayoutWrapper({ children }: { children: React.ReactNode }) {
       enableSystem={false}
       disableTransitionOnChange
     >
+      <ThemeToaster />
       {isDashboardPage ? (
         <SidebarProvider defaultOpen={true}>
           <AppSidebar />

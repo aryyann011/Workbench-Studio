@@ -14,6 +14,7 @@ import { useAppStore } from "@/lib/store"
 import { Code2, SquareSplitHorizontal, LayoutDashboard, Save, Play, Sparkles, X } from "lucide-react"
 import { WorkspaceShare } from "@/components/WorkspaceShare"
 import PromptBar, { ChatMessage } from "@/components/editor/prompt-input"
+import { toast } from "sonner"
 import { Node, Edge } from "reactflow"
 
 type ViewMode = "code" | "both" | "canvas";
@@ -32,6 +33,7 @@ export default function ResizableDemo() {
   const [messages, setMessages] = useState<ChatMessage[]>([])
   
   const [viewMode, setViewMode] = useState<ViewMode>("both")
+  const [aiMode, setAiMode] = useState<'simple' | 'detailed'>('detailed')
 
   useEffect(() => {
     if (workspaceId === "new") {
@@ -91,7 +93,7 @@ export default function ResizableDemo() {
       const response = await fetch('/api/generate', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ text: userText }),
+        body: JSON.stringify({ text: userText, mode: aiMode }),
       });
 
       const data = await response.json()
@@ -128,7 +130,7 @@ export default function ResizableDemo() {
       const response = await fetch('/api/generate', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ text: promptText, skipCache: true }),
+        body: JSON.stringify({ text: promptText, skipCache: true, mode: aiMode }),
       });
 
       const data = await response.json();
@@ -151,11 +153,15 @@ export default function ResizableDemo() {
     
     const result = await saveArchitecture(code, nodes, edges, workspaceId);
     
-    if (result.success && workspaceId === "new") {
-      router.replace(`/dashboard/${result.id}`);
-      alert("Successfully created and saved!");
-    } else if (result.success) {
-      alert("Successfully updated!");
+    if (result.success) {
+      if (workspaceId === "new") {
+        router.replace(`/dashboard/${result.id}`);
+        toast.success("Successfully created and saved!");
+      } else {
+        toast.success("Successfully updated!");
+      }
+    } else {
+      toast.error(result.error || "Failed to save workspace");
     }
     
     setIsSaving(false);
@@ -192,6 +198,13 @@ export default function ResizableDemo() {
         </div>
 
         <div className="flex items-center gap-1.5">
+          <button
+            onClick={() => setAiMode(prev => prev === 'simple' ? 'detailed' : 'simple')}
+            title={aiMode === 'simple' ? 'Simple Mode' : 'Detailed Mode'}
+            className={`p-1.5 rounded-md border transition-colors flex items-center justify-center size-8 shrink-0 text-xs font-bold ${aiMode === 'simple' ? 'bg-emerald-600/10 text-emerald-500 border-emerald-500/50' : 'bg-secondary hover:bg-secondary/80 text-secondary-foreground border-border'}`}
+          >
+            {aiMode === 'simple' ? '⚡' : '🔬'}
+          </button>
           <WorkspaceShare 
             workspaceId={workspaceId === "new" ? "" : workspaceId}
             workspaceName={workspaceName}
@@ -249,6 +262,13 @@ export default function ResizableDemo() {
           workspaceName={workspaceName}
         />
         
+        <button
+          onClick={() => setAiMode(prev => prev === 'simple' ? 'detailed' : 'simple')}
+          className={`flex items-center gap-2 px-4 py-2 rounded-md text-sm font-semibold transition-colors border ${aiMode === 'simple' ? 'bg-emerald-600/10 text-emerald-500 border-emerald-500/50' : 'bg-secondary hover:bg-secondary/80 text-secondary-foreground border-border'}`}
+        >
+          {aiMode === 'simple' ? '⚡ Simple' : '🔬 Detailed'}
+        </button>
+
         <button
           onClick={handleRun}
           className="flex items-center gap-2 bg-secondary hover:bg-secondary/80 text-secondary-foreground px-4 py-2 rounded-md text-sm font-semibold transition-colors border border-border"
