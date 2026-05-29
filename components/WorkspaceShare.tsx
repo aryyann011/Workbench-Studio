@@ -138,13 +138,13 @@ export function WorkspaceShare({ workspaceId, workspaceName = "Workspace", iconO
           </button>
         ) : (
           <Button
-            variant="ghost"
+            variant="outline"
             size="sm"
-            className="flex items-center gap-2"
+            className="flex items-center gap-2 px-3 py-2 lg:px-4 h-9"
             onClick={handleOpenDialog}
-          >
+          >``
             <Share2 className="w-4 h-4" />
-            Share
+            <span className="hidden lg:inline">Share</span>
           </Button>
         )}
       </DialogTrigger>
