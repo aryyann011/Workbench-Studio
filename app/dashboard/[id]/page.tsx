@@ -30,6 +30,7 @@ export default function ResizableDemo() {
   const { code, setCode, generateGraph, SetTheGraph, nodes, edges } = useAppStore()
   const [prompt, setPrompt] = useState<string>("")
   const [isLoading, setIsLoading] = useState<boolean>(false)
+  const [loadingText, setLoadingText] = useState<string>("Generating architecture...")
   const [isSaving, setIsSaving] = useState<boolean>(false)
   const [messages, setMessages] = useState<ChatMessage[]>([])
   
@@ -89,6 +90,8 @@ export default function ResizableDemo() {
     setPrompt("");
     
     setMessages(prev => [...prev, { role: "user", content: userText }]);
+    setLoadingText("Checking cached designs...");
+    setIsLoading(true);
 
     try {
       const cacheRes = await fetch('/api/generate', {
@@ -97,6 +100,8 @@ export default function ResizableDemo() {
         body: JSON.stringify({ text: userText, cacheCheckOnly: true }),
       });
       const cacheData = await cacheRes.json();
+
+      setIsLoading(false);
 
       if (cacheData.cacheHit) {
         setMessages(prev => [...prev, {
@@ -112,6 +117,7 @@ export default function ResizableDemo() {
       }
     } catch (err) {
       console.warn("Cache check failed, proceeding to mode select:", err);
+      setIsLoading(false);
     }
 
     setMessages(prev => [...prev, { role: "mode-select", content: "", pendingPrompt: userText }]);
@@ -142,6 +148,7 @@ export default function ResizableDemo() {
         ? { ...msg, selectedMode: mode }
         : msg
     ));
+    setLoadingText("Generating architecture...");
     setIsLoading(true);
 
     try {
@@ -329,6 +336,7 @@ export default function ResizableDemo() {
           onModeSelected={(mode, pendingPrompt) => handleModeSelected(mode, pendingPrompt)}
           onCacheDecision={(decision, promptText, cachedCode) => handleCacheDecision(decision, promptText, cachedCode)}
           isloading={isLoading}
+          loadingText={loadingText}
           messages={messages} 
         />
       </div>

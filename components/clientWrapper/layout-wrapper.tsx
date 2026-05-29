@@ -2,7 +2,7 @@
 
 import * as React from "react"
 import { usePathname } from "next/navigation"
-import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar"
+import { SidebarProvider, SidebarTrigger, useSidebar } from "@/components/ui/sidebar"
 import { AppSidebar } from "@/components/sidebar"
 import { ThemeProvider } from "@/components/Mode/themeProvider"
 import { ModeToggle } from "@/components/Mode/modeToggle"
@@ -26,6 +26,25 @@ function ThemeToaster() {
       }}
     />
   )
+}
+
+function SidebarController() {
+  const pathname = usePathname()
+  const { setOpen } = useSidebar()
+
+  React.useEffect(() => {
+    const pathParts = pathname?.split("/").filter(Boolean) || []
+    const workspaceId = pathParts[1]
+    const isWorkspaceEditor = workspaceId && workspaceId !== "new" && workspaceId !== "settings"
+
+    if (isWorkspaceEditor) {
+      setOpen(false)
+    } else {
+      setOpen(true)
+    }
+  }, [pathname])
+
+  return null
 }
 
 export function LayoutWrapper({ children }: { children: React.ReactNode }) {
@@ -54,6 +73,7 @@ export function LayoutWrapper({ children }: { children: React.ReactNode }) {
       <ThemeToaster />
       {isDashboardPage ? (
         <SidebarProvider defaultOpen={true}>
+          <SidebarController />
           <AppSidebar />
           
           <main className="w-full h-screen flex flex-col overflow-hidden bg-background">

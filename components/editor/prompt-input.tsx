@@ -28,6 +28,7 @@ interface CodeEditorProps {
   onModeSelected?: (mode: ArchitectMode, promptText: string) => void
   onCacheDecision?: (decision: "use" | "new", promptText: string, cachedCode?: string) => void
   isloading: boolean
+  loadingText?: string
   messages: ChatMessage[] 
 }
 
@@ -58,7 +59,7 @@ const MODE_CONFIG: Record<ArchitectMode, { icon: React.ReactNode; label: string;
   },
 };
 
-export default function PromptBar({ prompt, setPrompt, onPromptRun, onRegenerateNew, onModeSelected, onCacheDecision, isloading, messages }: CodeEditorProps) {
+export default function PromptBar({ prompt, setPrompt, onPromptRun, onRegenerateNew, onModeSelected, onCacheDecision, isloading, loadingText, messages }: CodeEditorProps) {
   const MAX_HEIGHT = 150
   const messagesEndRef = useRef<HTMLDivElement>(null)
 
@@ -216,7 +217,7 @@ export default function PromptBar({ prompt, setPrompt, onPromptRun, onRegenerate
               <Bot className="w-4 h-4 text-muted-foreground" />
             </div>
             <div className="px-3 py-2 rounded-lg bg-muted border border-border rounded-tl-none flex items-center gap-2 text-sm text-muted-foreground">
-              <Loader2 className="w-4 h-4 animate-spin" /> Generating architecture...
+              <Loader2 className="w-4 h-4 animate-spin" /> {loadingText || "Generating architecture..."}
             </div>
           </div>
         )}
@@ -228,7 +229,7 @@ export default function PromptBar({ prompt, setPrompt, onPromptRun, onRegenerate
         <div className="relative flex items-end gap-2 bg-muted/50 focus-within:bg-muted border border-transparent focus-within:border-border rounded-xl p-2 transition-colors">
           <textarea
             rows={1}
-            placeholder="E.g., Add a Redis cache..."
+            placeholder="E.g., Design backend of youtube"
             onInput={(e) => {
               const el = e.currentTarget
               el.style.height = "auto"
