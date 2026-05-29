@@ -284,29 +284,31 @@ export default function ResizableDemo() {
           workspaceName={workspaceName}
         />
 
-
         <button
           onClick={handleRun}
-          className="flex items-center gap-2 bg-secondary hover:bg-secondary/80 text-secondary-foreground px-4 py-2 rounded-md text-sm font-semibold transition-colors border border-border"
+          title="Run compiler"
+          className="flex items-center justify-center gap-2 bg-secondary hover:bg-secondary/80 text-secondary-foreground px-3 lg:px-4 h-9 rounded-md text-sm font-semibold transition-colors border border-border shrink-0"
         >
           <Play className="w-4 h-4" />
-          Run
+          <span className="hidden lg:inline">Run</span>
         </button>
 
         <button
           onClick={handleSaveWorkspace}
           disabled={isSaving || !code}
-          className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md text-sm font-semibold transition-colors shadow-md disabled:opacity-50"
+          title="Save architecture"
+          className="flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-3 lg:px-4 h-9 rounded-md text-sm font-semibold transition-colors shadow-md disabled:opacity-50 shrink-0"
         >
           <Save className="w-4 h-4"/>
-          {isSaving ? "Saving..." : "Save"}
+          <span className="hidden lg:inline">{isSaving ? "Saving..." : "Save"}</span>
         </button>
         <button
           onClick={() => setIsAIOpen(!isAIOpen)}
-          className={`flex items-center gap-2 px-4 py-2 rounded-md text-sm font-semibold transition-colors border ${isAIOpen ? 'bg-blue-600/10 text-blue-500 border-blue-500/50' : 'bg-secondary hover:bg-secondary/80 text-secondary-foreground border-border'}`}
+          title="AI Chat"
+          className={`flex items-center justify-center gap-2 px-3 lg:px-4 h-9 rounded-md text-sm font-semibold transition-colors border shrink-0 ${isAIOpen ? 'bg-blue-600/10 text-blue-500 border-blue-500/50' : 'bg-secondary hover:bg-secondary/80 text-secondary-foreground border-border'}`}
         >
           <Sparkles className="w-4 h-4" />
-          AI Chat
+          <span className="hidden lg:inline">AI Chat</span>
         </button>
       </div>
 
@@ -338,7 +340,7 @@ export default function ResizableDemo() {
         {viewMode !== "canvas" && (
           <>
             <ResizablePanel defaultSize={viewMode === "code" ? 100 : 30} minSize={20}>
-              <div className="h-full w-full px-4 bg-zinc-950/50">
+              <div className="h-full w-full px-4 bg-background">
                 <CodeEditor onRun={handleRun}/>
               </div>
             </ResizablePanel>
@@ -349,7 +351,7 @@ export default function ResizableDemo() {
 
         {viewMode !== "code" && (
           <ResizablePanel defaultSize={viewMode === "canvas" ? 100 : 70}>
-            <div className="h-full w-full bg-zinc-900/10">
+            <div className="h-full w-full bg-background/50 dark:bg-zinc-900/10">
               <BaseEditor/>
             </div>
           </ResizablePanel>

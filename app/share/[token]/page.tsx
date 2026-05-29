@@ -200,13 +200,13 @@ export default function SharedWorkspacePage() {
             </ResizablePanel>
             <ResizableHandle />
             <ResizablePanel defaultSize={50} minSize={20}>
-              <BaseEditor />
+              <BaseEditor readOnly={!canEdit} workspaceId={workspaceId} />
             </ResizablePanel>
           </ResizablePanelGroup>
         ) : viewMode === "code" && canEdit ? (
           <CodeEditor onRun={handleRun} />
         ) : (
-          <BaseEditor />
+          <BaseEditor readOnly={!canEdit} workspaceId={workspaceId} />
         )}
       </div>
 

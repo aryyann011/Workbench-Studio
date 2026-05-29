@@ -6,7 +6,7 @@ export const SystemGroupNode = memo(({ data }: any) => {
   const { theme } = useTheme();
   const isDark = theme !== 'light';
   
-  const isLocked = data.lockedby !== undefined
+  const isLocked = data.lockedBy !== undefined || data.lockedby !== undefined
   const colorIndex = (data.label?.length || 0) % themeColors.length;
   const themeColor = themeColors[colorIndex];
 
@@ -32,7 +32,7 @@ export const SystemGroupNode = memo(({ data }: any) => {
             <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
             <path d="M7 11V7a5 5 0 0110 0v4"></path>
           </svg>
-          {data.lockedBy}
+          {data.lockedBy || data.lockedby}
         </div>
       )}
       {/* group-drag-handle: Only this label can be used to drag the group */}

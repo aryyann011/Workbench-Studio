@@ -41,7 +41,7 @@ export const CodeEditor = ({ onRun }: CodeEditorProps) => {
       <Editor
         height="100%"
         defaultLanguage="markdown"
-        theme={theme === "dark" ? "vs-dark" : "light"}
+        theme={theme === "dark" ? "workbench-dark" : "light"}
         value={code}
         onChange={(value) => setCode(value ?? "")}
         onMount={handleEditorDidMount}

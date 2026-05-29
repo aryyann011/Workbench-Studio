@@ -20,8 +20,8 @@ export default async function DashboardPage() {
     <div className="p-6 w-full max-w-6xl mx-auto h-full overflow-y-auto">
       <div className="mb-5 flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight mb-0.5 text-white">Your Architectures</h1>
-          <p className="text-xs text-slate-400">Manage and view your saved system designs.</p>
+          <h1 className="text-2xl font-bold tracking-tight mb-0.5 text-foreground">Your Architectures</h1>
+          <p className="text-xs text-muted-foreground">Manage and view your saved system designs.</p>
         </div>
         
         <Link 
@@ -38,7 +38,7 @@ export default async function DashboardPage() {
           <Link 
             href={`/dashboard/${workspace.id}`} 
             key={workspace.id} 
-            className="relative group flex flex-col p-4 border border-white/[0.06] rounded-xl bg-[#09090b] hover:border-blue-500/50 hover:bg-[#0c0c14] hover:shadow-[0_0_25px_rgba(59,130,246,0.12)] transition-all duration-300 cursor-pointer min-h-[132px] justify-between"
+            className="relative group flex flex-col p-4 border border-border/60 rounded-xl bg-card hover:border-blue-500/50 hover:bg-accent/20 dark:hover:bg-[#0c0c14] hover:shadow-[0_0_25px_rgba(59,130,246,0.06)] dark:hover:shadow-[0_0_25px_rgba(59,130,246,0.12)] transition-all duration-300 cursor-pointer min-h-[132px] justify-between"
           >
             <WorkspaceActions workspaceId={workspace.id}/>
             
@@ -46,16 +46,16 @@ export default async function DashboardPage() {
               <div className="p-1.5 bg-blue-500/10 rounded-lg text-blue-400 border border-blue-500/15 shrink-0">
                 <FileCode2 className="w-4 h-4 text-blue-400" />
               </div>
-              <h2 className="font-semibold text-[14px] truncate text-slate-100 group-hover:text-white transition-colors" title={workspace.name}>
+              <h2 className="font-semibold text-[14px] truncate text-foreground/90 group-hover:text-foreground transition-colors" title={workspace.name}>
                 {workspace.name}
               </h2>
             </div>
             
-            <div className="pt-3 border-t border-white/[0.04] flex items-center justify-between text-[11px]">
-              <span className="text-slate-500 group-hover:text-slate-400 transition-colors">
+            <div className="pt-3 border-t border-border/40 flex items-center justify-between text-[11px]">
+              <span className="text-muted-foreground group-hover:text-foreground/70 transition-colors">
                 Updated {workspace.updatedAt.toLocaleDateString()}
               </span>
-              <span className="font-mono text-[9px] bg-white/5 border border-white/5 px-1.5 py-0.5 rounded text-slate-400">
+              <span className="font-mono text-[9px] bg-muted border border-border/50 px-1.5 py-0.5 rounded text-muted-foreground">
                 ID: {workspace.id.slice(0, 8)}...
               </span>
             </div>
@@ -64,12 +64,12 @@ export default async function DashboardPage() {
 
         <Link 
           href="/dashboard/new"
-          className="flex flex-col items-center justify-center p-4 border border-dashed border-white/10 hover:border-blue-500/50 bg-white/[0.01] hover:bg-blue-500/[0.02] hover:shadow-[0_0_20px_rgba(59,130,246,0.05)] rounded-xl min-h-[132px] transition-all duration-300 group cursor-pointer"
+          className="flex flex-col items-center justify-center p-4 border border-dashed border-border hover:border-blue-500/50 bg-card hover:bg-blue-500/[0.01] hover:shadow-[0_0_20px_rgba(59,130,246,0.04)] rounded-xl min-h-[132px] transition-all duration-300 group cursor-pointer"
         >
-          <div className="p-2 bg-white/[0.02] group-hover:bg-blue-500/10 rounded-full border border-white/[0.04] group-hover:border-blue-500/20 text-slate-500 group-hover:text-blue-400 transition-all mb-2">
+          <div className="p-2 bg-muted group-hover:bg-blue-500/10 rounded-full border border-border group-hover:border-blue-500/20 text-muted-foreground group-hover:text-blue-500 transition-all mb-2">
             <Plus className="w-5 h-5" />
           </div>
-          <span className="text-xs font-semibold text-slate-400 group-hover:text-slate-200 transition-all">Create New Design</span>
+          <span className="text-xs font-semibold text-muted-foreground group-hover:text-foreground transition-all">Create New Design</span>
         </Link>
       </div>
     </div>

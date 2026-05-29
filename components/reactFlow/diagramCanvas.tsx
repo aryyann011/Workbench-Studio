@@ -37,7 +37,7 @@ type dragState = {
   end : position | null
 }
 
-const EditorContent = () => {
+const EditorContent = ({ readOnly = false, workspaceId: propWorkspaceId }: { readOnly?: boolean; workspaceId?: string }) => {
   const params = useParams()
   const { theme } = useTheme()
   const [menuState, setMenuState] = useState<{
@@ -50,10 +50,10 @@ const EditorContent = () => {
     start : null,
     end : null
   })
-  const [isInteractive, setIsInteractive] = useState(true)
+  const [isInteractive, setIsInteractive] = useState(!readOnly)
 
   const {userId} = useAuth()
-  const workspaceId = params.id as string 
+  const workspaceId = propWorkspaceId || (params.id as string) 
   const {nodes, edges, onNodesChange, onEdgesChange,onConnect, deleteNode, undoTheActiion, RedoTheAction, NodeMovementTracker} = useAppStore()
   
   const {screenToFlowPosition, flowToScreenPosition, fitView} = useReactFlow()
@@ -258,7 +258,7 @@ const EditorContent = () => {
         </div>
         );
       })}
-      {menuState.isOpen && (
+      {menuState.isOpen && !readOnly && (
         <div
           className="fixed z-[100] bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 shadow-xl rounded-md p-1 min-w-[150px]"
           style={{ top: menuState.y, left: menuState.x }}
@@ -289,11 +289,11 @@ const EditorContent = () => {
         zoomOnScroll={true}
         onNodeDragStart={handleNodeDragStart}
         onNodeDragStop={handleNodeDragStop}
-        nodesDraggable={isInteractive}
-        nodesConnectable={isInteractive}
+        nodesDraggable={isInteractive && !readOnly}
+        nodesConnectable={isInteractive && !readOnly}
         panOnDrag={true}
         onPaneClick={handlePaneClick}
-        edgesUpdatable={isInteractive}
+        edgesUpdatable={isInteractive && !readOnly}
         onlyRenderVisibleElements={true}
         defaultEdgeOptions={{
           type : 'smoothstep',
@@ -310,6 +310,7 @@ const EditorContent = () => {
         fitView
         fitViewOptions={{ minZoom: 0.7, padding: 0.1 }}
       >
+        {!readOnly && (
         <Panel
           position="bottom-left"
           style={{
@@ -339,7 +340,7 @@ const EditorContent = () => {
               <path d="M3 17a9 9 0 0 1 9-9 9 9 0 0 1 6 2.3l3 2.7" />
             </svg>
           </button>
-          <div className="w-px h-6 bg-slate-200 dark:bg-slate-700 mx-1 self-center" /> {/* A nice visual divider */}
+          <div className="w-px h-6 bg-slate-200 dark:bg-slate-700 mx-1 self-center" />
           
           <button
             onClick={downloadArchitecture}
@@ -354,6 +355,7 @@ const EditorContent = () => {
             Export PNG
           </button>
         </Panel>
+        )}
         <Background color="#475569" gap={28} size={1.5} />
         <Controls 
           className="bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700" 
@@ -371,10 +373,10 @@ const EditorContent = () => {
   );
 }
 
-export const BaseEditor = () => {
+export const BaseEditor = ({ readOnly = false, workspaceId }: { readOnly?: boolean; workspaceId?: string }) => {
   return(
     <ReactFlowProvider>
-      <EditorContent/>
+      <EditorContent readOnly={readOnly} workspaceId={workspaceId} />
     </ReactFlowProvider>
   )
 }
