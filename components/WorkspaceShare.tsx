@@ -49,7 +49,6 @@ export function WorkspaceShare({ workspaceId, workspaceName = "Workspace", iconO
   const [selectedRole, setSelectedRole] = useState<WorkspaceRole>("READER")
   const [inviteeEmail, setInviteeEmail] = useState("")
   const [shares, setShares] = useState<any[]>([])
-  const [shareUrl, setShareUrl] = useState("")
   const [isLoadingShares, setIsLoadingShares] = useState(false)
   const [isCreatingLink, setIsCreatingLink] = useState(false)
   const [isDeletingShare, setIsDeletingShare] = useState<string | null>(null)
@@ -57,7 +56,6 @@ export function WorkspaceShare({ workspaceId, workspaceName = "Workspace", iconO
 
   const handleOpenDialog = async () => {
     setIsLoadingShares(true)
-    setShareUrl("")
     const result = await getWorkspaceShares(workspaceId)
     if (result.success) {
       setShares(result.shares || [])
@@ -70,7 +68,6 @@ export function WorkspaceShare({ workspaceId, workspaceName = "Workspace", iconO
     const result = await createShareLink(workspaceId, selectedRole as WorkspaceRole)
     
     if (result.success) {
-      setShareUrl(result.shareUrl || "")
       toast.success("Share link created")
       const sharesResult = await getWorkspaceShares(workspaceId)
       if (sharesResult.success) {
@@ -110,12 +107,15 @@ export function WorkspaceShare({ workspaceId, workspaceName = "Workspace", iconO
   }
 
   const handleCopyLink = () => {
-    if (shareUrl) {
-      navigator.clipboard.writeText(shareUrl)
+    if (displayShareUrl) {
+      navigator.clipboard.writeText(displayShareUrl)
       setCopied(true)
       setTimeout(() => setCopied(false), 2000)
     }
   }
+
+  const activeShareToken = shares.find(s => s.shareToken !== null && s.role === selectedRole)?.shareToken;
+  const displayShareUrl = activeShareToken ? `${process.env.NEXT_PUBLIC_APP_URL || (typeof window !== 'undefined' ? window.location.origin : '')}/share/${activeShareToken}` : "";
 
   const getRoleIcon = (role: WorkspaceRole) => {
     switch (role) {
@@ -203,10 +203,10 @@ export function WorkspaceShare({ workspaceId, workspaceName = "Workspace", iconO
                 </div>
               </div>
 
-              {shareUrl ? (
+              {displayShareUrl ? (
                 <div className="flex gap-2">
                   <Input
-                    value={shareUrl}
+                    value={displayShareUrl}
                     readOnly
                     className="font-mono text-xs"
                   />

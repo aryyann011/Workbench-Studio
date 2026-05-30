@@ -7,7 +7,7 @@ import { useAppStore } from "@/lib/store"
 
 export function broadcastTimelineSync(workspaceId: string) {
     const channelName = `workspace-${workspaceId}`;
-    const channel = supabase.getChannels().find(c => c.name === channelName);
+    const channel = supabase.getChannels().find(c => c.topic === channelName);
     if (!channel) return;
     const { nodes, edges } = useAppStore.getState();
     channel.send({
