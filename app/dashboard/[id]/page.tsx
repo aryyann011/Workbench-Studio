@@ -11,12 +11,20 @@ import {
 } from "@/components/ui/resizable"
 import { BaseEditor } from "@/components/reactFlow/diagramCanvas"
 import { useAppStore } from "@/lib/store"
-import { Code2, SquareSplitHorizontal, LayoutDashboard, Save, Play, Sparkles, X } from "lucide-react"
+import { Code2, SquareSplitHorizontal, LayoutDashboard, Save, Sparkles, X } from "lucide-react"
 import { WorkspaceShare } from "@/components/WorkspaceShare"
 import PromptBar, { ChatMessage, ArchitectMode } from "@/components/editor/prompt-input"
 import { toast } from "sonner"
 import { Node, Edge } from "reactflow"
 import { useWorkspaceSocket } from "@/hooks/useWorkspaceSocket"
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+} from "@/components/ui/dialog"
+import { Input } from "@/components/ui/input"
 
 type ViewMode = "code" | "both" | "canvas";
 
@@ -33,6 +41,8 @@ export default function ResizableDemo() {
   const [loadingText, setLoadingText] = useState<string>("Generating architecture...")
   const [isSaving, setIsSaving] = useState<boolean>(false)
   const [messages, setMessages] = useState<ChatMessage[]>([])
+  const [showNameDialog, setShowNameDialog] = useState<boolean>(false)
+  const [saveName, setSaveName] = useState<string>("")
   
   const [viewMode, setViewMode] = useState<ViewMode>("both")
 
@@ -183,13 +193,22 @@ export default function ResizableDemo() {
     ]);
   }
 
+  const handleSaveClick = () => {
+    if (!code) return;
+    setSaveName(workspaceName === "Untitled" || workspaceName === "Untitled Architecture" ? "" : workspaceName);
+    setShowNameDialog(true);
+  }
+
   const handleSaveWorkspace = async () => {
     if (!code) return;
+    const finalName = saveName.trim() || "Untitled Architecture";
+    setShowNameDialog(false);
     setIsSaving(true);
     
-    const result = await saveArchitecture(code, nodes, edges, workspaceId);
+    const result = await saveArchitecture(code, nodes, edges, workspaceId, undefined, finalName);
     
     if (result.success) {
+      setWorkspaceName(finalName);
       if (workspaceId === "new") {
         router.replace(`/dashboard/${result.id}`);
         toast.success("Successfully created and saved!");
@@ -239,15 +258,9 @@ export default function ResizableDemo() {
             workspaceName={workspaceName}
             iconOnly={true}
           />
+
           <button
-            onClick={handleRun}
-            title="Run compiler"
-            className="p-1.5 bg-secondary hover:bg-secondary/80 text-secondary-foreground rounded-md border border-border transition-colors flex items-center justify-center size-8 shrink-0"
-          >
-            <Play className="w-4 h-4" />
-          </button>
-          <button
-            onClick={handleSaveWorkspace}
+            onClick={handleSaveClick}
             disabled={isSaving || !code}
             title="Save architecture"
             className="p-1.5 bg-blue-600 hover:bg-blue-700 text-white rounded-md transition-colors flex items-center justify-center size-8 shrink-0 disabled:opacity-50"
@@ -291,17 +304,10 @@ export default function ResizableDemo() {
           workspaceName={workspaceName}
         />
 
-        <button
-          onClick={handleRun}
-          title="Run compiler"
-          className="flex items-center justify-center gap-2 bg-secondary hover:bg-secondary/80 text-secondary-foreground px-3 lg:px-4 h-9 rounded-md text-sm font-semibold transition-colors border border-border shrink-0"
-        >
-          <Play className="w-4 h-4" />
-          <span className="hidden lg:inline">Run</span>
-        </button>
+
 
         <button
-          onClick={handleSaveWorkspace}
+          onClick={handleSaveClick}
           disabled={isSaving || !code}
           title="Save architecture"
           className="flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-3 lg:px-4 h-9 rounded-md text-sm font-semibold transition-colors shadow-md disabled:opacity-50 shrink-0"
@@ -365,6 +371,43 @@ export default function ResizableDemo() {
           </ResizablePanel>
         )}
       </ResizablePanelGroup>
+
+      <Dialog open={showNameDialog} onOpenChange={setShowNameDialog}>
+        <DialogContent className="sm:max-w-md bg-card border border-border">
+          <DialogHeader>
+            <DialogTitle className="text-foreground">Save Architecture</DialogTitle>
+          </DialogHeader>
+          <div className="py-4">
+            <Input 
+              value={saveName}
+              onChange={(e) => setSaveName(e.target.value)}
+              placeholder="e.g. My Awesome Backend"
+              className="bg-background text-foreground border-border focus-visible:ring-blue-500"
+              autoFocus
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') {
+                  e.preventDefault();
+                  handleSaveWorkspace();
+                }
+              }}
+            />
+          </div>
+          <DialogFooter>
+            <button
+              onClick={() => setShowNameDialog(false)}
+              className="px-4 py-2 rounded-md text-sm font-medium hover:bg-muted text-muted-foreground transition-colors"
+            >
+              Cancel
+            </button>
+            <button
+              onClick={handleSaveWorkspace}
+              className="px-4 py-2 rounded-md text-sm font-medium bg-blue-600 hover:bg-blue-700 text-white transition-colors"
+            >
+              Save
+            </button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
 
     </div>
   )

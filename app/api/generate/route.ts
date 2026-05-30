@@ -66,6 +66,8 @@ Separate Section 1 and Section 2 with a single blank line.
    - Ensure nodes are distributed evenly inside their boxes. Do not leave boxes completely bare or create high-density line bottlenecks.
    - Name nodes specifically for the requested domain (e.g., [Video Transcoder], [Redis Timeline Cache], [Notification Fanout Queue]).
 
+4. DIRECTIONAL ACCURACY: ALWAYS start the flow from the user's perspective. The origin of the graph should be [Client] or [Load Balancer], flowing downstream into Gateways, Services, and finally ending at Databases/Caches.
+
 ━━━ MODE-SPECIFIC CONSTRAINTS (OVERRIDING BALANCING TARGETS) ━━━
 ${modeRules}
 

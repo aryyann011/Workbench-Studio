@@ -63,13 +63,10 @@ export default function SignInPage() {
 
   return (
     <div className="relative min-h-screen w-full bg-black flex flex-col items-center justify-center overflow-hidden font-sans">
-      {/* Background Spotlight (Monochromatic) */}
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_-20%,rgba(255,255,255,0.12),transparent_75%)] pointer-events-none z-0" />
 
-      {/* Grid Pattern */}
       <div className="absolute inset-0 pointer-events-none opacity-30 z-0 bg-[linear-gradient(to_right,#242426_1px,transparent_1px),linear-gradient(to_bottom,#242426_1px,transparent_1px)] bg-[size:4rem_4rem]" />
 
-      {/* Floating System Design Cards in Background */}
       <div className="absolute left-[8%] top-[20%] opacity-40 hidden xl:flex flex-col p-4 border border-neutral-800 rounded-xl bg-neutral-950/40 pointer-events-none select-none z-0 border-l-neutral-700/30">
         <div className="flex items-center gap-3">
           <div className="p-2 bg-neutral-900 rounded-lg text-neutral-400">
@@ -118,21 +115,17 @@ export default function SignInPage() {
         </div>
       </div>
 
-      {/* Header back button */}
-      {/* <div className="absolute top-8 left-8 z-10">
+      <div className="absolute top-8 left-8 z-10">
         <Link href="/" className="flex items-center gap-2 text-sm text-neutral-400 hover:text-white transition-colors">
           ← Back to landing
         </Link>
-      </div> */}
+      </div>
 
-      {/* Sign In Component Box */}
       <div className="relative z-10 w-full max-w-[420px] p-4">
         <div className="bg-[#050507]/90 border border-neutral-850 rounded-2xl p-8 shadow-2xl backdrop-blur-2xl flex flex-col gap-6 relative">
           
-          {/* Subtle top glow bar */}
           <div className="absolute top-0 inset-x-0 h-[1.5px] bg-gradient-to-r from-transparent via-neutral-700/40 to-transparent rounded-t-2xl" />
 
-          {/* Logo & Headings */}
           <div className="flex flex-col items-center text-center gap-2">
             <div className="w-10 h-10 rounded-full bg-white text-black flex items-center justify-center font-black text-lg mb-2 shadow-inner">
               W
@@ -145,7 +138,6 @@ export default function SignInPage() {
             </p>
           </div>
 
-          {/* Error Message */}
           {error && (
             <div className="flex gap-2.5 items-start bg-red-500/10 border border-red-500/30 p-3.5 rounded-xl text-red-400 text-xs leading-normal">
               <AlertCircle className="w-4 h-4 shrink-0 mt-0.5" />
@@ -153,7 +145,6 @@ export default function SignInPage() {
             </div>
           )}
 
-          {/* Social login */}
           <button
             onClick={handleGoogleSignIn}
             className="w-full flex items-center justify-center gap-3 bg-neutral-900 border border-neutral-800 hover:border-neutral-700 text-white rounded-xl py-3 px-4 font-medium transition-all active:scale-[0.98] cursor-pointer shadow-sm"
@@ -167,7 +158,6 @@ export default function SignInPage() {
             <span className="text-sm font-medium">Continue with Google</span>
           </button>
 
-          {/* Divider */}
           <div className="relative flex py-1 items-center">
             <div className="flex-grow border-t border-neutral-900"></div>
             <span className="flex-shrink mx-4 text-neutral-600 text-[10px] uppercase font-bold tracking-wider">
@@ -176,7 +166,6 @@ export default function SignInPage() {
             <div className="flex-grow border-t border-neutral-900"></div>
           </div>
 
-          {/* Direct credentials form */}
           <form onSubmit={handleSubmit} className="flex flex-col gap-4">
             <div className="flex flex-col gap-1.5">
               <label className="text-neutral-400 text-xs font-semibold uppercase tracking-wider">
@@ -231,7 +220,6 @@ export default function SignInPage() {
             </button>
           </form>
 
-          {/* Signup link footer */}
           <div className="text-center pt-2">
             <p className="text-neutral-500 text-xs">
               Don&apos;t have an account?{" "}
