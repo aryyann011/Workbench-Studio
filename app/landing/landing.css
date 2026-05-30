@@ -485,7 +485,7 @@
 }
 
 .hero-heading {
-  font-size: clamp(2rem, 8vw, 5.5rem);
+  font-size: clamp(2rem, 6vw, 5.5rem);
   line-height: 1.02;
   letter-spacing: -0.03em;
   margin-bottom: 24px;
@@ -1595,6 +1595,25 @@
   background: rgba(255, 255, 255, 0.85) !important;
   backdrop-filter: blur(12px) !important;
   border-bottom: 1px solid rgba(0, 0, 0, 0.05) !important;
+}
+
+:is(.light) .nav-pill {
+  background: rgba(255, 255, 255, 0.6) !important;
+  border-color: rgba(0, 0, 0, 0.08) !important;
+}
+
+:is(.light) .landing-header.scrolled .nav-pill {
+  background: rgba(255, 255, 255, 0.8) !important;
+  border-color: rgba(0, 0, 0, 0.12) !important;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06) !important;
+}
+
+:is(.light) .nav-item {
+  color: #4b5563 !important;
+}
+
+:is(.light) .nav-item:hover {
+  color: #111827 !important;
 }
 
 :is(.light) .bento-card {

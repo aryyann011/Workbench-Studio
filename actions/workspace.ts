@@ -118,7 +118,7 @@ export async function deleteArchitecture(Id : string){
   }
 }
 
-export async function saveArchitecture(code: string, nodes : Node[], edges : Edge[], existingId?: string, shareToken?: string) {
+export async function saveArchitecture(code: string, nodes : Node[], edges : Edge[], existingId?: string, shareToken?: string, name?: string) {
   try {
     const { userId } = await auth();
     if (!userId) return { success: false, error: "Unauthorized" };
@@ -163,14 +163,15 @@ export async function saveArchitecture(code: string, nodes : Node[], edges : Edg
           code: code,
           canvas_nodes: JSON.stringify(nodes),
           canvas_edges: JSON.stringify(edges),
-          updatedAt: new Date()
+          updatedAt: new Date(),
+          ...(name ? { name } : {})
         },
       });
       return { success: true, id: existingId };
     }
     
     const newWorkspace = await prisma.workspace.create({
-      data: { userId: userId, code: code, canvas_nodes : JSON.stringify(nodes), canvas_edges : JSON.stringify(edges) }
+      data: { userId: userId, code: code, canvas_nodes : JSON.stringify(nodes), canvas_edges : JSON.stringify(edges), ...(name ? { name } : {}) }
     });
     return { success: true, id: newWorkspace.id };
 

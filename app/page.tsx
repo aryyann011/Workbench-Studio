@@ -3,23 +3,23 @@
 import React, { useState, useEffect } from "react"
 import Link from "next/link"
 import { Space_Grotesk, Inter } from "next/font/google"
-import { 
-  ArrowRight, 
-  Github, 
-  Smartphone, 
-  Server, 
-  Shield, 
-  Layers, 
-  Mail, 
-  Play, 
-  Settings, 
-  Database, 
-  FolderUp, 
-  Code2, 
-  Zap, 
-  Lock, 
-  Cloud, 
-  Users, 
+import {
+  ArrowRight,
+  Github,
+  Smartphone,
+  Server,
+  Shield,
+  Layers,
+  Mail,
+  Play,
+  Settings,
+  Database,
+  FolderUp,
+  Code2,
+  Zap,
+  Lock,
+  Cloud,
+  Users,
   Check
 } from "lucide-react"
 import "./landing/landing.css"
@@ -42,7 +42,7 @@ export default function LandingPage() {
 
   return (
     <div className={`landing-root noise-overlay ${inter.className}`}>
-      
+
       <header className={`landing-header ${scrolled ? "scrolled" : ""}`}>
         <div className="nav-pill">
           <Link href="/" className="logo-link">
@@ -52,7 +52,7 @@ export default function LandingPage() {
 
           <nav className="nav-links hidden md:flex">
             <a href="#features" className="nav-item">Features</a>
-            <a href="#flowchart" className="nav-item">Pipeline</a>
+            <Link href="/feedback" className="nav-item">Feedback</Link>
             <a href="#editor-showcase" className="nav-item">Platform</a>
           </nav>
 
@@ -71,9 +71,9 @@ export default function LandingPage() {
           <div className="hero-glow-orb hero-orb-emerald" />
         </div>
 
-        <h1 className={`hero-heading ${spaceGrotesk.className}`}>
-          Your system <span className="hero-highlight">architecture</span> starts here.
-        </h1>
+        <h2 className={`hero-heading ${spaceGrotesk.className}`}>
+          Architecture diagrams <span className="hero-highlight">at the speed</span> of thoughts
+        </h2>
 
         <p className="hero-subheading">
           Stop drawing boxes manually. Describe your software system in plain text, and watch a structured interactive diagram build itself instantly.
@@ -83,10 +83,10 @@ export default function LandingPage() {
           <Link href="/dashboard" className="pill-btn-white">
             Start Designing <ArrowRight className="w-4 h-4" />
           </Link>
-          <a 
-            href="https://github.com/aryyann011/Workbench-Studio" 
-            target="_blank" 
-            rel="noopener noreferrer" 
+          <a
+            href="https://github.com/aryyann011/Workbench-Studio"
+            target="_blank"
+            rel="noopener noreferrer"
             className="pill-btn-outline"
           >
             <Github className="w-4 h-4" /> Star on GitHub
@@ -101,7 +101,7 @@ export default function LandingPage() {
               <span className="preview-dot green" />
               <span className="preview-tab-label">architecture.wbs</span>
             </div>
-            
+
             <div className="preview-workspace-split">
               <div className="preview-editor-pane">
                 <div className="editor-line">
@@ -163,9 +163,9 @@ export default function LandingPage() {
               </div>
 
               <div className="preview-canvas-pane relative overflow-hidden bg-[#060608] border-l border-white/5 flex items-center justify-center min-h-[350px]">
-                
+
                 <svg className="w-full h-full absolute inset-0" viewBox="0 0 600 400" preserveAspectRatio="xMidYMid meet">
-                  
+
                   <defs>
                     <marker id="arrow-cyan" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse">
                       <path d="M 0 0 L 10 5 L 0 10 z" fill="rgba(34, 211, 238, 0.4)" />
@@ -178,15 +178,17 @@ export default function LandingPage() {
                     </marker>
                   </defs>
 
+                  
                   <path d="M 181 100 L 405 100" fill="none" stroke="rgba(34, 211, 238, 0.2)" strokeWidth="1.5" strokeDasharray="4 4" markerEnd="url(#arrow-cyan)" />
-                  
+
                   <path d="M 483 125 C 483 190, 113 190, 113 247" fill="none" stroke="rgba(251, 191, 36, 0.2)" strokeWidth="1.5" markerEnd="url(#arrow-amber)" />
-                  
+
                   <path d="M 181 280 L 405 280" fill="none" stroke="rgba(52, 211, 153, 0.2)" strokeWidth="1.5" markerEnd="url(#arrow-emerald)" />
 
+                  
                   <foreignObject x="45" y="75" width="136" height="50">
                     <div className="w-full h-full bg-[#08080a]/90 border border-white/[0.06] rounded-xl shadow-lg flex items-center p-2 gap-2.5 border-l-[3px] border-l-cyan-400/70">
-                      <div className="bg-cyan-500/5 p-1 rounded border border-cyan-500/10 flex items-center justify-center"><Smartphone className="w-3.5 h-3.5 text-cyan-400/80"/></div>
+                      <div className="bg-cyan-500/5 p-1 rounded border border-cyan-500/10 flex items-center justify-center"><Smartphone className="w-3.5 h-3.5 text-cyan-400/80" /></div>
                       <div className="flex flex-col justify-center text-left">
                         <span className="text-[10px] font-semibold text-slate-200 leading-none">Client App</span>
                         <span className="text-[7.5px] font-medium tracking-wider text-slate-500 uppercase mt-1">Client</span>
@@ -196,7 +198,7 @@ export default function LandingPage() {
 
                   <foreignObject x="415" y="75" width="136" height="50">
                     <div className="w-full h-full bg-[#08080a]/90 border border-white/[0.06] rounded-xl shadow-lg flex items-center p-2 gap-2.5 border-l-[3px] border-l-emerald-400/70">
-                      <div className="bg-emerald-500/5 p-1 rounded border border-emerald-500/10 flex items-center justify-center"><Server className="w-3.5 h-3.5 text-emerald-400/80"/></div>
+                      <div className="bg-emerald-500/5 p-1 rounded border border-emerald-500/10 flex items-center justify-center"><Server className="w-3.5 h-3.5 text-emerald-400/80" /></div>
                       <div className="flex flex-col justify-center text-left">
                         <span className="text-[10px] font-semibold text-slate-200 leading-none">API Gateway</span>
                         <span className="text-[7.5px] font-medium tracking-wider text-slate-500 uppercase mt-1">Endpoint</span>
@@ -206,7 +208,7 @@ export default function LandingPage() {
 
                   <foreignObject x="45" y="255" width="136" height="50">
                     <div className="w-full h-full bg-[#08080a]/90 border border-white/[0.06] rounded-xl shadow-lg flex items-center p-2 gap-2.5 border-l-[3px] border-l-amber-500/70">
-                      <div className="bg-amber-500/5 p-1 rounded border border-amber-500/10 flex items-center justify-center"><Shield className="w-3.5 h-3.5 text-amber-500/80"/></div>
+                      <div className="bg-amber-500/5 p-1 rounded border border-amber-500/10 flex items-center justify-center"><Shield className="w-3.5 h-3.5 text-amber-500/80" /></div>
                       <div className="flex flex-col justify-center text-left">
                         <span className="text-[10px] font-semibold text-slate-200 leading-none">Auth Service</span>
                         <span className="text-[7.5px] font-medium tracking-wider text-slate-500 uppercase mt-1">Service</span>
@@ -216,7 +218,7 @@ export default function LandingPage() {
 
                   <foreignObject x="415" y="255" width="136" height="50">
                     <div className="w-full h-full bg-[#08080a]/90 border border-white/[0.06] rounded-xl shadow-lg flex items-center p-2 gap-2.5 border-l-[3px] border-l-blue-500/70">
-                      <div className="bg-blue-500/5 p-1 rounded border border-blue-500/10 flex items-center justify-center"><Layers className="w-3.5 h-3.5 text-blue-500/80"/></div>
+                      <div className="bg-blue-500/5 p-1 rounded border border-blue-500/10 flex items-center justify-center"><Layers className="w-3.5 h-3.5 text-blue-500/80" /></div>
                       <div className="flex flex-col justify-center text-left">
                         <span className="text-[10px] font-semibold text-slate-200 leading-none">Collab Engine</span>
                         <span className="text-[7.5px] font-medium tracking-wider text-slate-500 uppercase mt-1">Component</span>
@@ -233,7 +235,7 @@ export default function LandingPage() {
 
       <section className="landing-section bento-sec">
         <div className="section-inner">
-          
+
           <div className="section-header text-center items-center flex flex-col mb-16">
             <span className="section-label text-emerald-400">The Workbench Engine</span>
             <h2 className={`section-title ${spaceGrotesk.className} max-w-2xl`}>
@@ -242,7 +244,7 @@ export default function LandingPage() {
           </div>
 
           <div className="bento-grid-container">
-            
+
             <div className="bento-card bento-large border-glow-hover bg-slate-900/40 flex flex-col md:flex-row items-center gap-6">
               <div className="bento-content flex-1 text-left">
                 <Code2 className="w-6 h-6 text-cyan-400 mb-4" />
@@ -263,7 +265,7 @@ export default function LandingPage() {
                     <div><span className="text-[#f97583]">[</span><span className="text-[#79c0ff]">Auth Service</span><span className="text-[#f97583]">]</span> <span className="text-[#ff7b72]">→</span> <span className="text-[#f97583]">[</span><span className="text-[#79c0ff]">Database</span><span className="text-[#f97583]">]</span></div>
                     <div><span className="text-[#f97583]">[</span><span className="text-[#79c0ff]">API Gateway</span><span className="text-[#f97583]">]</span> <span className="text-[#ff7b72]">→</span> <span className="text-[#f97583]">[</span><span className="text-[#79c0ff]">Auth Service</span><span className="text-[#f97583]">]</span></div>
                     <div className="mt-3 text-[#10b981] text-[10px] flex items-center gap-1.5 font-sans">
-                      <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"/> Syntax valid
+                      <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" /> Syntax valid
                     </div>
                   </div>
                 </div>
@@ -343,10 +345,10 @@ export default function LandingPage() {
                     </div>
                   </div>
                   <div className="mt-4 pt-3.5 border-t border-white/[0.04] flex items-center gap-2">
-                    <input 
-                      type="text" 
-                      readOnly 
-                      value="token_wbs_8f92ac410b" 
+                    <input
+                      type="text"
+                      readOnly
+                      value="token_wbs_8f92ac410b"
                       className="bg-white/[0.02] border border-white/5 rounded px-2 py-1 text-[10px] font-mono text-blue-400/80 flex-1 outline-none"
                     />
                     <button className="bg-white/5 border border-white/10 hover:bg-white/10 text-white rounded px-2.5 py-1 text-[9px] font-semibold transition-all">Copy</button>
@@ -418,14 +420,14 @@ export default function LandingPage() {
       <section className="landing-section tabs-showcase-sec" id="editor-showcase">
         <div className="section-inner">
           <div className="tabs-layout-grid">
-            
+
             <div className="tabs-sidebar">
               <span className="section-label text-cyan-400" style={{ alignSelf: "flex-start" }}>Interactive Demo</span>
-              <h2 className={spaceGrotesk.className} style={{ fontSize: "36px", marginBottom: "16px", color: "var(--text-primary)" }}>
+              <h2 className={spaceGrotesk.className} style={{ fontSize: "36px", marginBottom: "16px", color: "#fff" }}>
                 Built for active collaboration
               </h2>
-              
-              <button 
+
+              <button
                 className={`tabs-btn ${activeTab === "collab" ? "active" : ""}`}
                 onClick={() => setActiveTab("collab")}
               >
@@ -433,7 +435,7 @@ export default function LandingPage() {
                 <span className="tab-btn-desc">Work side-by-side with colleagues using real-time broadcast channels.</span>
               </button>
 
-              <button 
+              <button
                 className={`tabs-btn ${activeTab === "editor" ? "active" : ""}`}
                 onClick={() => setActiveTab("editor")}
               >
@@ -441,7 +443,7 @@ export default function LandingPage() {
                 <span className="tab-btn-desc">Write declarative architecture code or drag-and-drop elements on a visual canvas.</span>
               </button>
 
-              <button 
+              <button
                 className={`tabs-btn ${activeTab === "caching" ? "active" : ""}`}
                 onClick={() => setActiveTab("caching")}
               >
@@ -478,7 +480,7 @@ export default function LandingPage() {
                 )}
 
                 {activeTab === "editor" && (
-                  <div className="w-full text-left font-mono" style={{ fontSize: "13px", color: "var(--text-secondary)", background: "var(--bg-secondary)", padding: "20px", borderRadius: "8px", border: "1px solid var(--border-primary)" }}>
+                  <div className="w-full text-left font-mono" style={{ fontSize: "13px", color: "#a1a1aa", background: "#060608", padding: "20px", borderRadius: "8px", border: "1px solid rgba(255,255,255,0.04)" }}>
                     {/* <div style={{ color: "#71717a" }}>{"// Canvas changes synchronize in code pane automatically"}</div> */}
                     <div><span style={{ color: "#ff7b72" }}>[</span>Client Application<span style={{ color: "#ff7b72" }}>]</span> → <span style={{ color: "#ff7b72" }}>[</span>API Gateway<span style={{ color: "#ff7b72" }}>]</span></div>
                     <div><span style={{ color: "#ff7b72" }}>[</span>API Gateway<span style={{ color: "#ff7b72" }}>]</span> → <span style={{ color: "#ff7b72" }}>[</span>Auth Service<span style={{ color: "#ff7b72" }}>]</span></div>
@@ -539,12 +541,12 @@ export default function LandingPage() {
         <div className="section-inner footer-flex">
           <div className="footer-left">
             <div className="footer-logo">W</div>
-            <span className={`${spaceGrotesk.className}`} style={{ fontWeight: 700, color: "var(--text-primary)" }}>Workbench Studio</span>
+            <span className={`${spaceGrotesk.className}`} style={{ fontWeight: 700, color: "#fff" }}>Workbench Studio</span>
           </div>
 
           <div className="footer-links">
             <a href="#features" className="footer-link">Features</a>
-            <a href="#flowchart" className="footer-link">Pipeline</a>
+            <Link href="/feedback" className="footer-link">Feedback</Link>
             <a href="https://github.com/aryyann011/Workbench-Studio" target="_blank" rel="noopener noreferrer" className="footer-link">GitHub</a>
           </div>
 

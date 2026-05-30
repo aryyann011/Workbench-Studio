@@ -72,3 +72,14 @@ model PromptCache {
   @@index([userId])
   @@index([promptHash])
 }
+
+model Feedback {
+  id        String   @id @default(uuid())
+  userId    String?  // Optional, if user is logged in
+  email     String?  // Optional, if user wants to be contacted
+  message   String   @db.Text
+  rating    Int?     // Optional rating, e.g., out of 5
+  createdAt DateTime @default(now())
+
+  @@index([userId])
+}
