@@ -12,7 +12,7 @@ import { BaseEditor } from "@/components/reactFlow/diagramCanvas"
 import { useAppStore } from "@/lib/store"
 import { Code2, Loader2, AlertCircle, Eye, Users, Wifi, WifiOff } from "lucide-react"
 import { Node, Edge } from "reactflow"
-import { useWorkspaceSocket } from "@/hooks/useWorkspaceSocket"
+
 
 type ViewMode = "code" | "both" | "canvas"
 
@@ -31,7 +31,6 @@ export default function SharedWorkspacePage() {
   const [isSaving, setIsSaving] = useState<boolean>(false)
   const [workspaceId, setWorkspaceId] = useState<string>("")
 
-  const { isConnected } = useWorkspaceSocket(workspaceId)
 
   useEffect(() => {
     async function loadSharedWorkspace() {
@@ -161,16 +160,6 @@ export default function SharedWorkspacePage() {
               <><Eye className="w-3 h-3" /> Viewer</>
             )}
           </span>
-          {workspaceId && (
-            <span className={`text-xs px-2 py-1 rounded-full font-medium flex items-center gap-1.5 ${
-              isConnected 
-                ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300'
-                : 'bg-red-100 text-red-700 dark:bg-red-950 dark:text-red-300'
-            }`}>
-              {isConnected ? <Wifi className="w-3 h-3" /> : <WifiOff className="w-3 h-3" />}
-              {isConnected ? 'Live' : 'Offline'}
-            </span>
-          )}
         </div>
 
         <div className="flex items-center gap-2">
