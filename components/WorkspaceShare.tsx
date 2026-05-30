@@ -1,7 +1,7 @@
 "use client"
 
 import { useState } from "react"
-import { Share2, Copy, Trash2, Users, Lock, Eye, Plus, X, Loader2, Link2 } from "lucide-react"
+import { Share2, Copy, Trash2, Users, Lock, Eye, Plus, X, Loader2, Link2, AlertCircle } from "lucide-react"
 import {
   Dialog,
   DialogContent,
@@ -14,6 +14,7 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { createShareLink, getWorkspaceShares, revokeShare, updateShareRole, inviteUser } from "@/actions/share"
 import { WorkspaceRole } from "@prisma/client"
+import { toast } from "sonner"
 
 interface ShareOption {
   value: WorkspaceRole
@@ -48,7 +49,6 @@ export function WorkspaceShare({ workspaceId, workspaceName = "Workspace", iconO
   const [selectedRole, setSelectedRole] = useState<WorkspaceRole>("READER")
   const [inviteeEmail, setInviteeEmail] = useState("")
   const [shares, setShares] = useState<any[]>([])
-  const [shareUrl, setShareUrl] = useState("")
   const [isLoadingShares, setIsLoadingShares] = useState(false)
   const [isCreatingLink, setIsCreatingLink] = useState(false)
   const [isDeletingShare, setIsDeletingShare] = useState<string | null>(null)
@@ -56,7 +56,6 @@ export function WorkspaceShare({ workspaceId, workspaceName = "Workspace", iconO
 
   const handleOpenDialog = async () => {
     setIsLoadingShares(true)
-    setShareUrl("")
     const result = await getWorkspaceShares(workspaceId)
     if (result.success) {
       setShares(result.shares || [])
@@ -69,11 +68,13 @@ export function WorkspaceShare({ workspaceId, workspaceName = "Workspace", iconO
     const result = await createShareLink(workspaceId, selectedRole as WorkspaceRole)
     
     if (result.success) {
-      setShareUrl(result.shareUrl || "")
+      toast.success("Share link created")
       const sharesResult = await getWorkspaceShares(workspaceId)
       if (sharesResult.success) {
         setShares(sharesResult.shares || [])
       }
+    } else {
+      toast.error(result.error || "Failed to create share link")
     }
     setIsCreatingLink(false)
   }
@@ -85,10 +86,13 @@ export function WorkspaceShare({ workspaceId, workspaceName = "Workspace", iconO
     
     if (result.success) {
       setInviteeEmail("")
+      toast.success(result.message || "User invited successfully")
       const sharesResult = await getWorkspaceShares(workspaceId)
       if (sharesResult.success) {
         setShares(sharesResult.shares || [])
       }
+    } else {
+      toast.error(result.error || "Failed to invite user")
     }
   }
 
@@ -103,12 +107,15 @@ export function WorkspaceShare({ workspaceId, workspaceName = "Workspace", iconO
   }
 
   const handleCopyLink = () => {
-    if (shareUrl) {
-      navigator.clipboard.writeText(shareUrl)
+    if (displayShareUrl) {
+      navigator.clipboard.writeText(displayShareUrl)
       setCopied(true)
       setTimeout(() => setCopied(false), 2000)
     }
   }
+
+  const activeShareToken = shares.find(s => s.shareToken !== null && s.role === selectedRole)?.shareToken;
+  const displayShareUrl = activeShareToken ? `${process.env.NEXT_PUBLIC_APP_URL || (typeof window !== 'undefined' ? window.location.origin : '')}/share/${activeShareToken}` : "";
 
   const getRoleIcon = (role: WorkspaceRole) => {
     switch (role) {
@@ -131,8 +138,9 @@ export function WorkspaceShare({ workspaceId, workspaceName = "Workspace", iconO
         {iconOnly ? (
           <button
             onClick={handleOpenDialog}
-            title="Share architecture"
-            className="p-1.5 bg-background/50 hover:bg-muted text-muted-foreground hover:text-foreground border border-border rounded-md transition-colors shadow-sm shrink-0"
+            disabled={!workspaceId}
+            title={!workspaceId ? "Save workspace first to share" : "Share architecture"}
+            className="p-1.5 bg-background/50 hover:bg-muted text-muted-foreground hover:text-foreground border border-border rounded-md transition-colors shadow-sm shrink-0 disabled:opacity-50 disabled:cursor-not-allowed"
           >
             <Share2 className="w-4 h-4" />
           </button>
@@ -140,7 +148,9 @@ export function WorkspaceShare({ workspaceId, workspaceName = "Workspace", iconO
           <Button
             variant="outline"
             size="sm"
-            className="flex items-center gap-2 px-3 py-2 lg:px-4 h-9"
+            disabled={!workspaceId}
+            title={!workspaceId ? "Save workspace first to share" : "Share architecture"}
+            className="flex items-center gap-2 px-3 py-2 lg:px-4 h-9 disabled:opacity-50"
             onClick={handleOpenDialog}
           >``
             <Share2 className="w-4 h-4" />
@@ -193,10 +203,10 @@ export function WorkspaceShare({ workspaceId, workspaceName = "Workspace", iconO
                 </div>
               </div>
 
-              {shareUrl ? (
+              {displayShareUrl ? (
                 <div className="flex gap-2">
                   <Input
-                    value={shareUrl}
+                    value={displayShareUrl}
                     readOnly
                     className="font-mono text-xs"
                   />
@@ -332,5 +342,4 @@ export function WorkspaceShare({ workspaceId, workspaceName = "Workspace", iconO
   )
 }
 
-// Export component for adding to existing UI
 export default WorkspaceShare
