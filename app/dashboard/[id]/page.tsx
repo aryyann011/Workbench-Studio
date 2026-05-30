@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react"
 import { useParams, useRouter } from "next/navigation"
-import { getWorkspace, saveArchitecture } from "@/actions/workspace"
+import { getAccessibleWorkspace, saveArchitecture } from "@/actions/workspace"
 import { CodeEditor } from "@/components/editor/codeEditor"
 import {
   ResizablePanelGroup,
@@ -16,7 +16,7 @@ import { WorkspaceShare } from "@/components/WorkspaceShare"
 import PromptBar, { ChatMessage, ArchitectMode } from "@/components/editor/prompt-input"
 import { toast } from "sonner"
 import { Node, Edge } from "reactflow"
-import { useWorkspaceSocket } from "@/hooks/useWorkspaceSocket"
+import { broadcastTimelineSync } from "@/hooks/useWorkspaceSocket"
 import {
   Dialog,
   DialogContent,
@@ -45,8 +45,7 @@ export default function ResizableDemo() {
   const [saveName, setSaveName] = useState<string>("")
   
   const [viewMode, setViewMode] = useState<ViewMode>("both")
-
-  const { broadcastSync } = useWorkspaceSocket(workspaceId)
+  const [canEdit, setCanEdit] = useState<boolean>(true)
 
   useEffect(() => {
     if (workspaceId === "new") {
@@ -56,22 +55,27 @@ export default function ResizableDemo() {
       return;
     }
 
-    getWorkspace(workspaceId).then((data) => {
-      if (data && data.code && data.canvas_nodes && data.canvas_edges) {
-        setCode(data.code);
-        setWorkspaceName(data.name || "Untitled");
+    getAccessibleWorkspace(workspaceId).then((data) => {
+      if (data && data.success && data.workspace) {
+        const ws = data.workspace;
+        setCanEdit(data.canEdit || false);
 
-        const parsedNodes = typeof data.canvas_nodes === 'string' 
-          ? JSON.parse(data.canvas_nodes) 
-          : data.canvas_nodes;
-          
-        const parsedEdges = typeof data.canvas_edges === 'string' 
-          ? JSON.parse(data.canvas_edges) 
-          : data.canvas_edges;
+        if (ws.code && ws.canvas_nodes && ws.canvas_edges) {
+          setCode(ws.code);
+          setWorkspaceName(ws.name || "Untitled");
 
-        setTimeout(() => {
-          SetTheGraph(parsedNodes, parsedEdges); 
-        }, 100);
+          const parsedNodes = typeof ws.canvas_nodes === 'string' 
+            ? JSON.parse(ws.canvas_nodes) 
+            : ws.canvas_nodes;
+            
+          const parsedEdges = typeof ws.canvas_edges === 'string' 
+            ? JSON.parse(ws.canvas_edges) 
+            : ws.canvas_edges;
+
+          setTimeout(() => {
+            SetTheGraph(parsedNodes, parsedEdges); 
+          }, 100);
+        }
       }
     });
   }, [workspaceId]); 
@@ -144,7 +148,7 @@ export default function ResizableDemo() {
       setCode(cachedCode);
       setTimeout(() => {
         generateGraph();
-        setTimeout(() => broadcastSync(), 100);
+        setTimeout(() => broadcastTimelineSync(workspaceId), 100);
       }, 0);
       setMessages(prev => [...prev, { role: "ai", content: "Architecture loaded from cache." }]);
     } else {
@@ -173,7 +177,7 @@ export default function ResizableDemo() {
         setCode(data.code);
         setTimeout(() => {
           generateGraph();
-          setTimeout(() => broadcastSync(), 100);
+          setTimeout(() => broadcastTimelineSync(workspaceId), 100);
         }, 0);
         setMessages(prev => [...prev, { role: "ai", content: "Architecture generated successfully." }]);
       }
@@ -203,23 +207,49 @@ export default function ResizableDemo() {
     if (!code) return;
     const finalName = saveName.trim() || "Untitled Architecture";
     setShowNameDialog(false);
-    setIsSaving(true);
     
-    const result = await saveArchitecture(code, nodes, edges, workspaceId, undefined, finalName);
-    
-    if (result.success) {
-      setWorkspaceName(finalName);
-      if (workspaceId === "new") {
-        router.replace(`/dashboard/${result.id}`);
-        toast.success("Successfully created and saved!");
-      } else {
-        toast.success("Successfully updated!");
-      }
-    } else {
-      toast.error(result.error || "Failed to save workspace");
+    if (workspaceId === "new") {
+      setIsSaving(true);
+      const promise = saveArchitecture(code, nodes, edges, workspaceId, undefined, finalName);
+      
+      toast.promise(promise, {
+        loading: 'Creating workspace...',
+        success: (result) => {
+          setIsSaving(false);
+          if (result.success) {
+            setWorkspaceName(finalName);
+            router.replace(`/dashboard/${result.id}`);
+            return "Successfully created and saved!";
+          } else {
+            throw new Error(result.error || "Failed to save workspace");
+          }
+        },
+        error: (err) => {
+          setIsSaving(false);
+          return err.message;
+        }
+      });
+      return;
     }
+
+    // For existing workspace: fire and forget background save
+    setWorkspaceName(finalName);
+    setIsSaving(true); // briefly show saving state
     
-    setIsSaving(false);
+    // Start background save without blocking
+    saveArchitecture(code, nodes, edges, workspaceId, undefined, finalName)
+      .then((result) => {
+        setIsSaving(false);
+        if (result.success) {
+          toast.success("Successfully updated!");
+        } else {
+          toast.error(result.error || "Failed to save workspace");
+        }
+      })
+      .catch((err) => {
+        setIsSaving(false);
+        toast.error("An unexpected error occurred while saving");
+      });
   }
   
   useEffect(() => {
@@ -261,8 +291,8 @@ export default function ResizableDemo() {
 
           <button
             onClick={handleSaveClick}
-            disabled={isSaving || !code}
-            title="Save architecture"
+            disabled={isSaving || !code || !canEdit}
+            title={canEdit ? "Save architecture" : "You do not have permission to save"}
             className="p-1.5 bg-blue-600 hover:bg-blue-700 text-white rounded-md transition-colors flex items-center justify-center size-8 shrink-0 disabled:opacity-50"
           >
             <Save className="w-4 h-4"/>
@@ -308,8 +338,8 @@ export default function ResizableDemo() {
 
         <button
           onClick={handleSaveClick}
-          disabled={isSaving || !code}
-          title="Save architecture"
+          disabled={isSaving || !code || !canEdit}
+          title={canEdit ? "Save architecture" : "You do not have permission to save"}
           className="flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-3 lg:px-4 h-9 rounded-md text-sm font-semibold transition-colors shadow-md disabled:opacity-50 shrink-0"
         >
           <Save className="w-4 h-4"/>
@@ -366,7 +396,7 @@ export default function ResizableDemo() {
         {viewMode !== "code" && (
           <ResizablePanel defaultSize={viewMode === "canvas" ? 100 : 70}>
             <div className="h-full w-full bg-background/50 dark:bg-zinc-900/10">
-              <BaseEditor/>
+              <BaseEditor readOnly={!canEdit}/>
             </div>
           </ResizablePanel>
         )}

@@ -19,7 +19,7 @@ import { useAppStore } from '@/lib/store';
 import { SystemGroupNode } from './systemGroupNode';
 import { useWorkspaceSocket } from '@/hooks/useWorkspaceSocket';
 import { useParams } from 'next/navigation';
-import { useAuth } from '@clerk/nextjs';
+import { useAuth, useUser } from '@clerk/nextjs';
 import { toPng } from 'html-to-image';
 import { useTheme } from 'next-themes';
 
@@ -53,11 +53,29 @@ const EditorContent = ({ readOnly = false, workspaceId: propWorkspaceId }: { rea
   const [isInteractive, setIsInteractive] = useState(!readOnly)
 
   const {userId} = useAuth()
+  const {user} = useUser()
   const workspaceId = propWorkspaceId || (params.id as string) 
   const {nodes, edges, onNodesChange, onEdgesChange,onConnect, deleteNode, undoTheActiion, RedoTheAction, NodeMovementTracker} = useAppStore()
   
   const {screenToFlowPosition, flowToScreenPosition, fitView} = useReactFlow()
-  const { isConnected, channel, cursors } = useWorkspaceSocket(workspaceId);
+  const { isConnected, channel, cursors, presence } = useWorkspaceSocket(workspaceId, userId);
+
+  const lastCursorSend = useRef<number>(0);
+
+  const handleMouseMove = useCallback((e: React.MouseEvent) => {
+    if (!channel || !isConnected || !userId) return;
+    const now = Date.now();
+    if (now - lastCursorSend.current < 50) return; // 50ms throttle
+    lastCursorSend.current = now;
+
+    const position = screenToFlowPosition({ x: e.clientX, y: e.clientY });
+    
+    channel.send({
+      type: 'broadcast',
+      event: 'cursor-move',
+      payload: { x: position.x, y: position.y, userId, userName: user?.firstName || 'User' }
+    });
+  }, [channel, isConnected, userId, screenToFlowPosition, user]);
 
   const lastUpdate = useRef<number>(0);
   const prevNodeCount = useRef<number>(nodes.length);
@@ -74,25 +92,6 @@ const EditorContent = ({ readOnly = false, workspaceId: propWorkspaceId }: { rea
     }
     prevNodeCount.current = nodes.length;
   }, [nodes.length, fitView]);
-
-  const handlePointerMove = (e: React.MouseEvent) => {
-      if (!isConnected || !channel) return;
-
-      const now = Date.now();
-      if (now - lastUpdate.current < 50) return;
-      lastUpdate.current = now;
-
-      const newPosition = screenToFlowPosition({x : e.clientX, y : e.clientY})
-      channel.send({
-          type: 'broadcast',
-          event: 'cursor-move',
-          payload: {
-              x: newPosition.x,
-              y: newPosition.y,
-              userId: userId
-          },
-      });
-  };
 
   const handleThePopUpPosition = (e: React.MouseEvent, node: any) => {
   e.preventDefault();
@@ -236,26 +235,38 @@ const EditorContent = ({ readOnly = false, workspaceId: propWorkspaceId }: { rea
   }
 
   return (
-    <div onPointerMove={handlePointerMove} className="relative h-[100%] w-full bg-slate-50 dark:bg-black">
+    <div className="relative h-[100%] w-full bg-slate-50 dark:bg-black" onMouseMove={handleMouseMove}>
       
+      {/* Render Cursors */}
       {Object.entries(cursors).map(([id, cursor]) => {
-        const changedPosition = flowToScreenPosition({x : cursor.x, y : cursor.y});
+        // Convert diagram coordinates back to screen space for overlay rendering
+        const screenPos = flowToScreenPosition({ x: cursor.x, y: cursor.y });
         return (
           <div
             key={id}
-            className="fixed top-0 left-0 z-50 transition-transform duration-75"
+            className="absolute z-50 pointer-events-none transition-all duration-75"
             style={{
-                transform: `translate(${changedPosition.x}px, ${changedPosition.y}px)`,
-                pointerEvents: 'none', 
+              left: screenPos.x,
+              top: screenPos.y,
             }}
-        >
-            <svg width="20" height="20" viewBox="0 0 24 36" fill="none" stroke="white" strokeWidth="2" xmlns="http://www.w3.org/2000/svg">
-                <path d="M5.65376 21.1597L1.6968 4.20455C1.19254 2.04353 3.51865 0.320499 5.37854 1.48203L22.1852 11.9868C24.0841 13.1736 23.7051 16.0963 21.5036 16.5925L14.7335 18.1189C14.3917 18.1959 14.0953 18.396 13.9113 18.6811L10.3707 24.1678C9.17726 26.0177 6.24151 23.6782 5.65376 21.1597Z" fill="#E11D48"/>
+          >
+            {/* SVG Cursor matching the standard design */}
+            <svg
+              width="24"
+              height="36"
+              viewBox="0 0 24 36"
+              fill="none"
+              stroke="white"
+              strokeWidth="2"
+              className="drop-shadow-md text-indigo-500"
+              style={{ fill: 'currentColor' }}
+            >
+              <path d="M5.65376 12.3673H5.46026L5.31717 12.4976L0.500002 16.8829L0.500002 1.19841L11.7871 12.3673H5.65376Z" />
             </svg>
-            <div className="absolute left-5 top-5 bg-rose-600 text-white text-[10px] px-2 py-0.5 rounded-md whitespace-nowrap shadow-sm">
-                {id}
+            <div className="bg-indigo-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-full whitespace-nowrap w-max ml-3 shadow-md">
+              Collaborator
             </div>
-        </div>
+          </div>
         );
       })}
       {menuState.isOpen && !readOnly && (

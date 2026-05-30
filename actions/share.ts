@@ -1,7 +1,7 @@
 "use server"
 
 import { prisma } from '@/lib/db';
-import { auth } from '@clerk/nextjs/server';
+import { auth, clerkClient } from '@clerk/nextjs/server';
 import { WorkspaceRole } from '@prisma/client';
 import crypto from 'crypto';
 
@@ -68,21 +68,20 @@ export async function createShareLink(
 }
 
 /**
- * Invites a specific user as collaborator or reader
+ * Invites a specific user as collaborator or reader by email
  * @param workspaceId - The workspace to share
- * @param inviteeId - The Clerk user ID to invite
+ * @param inviteeEmail - The email of the user to invite
  * @param role - The role to grant
  */
 export async function inviteUser(
   workspaceId: string,
-  inviteeId: string,
+  inviteeEmail: string,
   role: WorkspaceRole = WorkspaceRole.COLLABORATOR
 ) {
   try {
     const { userId } = await auth();
     if (!userId) return { success: false, error: "Unauthorized" };
 
-    // Verify ownership
     const workspace = await prisma.workspace.findUnique({
       where: { id: workspaceId }
     });
@@ -91,11 +90,19 @@ export async function inviteUser(
       return { success: false, error: "Workspace not found or unauthorized" };
     }
 
+    const client = await clerkClient();
+    const users = await client.users.getUserList({ emailAddress: [inviteeEmail] });
+    
+    if (users.data.length === 0) {
+      return { success: false, error: "User not found on platform. They must sign up first." };
+    }
+
+    const inviteeId = users.data[0].id;
+
     if (inviteeId === userId) {
       return { success: false, error: "Cannot invite yourself" };
     }
 
-    // Check if already shared with this user
     const existingShare = await prisma.workspaceShare.findUnique({
       where: {
         workspaceId_userId: {
@@ -106,7 +113,6 @@ export async function inviteUser(
     });
 
     if (existingShare) {
-      // Update existing share role
       const updated = await prisma.workspaceShare.update({
         where: { id: existingShare.id },
         data: { role, updatedAt: new Date() }
@@ -114,7 +120,6 @@ export async function inviteUser(
       return { success: true, message: "User role updated", share: updated };
     }
 
-    // Create new share
     const share = await prisma.workspaceShare.create({
       data: {
         workspaceId,
@@ -131,9 +136,6 @@ export async function inviteUser(
   }
 }
 
-/**
- * Get all shares for a workspace (only owner can see)
- */
 export async function getWorkspaceShares(workspaceId: string) {
   try {
     const { userId } = await auth();
@@ -159,9 +161,6 @@ export async function getWorkspaceShares(workspaceId: string) {
   }
 }
 
-/**
- * Revoke a share (by share ID)
- */
 export async function revokeShare(shareId: string) {
   try {
     const { userId } = await auth();
@@ -176,7 +175,6 @@ export async function revokeShare(shareId: string) {
       return { success: false, error: "Share not found" };
     }
 
-    // Only workspace owner can revoke
     if (share.workspace.userId !== userId) {
       return { success: false, error: "Unauthorized" };
     }
@@ -192,10 +190,6 @@ export async function revokeShare(shareId: string) {
   }
 }
 
-/**
- * Access a workspace via share token or direct access
- * Returns the workspace if user has permission
- */
 export async function getAccessibleWorkspace(workspaceId: string, shareToken?: string) {
   try {
     const { userId } = await auth();
@@ -208,7 +202,6 @@ export async function getAccessibleWorkspace(workspaceId: string, shareToken?: s
       return { success: false, error: "Workspace not found", canAccess: false };
     }
 
-    // Check if owner
     if (workspace.userId === userId) {
       return {
         success: true,
@@ -219,7 +212,6 @@ export async function getAccessibleWorkspace(workspaceId: string, shareToken?: s
       };
     }
 
-    // Check share token if provided
     if (shareToken) {
       const share = await prisma.workspaceShare.findUnique({
         where: { shareToken }
@@ -229,7 +221,6 @@ export async function getAccessibleWorkspace(workspaceId: string, shareToken?: s
         return { success: false, error: "Invalid share link", canAccess: false };
       }
 
-      // Check if expired
       if (share.expiresAt && new Date() > share.expiresAt) {
         return { success: false, error: "Share link has expired", canAccess: false };
       }
@@ -243,7 +234,6 @@ export async function getAccessibleWorkspace(workspaceId: string, shareToken?: s
       };
     }
 
-    // Check direct user invite
     if (userId) {
       const share = await prisma.workspaceShare.findUnique({
         where: {
@@ -276,9 +266,6 @@ export async function getAccessibleWorkspace(workspaceId: string, shareToken?: s
   }
 }
 
-/**
- * Update share role
- */
 export async function updateShareRole(shareId: string, newRole: WorkspaceRole) {
   try {
     const { userId } = await auth();

@@ -1,6 +1,6 @@
 import { auth } from "@clerk/nextjs/server";
 import { prisma } from "@/lib/db";
-import { FileCode2, Plus } from "lucide-react";
+import { FileCode2, Plus, Users } from "lucide-react";
 import Link from "next/link"; 
 import { WorkspaceActions } from "../workspaceActions";
 import { Workspace } from "@prisma/client";
@@ -14,6 +14,12 @@ export default async function DashboardPage() {
   const workspaces: Workspace[] = await prisma.workspace.findMany({
     where: { userId: userId },
     orderBy: { updatedAt: "desc" },
+  });
+
+  const sharedWithMe = await prisma.workspaceShare.findMany({
+    where: { userId: userId },
+    include: { workspace: true },
+    orderBy: { createdAt: "desc" },
   });
 
   return (
@@ -33,7 +39,7 @@ export default async function DashboardPage() {
         </Link>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 pb-12">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-12">
         {workspaces.map((workspace) => (
           <Link 
             href={`/dashboard/${workspace.id}`} 
@@ -72,6 +78,43 @@ export default async function DashboardPage() {
           <span className="text-xs font-semibold text-muted-foreground group-hover:text-foreground transition-all">Create New Design</span>
         </Link>
       </div>
+
+      {sharedWithMe.length > 0 && (
+        <>
+          <div className="mb-5">
+            <h1 className="text-2xl font-bold tracking-tight mb-0.5 text-foreground">Shared With Me</h1>
+            <p className="text-xs text-muted-foreground">Architectures you have been invited to collaborate on.</p>
+          </div>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 pb-12">
+            {sharedWithMe.map((share) => (
+              <Link 
+                href={`/dashboard/${share.workspace.id}`} 
+                key={share.id} 
+                className="relative group flex flex-col p-4 border border-border/60 rounded-xl bg-card hover:border-indigo-500/50 hover:bg-indigo-500/[0.02] dark:hover:bg-[#0c0c14] hover:shadow-[0_0_25px_rgba(99,102,241,0.06)] dark:hover:shadow-[0_0_25px_rgba(99,102,241,0.12)] transition-all duration-300 cursor-pointer min-h-[132px] justify-between"
+              >
+                <div className="flex items-center gap-2.5 mb-3 pr-4 text-left">
+                  <div className="p-1.5 bg-indigo-500/10 rounded-lg text-indigo-400 border border-indigo-500/15 shrink-0">
+                    <Users className="w-4 h-4 text-indigo-400" />
+                  </div>
+                  <h2 className="font-semibold text-[14px] truncate text-foreground/90 group-hover:text-foreground transition-colors" title={share.workspace.name}>
+                    {share.workspace.name}
+                  </h2>
+                </div>
+                
+                <div className="pt-3 border-t border-border/40 flex items-center justify-between text-[11px]">
+                  <span className="text-muted-foreground group-hover:text-foreground/70 transition-colors capitalize">
+                    Role: {share.role.toLowerCase()}
+                  </span>
+                  <span className="font-mono text-[9px] bg-muted border border-border/50 px-1.5 py-0.5 rounded text-muted-foreground">
+                    ID: {share.workspace.id.slice(0, 8)}...
+                  </span>
+                </div>
+              </Link>
+            ))}
+          </div>
+        </>
+      )}
     </div>
   );
 }
