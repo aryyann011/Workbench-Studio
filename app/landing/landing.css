@@ -1582,6 +1582,12 @@
     margin: 8px auto !important;
     padding: 0 8px 0 12px !important;
   }
+  .nav-cta-pill {
+    display: none !important;
+  }
+  .logo-text {
+    display: none !important;
+  }
 }
 
 /* Additional Light Mode Fine-Tuning */
