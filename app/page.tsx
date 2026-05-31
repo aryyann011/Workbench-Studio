@@ -57,7 +57,9 @@ export default function LandingPage() {
           </nav>
 
           <div className="flex items-center gap-3">
-            <ModeToggle />
+            <div className="hidden md:block">
+              <ModeToggle />
+            </div>
             <Link href="/dashboard" className="nav-cta-pill font-sans">
               Open Studio
             </Link>
