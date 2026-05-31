@@ -18,7 +18,7 @@ export default function SignUpPage() {
 
   if (!isLoaded) {
     return (
-      <div className="min-h-screen w-full bg-black flex items-center justify-center">
+      <div className="min-h-screen w-full bg-background flex items-center justify-center">
         <div className="w-8 h-8 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
       </div>
     );
@@ -86,78 +86,78 @@ export default function SignUpPage() {
   };
 
   return (
-    <div className="relative min-h-screen w-full bg-black flex flex-col items-center justify-center overflow-hidden">
+    <div className="relative min-h-screen w-full bg-background flex flex-col items-center justify-center overflow-hidden">
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_-20%,rgba(255,255,255,0.12),transparent_75%)] pointer-events-none z-0" />
 
       <div className="absolute inset-0 pointer-events-none opacity-30 z-0 bg-[linear-gradient(to_right,#242426_1px,transparent_1px),linear-gradient(to_bottom,#242426_1px,transparent_1px)] bg-[size:4rem_4rem]" />
 
-      <div className="absolute left-[8%] top-[20%] opacity-40 hidden xl:flex flex-col p-4 border border-neutral-800 rounded-xl bg-neutral-950/40 pointer-events-none select-none z-0 border-l-neutral-700/30">
+      <div className="absolute left-[8%] top-[20%] opacity-40 hidden xl:flex flex-col p-4 border border-border rounded-xl bg-card/40 pointer-events-none select-none z-0 border-l-border/50">
         <div className="flex items-center gap-3">
-          <div className="p-2 bg-neutral-900 rounded-lg text-neutral-400">
+          <div className="p-2 bg-muted rounded-lg text-muted-foreground">
             <Database className="w-5 h-5" />
           </div>
           <div>
-            <div className="text-white text-sm font-semibold">Primary Database</div>
-            <div className="text-neutral-500 text-[10px]">Database</div>
+            <div className="text-foreground text-sm font-semibold">Primary Database</div>
+            <div className="text-muted-foreground text-[10px]">Database</div>
           </div>
         </div>
       </div>
 
-      <div className="absolute right-[8%] top-[50%] opacity-40 hidden xl:flex flex-col p-4 border border-neutral-800 rounded-xl bg-neutral-950/40 pointer-events-none select-none z-0 border-r-neutral-700/30">
+      <div className="absolute right-[8%] top-[50%] opacity-40 hidden xl:flex flex-col p-4 border border-border rounded-xl bg-card/40 pointer-events-none select-none z-0 border-r-border/50">
         <div className="flex items-center gap-3">
-          <div className="p-2 bg-neutral-900 rounded-lg text-neutral-400">
+          <div className="p-2 bg-muted rounded-lg text-muted-foreground">
             <Server className="w-5 h-5" />
           </div>
           <div>
-            <div className="text-white text-sm font-semibold">API Gateway</div>
-            <div className="text-neutral-500 text-[10px]">API Endpoint</div>
+            <div className="text-foreground text-sm font-semibold">API Gateway</div>
+            <div className="text-muted-foreground text-[10px]">API Endpoint</div>
           </div>
         </div>
       </div>
 
-      <div className="absolute left-[12%] bottom-[20%] opacity-35 hidden xl:flex flex-col p-4 border border-neutral-800 rounded-xl bg-neutral-950/40 pointer-events-none select-none z-0 border-b-neutral-700/30">
+      <div className="absolute left-[12%] bottom-[20%] opacity-35 hidden xl:flex flex-col p-4 border border-border rounded-xl bg-card/40 pointer-events-none select-none z-0 border-b-border/50">
         <div className="flex items-center gap-3">
-          <div className="p-2 bg-neutral-900 rounded-lg text-neutral-400">
+          <div className="p-2 bg-muted rounded-lg text-muted-foreground">
             <Smartphone className="w-5 h-5" />
           </div>
           <div>
-            <div className="text-white text-sm font-semibold">Client App</div>
-            <div className="text-neutral-500 text-[10px]">Client</div>
+            <div className="text-foreground text-sm font-semibold">Client App</div>
+            <div className="text-muted-foreground text-[10px]">Client</div>
           </div>
         </div>
       </div>
 
-      <div className="absolute right-[15%] top-[15%] opacity-35 hidden xl:flex flex-col p-4 border border-neutral-800 rounded-xl bg-neutral-950/40 pointer-events-none select-none z-0 border-t-neutral-700/30">
+      <div className="absolute right-[15%] top-[15%] opacity-35 hidden xl:flex flex-col p-4 border border-border rounded-xl bg-card/40 pointer-events-none select-none z-0 border-t-border/50">
         <div className="flex items-center gap-3">
-          <div className="p-2 bg-neutral-900 rounded-lg text-neutral-400">
+          <div className="p-2 bg-muted rounded-lg text-muted-foreground">
             <Shield className="w-5 h-5" />
           </div>
           <div>
-            <div className="text-white text-sm font-semibold">Auth Service</div>
-            <div className="text-neutral-500 text-[10px]">Service</div>
+            <div className="text-foreground text-sm font-semibold">Auth Service</div>
+            <div className="text-muted-foreground text-[10px]">Service</div>
           </div>
         </div>
       </div>
 
       <div className="absolute top-8 left-8 z-10">
-        <Link href="/" className="flex items-center gap-2 text-sm text-neutral-400 hover:text-white transition-colors">
+        <Link href="/" className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors">
           ← Back to landing
         </Link>
       </div>
 
       <div className="relative z-10 w-full max-w-md p-4">
-        <div className="bg-neutral-950/80 border border-neutral-900 rounded-2xl p-8 shadow-2xl backdrop-blur-xl flex flex-col gap-6">
+        <div className="bg-card/80 border border-border rounded-2xl p-8 shadow-2xl backdrop-blur-xl flex flex-col gap-6">
           
           {!pendingVerification ? (
             <>
               <div className="flex flex-col items-center text-center gap-2">
-                <div className="w-10 h-10 rounded-full bg-white text-black flex items-center justify-center font-black text-lg mb-2">
+                <div className="w-10 h-10 rounded-full bg-foreground text-background flex items-center justify-center font-black text-lg mb-2">
                   W
                 </div>
-                <h1 className="text-white font-serif text-2xl font-bold tracking-tight">
+                <h1 className="text-foreground font-serif text-2xl font-bold tracking-tight">
                   Create your account
                 </h1>
-                <p className="text-neutral-400 text-sm">
+                <p className="text-muted-foreground text-sm">
                   Get started with Workbench Studio
                 </p>
               </div>
@@ -172,7 +172,7 @@ export default function SignUpPage() {
               {/* Google Sign Up */}
               <button
                 onClick={handleGoogleSignUp}
-                className="w-full flex items-center justify-center gap-3 bg-neutral-900 border border-neutral-850 hover:bg-neutral-800 text-white rounded-lg py-2.5 px-4 font-medium transition-all active:scale-[0.98] cursor-pointer"
+                className="w-full flex items-center justify-center gap-3 bg-muted border border-border hover:bg-muted/80 text-foreground rounded-lg py-2.5 px-4 font-medium transition-all active:scale-[0.98] cursor-pointer"
               >
                 <svg className="w-4 h-4" viewBox="0 0 24 24" fill="currentColor">
                   <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
@@ -185,17 +185,17 @@ export default function SignUpPage() {
 
               {/* Divider */}
               <div className="relative flex py-1 items-center">
-                <div className="flex-grow border-t border-neutral-900"></div>
-                <span className="flex-shrink mx-4 text-neutral-600 text-[10px] uppercase font-bold tracking-wider">
+                <div className="flex-grow border-t border-border"></div>
+                <span className="flex-shrink mx-4 text-muted-foreground text-[10px] uppercase font-bold tracking-wider">
                   OR
                 </span>
-                <div className="flex-grow border-t border-neutral-900"></div>
+                <div className="flex-grow border-t border-border"></div>
               </div>
 
               {/* Credentials signup form */}
               <form onSubmit={handleSubmit} className="flex flex-col gap-4">
                 <div className="flex flex-col gap-1.5">
-                  <label className="text-neutral-400 text-xs font-semibold uppercase tracking-wider">
+                  <label className="text-muted-foreground text-xs font-semibold uppercase tracking-wider">
                     Email Address
                   </label>
                   <div className="relative">
@@ -204,16 +204,16 @@ export default function SignUpPage() {
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
                       placeholder="name@example.com"
-                      className="w-full bg-neutral-900/60 border border-neutral-850 hover:border-neutral-800 focus:border-neutral-500 focus:ring-0 text-white rounded-lg py-2 pl-9 pr-4 text-sm transition-colors outline-none font-sans"
+                      className="w-full bg-muted/60 border border-border hover:border-border focus:border-neutral-500 focus:ring-0 text-foreground rounded-lg py-2 pl-9 pr-4 text-sm transition-colors outline-none font-sans"
                       required
                       disabled={isLoading}
                     />
-                    <Mail className="absolute left-3 top-2.5 w-4 h-4 text-neutral-500" />
+                    <Mail className="absolute left-3 top-2.5 w-4 h-4 text-muted-foreground" />
                   </div>
                 </div>
 
                 <div className="flex flex-col gap-1.5">
-                  <label className="text-neutral-400 text-xs font-semibold uppercase tracking-wider">
+                  <label className="text-muted-foreground text-xs font-semibold uppercase tracking-wider">
                     Password
                   </label>
                   <div className="relative">
@@ -222,21 +222,21 @@ export default function SignUpPage() {
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
                       placeholder="••••••••"
-                      className="w-full bg-neutral-900/60 border border-neutral-850 hover:border-neutral-800 focus:border-neutral-500 focus:ring-0 text-white rounded-lg py-2 pl-9 pr-4 text-sm transition-colors outline-none font-sans"
+                      className="w-full bg-muted/60 border border-border hover:border-border focus:border-neutral-500 focus:ring-0 text-foreground rounded-lg py-2 pl-9 pr-4 text-sm transition-colors outline-none font-sans"
                       required
                       disabled={isLoading}
                     />
-                    <Lock className="absolute left-3 top-2.5 w-4 h-4 text-neutral-500" />
+                    <Lock className="absolute left-3 top-2.5 w-4 h-4 text-muted-foreground" />
                   </div>
                 </div>
 
                 <button
                   type="submit"
                   disabled={isLoading}
-                  className="w-full bg-white text-black hover:bg-neutral-200 transition-all font-semibold rounded-lg py-2.5 text-sm flex items-center justify-center gap-2 cursor-pointer shadow-md disabled:bg-neutral-800 disabled:text-neutral-500"
+                  className="w-full bg-foreground text-background hover:bg-foreground/90 transition-all font-semibold rounded-lg py-2.5 text-sm flex items-center justify-center gap-2 cursor-pointer shadow-md disabled:bg-muted disabled:text-muted-foreground"
                 >
                   {isLoading ? (
-                    <div className="w-4 h-4 border-2 border-black border-t-transparent rounded-full animate-spin"></div>
+                    <div className="w-4 h-4 border-2 border-background border-t-transparent rounded-full animate-spin"></div>
                   ) : (
                     <>
                       Register <ArrowRight className="w-4 h-4" />
@@ -247,9 +247,9 @@ export default function SignUpPage() {
 
               {/* Login redirection footer */}
               <div className="text-center pt-2">
-                <p className="text-neutral-500 text-xs">
+                <p className="text-muted-foreground text-xs">
                   Already have an account?{" "}
-                  <Link href="/sign-in" className="text-white hover:text-neutral-200 font-semibold transition-colors">
+                  <Link href="/sign-in" className="text-foreground hover:text-foreground/80 font-semibold transition-colors">
                     Sign in
                   </Link>
                 </p>
@@ -263,11 +263,11 @@ export default function SignUpPage() {
                 <div className="w-10 h-10 rounded-full bg-blue-500/10 text-blue-400 flex items-center justify-center font-bold text-lg mb-2 border border-blue-500/30">
                   <KeyRound className="w-5 h-5" />
                 </div>
-                <h1 className="text-white font-serif text-2xl font-bold tracking-tight">
+                <h1 className="text-foreground font-serif text-2xl font-bold tracking-tight">
                   Verify email address
                 </h1>
-                <p className="text-neutral-400 text-sm max-w-[280px] leading-relaxed">
-                  We sent a 6-digit confirmation code to <span className="text-white font-semibold font-mono">{email}</span>.
+                <p className="text-muted-foreground text-sm max-w-[280px] leading-relaxed">
+                  We sent a 6-digit confirmation code to <span className="text-foreground font-semibold font-mono">{email}</span>.
                 </p>
               </div>
 
@@ -282,7 +282,7 @@ export default function SignUpPage() {
               {/* Verification Code Form */}
               <form onSubmit={handleVerifySubmit} className="flex flex-col gap-4">
                 <div className="flex flex-col gap-1.5">
-                  <label className="text-neutral-400 text-xs font-semibold uppercase tracking-wider text-center mb-1">
+                  <label className="text-muted-foreground text-xs font-semibold uppercase tracking-wider text-center mb-1">
                     Verification Code
                   </label>
                   <input
@@ -291,7 +291,7 @@ export default function SignUpPage() {
                     value={code}
                     onChange={(e) => setCode(e.target.value.replace(/\D/g, ""))}
                     placeholder="123456"
-                    className="w-full text-center bg-neutral-900/60 border border-neutral-850 hover:border-neutral-800 focus:border-neutral-500 focus:ring-0 text-white rounded-lg py-3 text-lg font-mono tracking-[0.6em] pl-[0.6em] transition-colors outline-none"
+                    className="w-full text-center bg-muted/60 border border-border hover:border-border focus:border-neutral-500 focus:ring-0 text-foreground rounded-lg py-3 text-lg font-mono tracking-[0.6em] pl-[0.6em] transition-colors outline-none"
                     required
                     disabled={isLoading}
                   />
@@ -300,10 +300,10 @@ export default function SignUpPage() {
                 <button
                   type="submit"
                   disabled={isLoading}
-                  className="w-full bg-white text-black hover:bg-neutral-200 transition-all font-semibold rounded-lg py-2.5 text-sm flex items-center justify-center gap-2 cursor-pointer shadow-md disabled:bg-neutral-800 disabled:text-neutral-500"
+                  className="w-full bg-foreground text-background hover:bg-foreground/90 transition-all font-semibold rounded-lg py-2.5 text-sm flex items-center justify-center gap-2 cursor-pointer shadow-md disabled:bg-muted disabled:text-muted-foreground"
                 >
                   {isLoading ? (
-                    <div className="w-4 h-4 border-2 border-black border-t-transparent rounded-full animate-spin"></div>
+                    <div className="w-4 h-4 border-2 border-background border-t-transparent rounded-full animate-spin"></div>
                   ) : (
                     "Verify Code"
                   )}
@@ -313,7 +313,7 @@ export default function SignUpPage() {
               <div className="text-center pt-2">
                 <button
                   onClick={() => setPendingVerification(false)}
-                  className="text-neutral-400 hover:text-white text-xs font-semibold transition-colors cursor-pointer"
+                  className="text-muted-foreground hover:text-foreground text-xs font-semibold transition-colors cursor-pointer"
                 >
                   ← Go back & update email
                 </button>
