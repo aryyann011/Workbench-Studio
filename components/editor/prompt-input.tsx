@@ -60,11 +60,16 @@ const MODE_CONFIG: Record<ArchitectMode, { icon: React.ReactNode; label: string;
 };
 
 export default function PromptBar({ prompt, setPrompt, onPromptRun, onRegenerateNew, onModeSelected, onCacheDecision, isloading, loadingText, messages }: CodeEditorProps) {
+  const scrollContainerRef = useRef<HTMLDivElement>(null)
   const MAX_HEIGHT = 150
-  const messagesEndRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" })
+    if (scrollContainerRef.current) {
+      scrollContainerRef.current.scrollTo({
+        top: scrollContainerRef.current.scrollHeight,
+        behavior: "smooth"
+      })
+    }
   }, [messages, isloading])
 
   return (
@@ -75,7 +80,7 @@ export default function PromptBar({ prompt, setPrompt, onPromptRun, onRegenerate
         <h3 className="font-semibold text-sm">AI Architect</h3>
       </div>
 
-      <div className="flex-1 overflow-y-auto p-4 flex flex-col gap-4 thin-scrollbar">
+      <div ref={scrollContainerRef} className="flex-1 overflow-y-auto p-4 flex flex-col gap-4 thin-scrollbar">
         {messages.length === 0 ? (
           <div className="flex flex-col items-center justify-center h-full text-muted-foreground/50">
             <Bot className="w-10 h-10 mb-2 opacity-20" />
@@ -222,7 +227,6 @@ export default function PromptBar({ prompt, setPrompt, onPromptRun, onRegenerate
           </div>
         )}
         
-        <div ref={messagesEndRef} />
       </div>
 
       <div className="p-4 bg-background border-t border-border shrink-0">

@@ -94,7 +94,6 @@ export function SystemNode({ data }: NodeProps) {
 
         <div className="px-7 py-6">
           <div className="flex items-center gap-5">
-            {/* Icon container with subtle gradient background */}
             <div 
               className="relative p-4 rounded-xl shrink-0 transition-transform duration-300 group-hover:scale-105"
               style={{ 
