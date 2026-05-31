@@ -1582,28 +1582,6 @@
     margin: 8px auto !important;
     padding: 0 8px 0 12px !important;
   }
-  .footer-flex {
-    flex-direction: column !important;
-    align-items: center !important;
-    justify-content: center !important;
-    text-align: center !important;
-    gap: 16px !important;
-  }
-  .footer-links {
-    gap: 16px !important;
-  }
-  .hero-sec {
-    padding: 100px 16px 40px !important;
-  }
-  .landing-section {
-    padding-top: 80px !important;
-  }
-  .cta-sec {
-    padding: 80px 0 !important;
-  }
-  .section-header {
-    margin-bottom: 40px !important;
-  }
 }
 
 /* Additional Light Mode Fine-Tuning */

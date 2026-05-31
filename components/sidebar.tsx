@@ -43,8 +43,8 @@ export function AppSidebar() {
   const pathname = usePathname()
   const router = useRouter()
   const { user, isLoaded } = useUser()
-  const { state, isMobile } = useSidebar()
-  const isCollapsed = state === "collapsed" && !isMobile
+  const { state } = useSidebar()
+  const isCollapsed = state === "collapsed"
 
   return (
     <Sidebar collapsible="icon" className="border-r border-border bg-slate-50 dark:bg-[#050507] text-foreground dark:text-white">
