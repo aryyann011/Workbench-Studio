@@ -28,10 +28,10 @@ export default async function SettingsPage() {
               <div className="space-y-1">
                 <h3 className="font-semibold text-lg">{user.fullName || "Developer"}</h3>
                 <p className="text-sm text-muted-foreground">{user.primaryEmailAddress?.emailAddress}</p>
-                <div className="inline-flex items-center gap-2 mt-2 px-2.5 py-1 rounded-full text-xs font-semibold bg-emerald-500/10 text-emerald-400 border border-emerald-500/25">
+                {/* <div className="inline-flex items-center gap-2 mt-2 px-2.5 py-1 rounded-full text-xs font-semibold bg-emerald-500/10 text-emerald-400 border border-emerald-500/25">
                   <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
                   Active Developer Account
-                </div>
+                </div> */}
               </div>
             </div>
           </div>
