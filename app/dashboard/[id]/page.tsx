@@ -34,6 +34,18 @@ export default function ResizableDemo() {
   const workspaceId = params.id as string 
 
   const [isAIOpen, setIsAIOpen] = useState<boolean>(false) 
+  const [prevWorkspaceId, setPrevWorkspaceId] = useState<string>(workspaceId)
+
+  if (workspaceId !== prevWorkspaceId) {
+    setPrevWorkspaceId(workspaceId)
+    setIsAIOpen(false)
+  }
+
+  const [mounted, setMounted] = useState<boolean>(false)
+  useEffect(() => {
+    setMounted(true)
+  }, [])
+
   const [workspaceName, setWorkspaceName] = useState<string>("Untitled")
   const { code, setCode, generateGraph, SetTheGraph, nodes, edges } = useAppStore()
   const [prompt, setPrompt] = useState<string>("")
@@ -232,11 +244,9 @@ export default function ResizableDemo() {
       return;
     }
 
-    // For existing workspace: fire and forget background save
     setWorkspaceName(finalName);
     setIsSaving(true); // briefly show saving state
     
-    // Start background save without blocking
     saveArchitecture(code, nodes, edges, workspaceId, undefined, finalName)
       .then((result) => {
         setIsSaving(false);
@@ -356,12 +366,14 @@ export default function ResizableDemo() {
       </div>
 
       <div 
-        className={`absolute top-0 right-0 h-full w-[85vw] max-w-sm md:w-80 z-50 transform transition-transform duration-300 ease-in-out ${isAIOpen ? 'translate-x-0' : 'translate-x-full'}`}
+        className="absolute top-0 right-0 h-full w-[85vw] max-w-sm md:w-80 z-50 transition-transform duration-300 ease-in-out"
+        style={{ transform: isAIOpen ? 'translateX(0)' : 'translateX(100%)' }}
       >
         <button 
-          className="absolute top-4 right-4 z-50 p-1 bg-muted hover:bg-muted-foreground/20 rounded-md text-muted-foreground transition-colors"
+          onClick={() => setIsAIOpen(false)}
+          className="absolute top-4 right-4 z-50 p-2 md:p-1 bg-muted hover:bg-muted-foreground/20 rounded-md text-muted-foreground transition-colors"
         >
-          <X className="w-4 h-4 cursor-pointer" onClick={() => setIsAIOpen(!isAIOpen)}/>
+          <X className="w-5 h-5 md:w-4 md:h-4 cursor-pointer" />
         </button>
         
         <PromptBar 

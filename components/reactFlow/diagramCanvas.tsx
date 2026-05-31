@@ -84,6 +84,31 @@ const EditorContent = ({ readOnly = false, workspaceId: propWorkspaceId }: { rea
   const prevNodeCount = useRef<number>(nodes.length);
 
   useEffect(() => {
+    // 1. Handle component mount (fixes unmount/remount issue with ResizablePanel)
+    const mountTimer = setTimeout(() => {
+      if (nodes.length > 0) {
+        fitView({ padding: 0.15, duration: 300 });
+      }
+    }, 250);
+
+    // 2. Handle tab visibility change (fixes "leaving site open and coming back" issue)
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === 'visible' && nodes.length > 0) {
+        setTimeout(() => {
+          fitView({ padding: 0.15, duration: 300 });
+        }, 100);
+      }
+    };
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+
+    return () => {
+      clearTimeout(mountTimer);
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+    };
+  }, [fitView, nodes.length]);
+
+  useEffect(() => {
+    // 3. Handle node additions (AI generating new architecture)
     if (nodes.length > 0 && nodes.length !== prevNodeCount.current) {
       prevNodeCount.current = nodes.length;
       const timer = setTimeout(() => {
