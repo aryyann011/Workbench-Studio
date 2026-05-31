@@ -2,7 +2,7 @@
 
 import * as React from "react"
 import { usePathname } from "next/navigation"
-import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar"
+import { SidebarProvider, SidebarTrigger, useSidebar } from "@/components/ui/sidebar"
 import { AppSidebar } from "@/components/sidebar"
 import { ThemeProvider } from "@/components/Mode/themeProvider"
 import { ModeToggle } from "@/components/Mode/modeToggle"
@@ -29,6 +29,18 @@ function ThemeToaster() {
       }}
     />
   )
+}
+
+function SidebarManager({ shouldStartClosed }: { shouldStartClosed: boolean }) {
+  const { setOpen, isMobile } = useSidebar()
+  React.useEffect(() => {
+    if (window.innerWidth < 1024 || isMobile) {
+      setOpen(false)
+    } else {
+      setOpen(!shouldStartClosed)
+    }
+  }, [shouldStartClosed, setOpen, isMobile])
+  return null
 }
 
 export function LayoutWrapper({
@@ -70,6 +82,7 @@ export function LayoutWrapper({
           key={pathname}
           defaultOpen={!shouldStartClosed}
         >
+          <SidebarManager shouldStartClosed={shouldStartClosed} />
           <AppSidebar />
 
           <main className="w-full h-screen flex flex-col overflow-hidden bg-background">

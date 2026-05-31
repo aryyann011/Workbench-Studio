@@ -47,7 +47,7 @@ export default function LandingPage() {
         <div className="nav-pill">
           <Link href="/" className="logo-link">
             <div className="logo-symbol">W</div>
-            <span className={`logo-text ${spaceGrotesk.className}`}>Workbench Studio</span>
+            <span className={`logo-text ${spaceGrotesk.className} hidden sm:inline`}>Workbench Studio</span>
           </Link>
 
           <nav className="nav-links hidden md:flex">
@@ -56,9 +56,9 @@ export default function LandingPage() {
             <a href="#editor-showcase" className="nav-item">Platform</a>
           </nav>
 
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2 sm:gap-3">
             <ModeToggle />
-            <Link href="/dashboard" className="nav-cta-pill font-sans">
+            <Link href="/dashboard" className="nav-cta-pill font-sans px-3 py-1.5 sm:px-4 sm:py-2 text-[11px] sm:text-[13px]">
               Open Studio
             </Link>
           </div>
@@ -162,7 +162,7 @@ export default function LandingPage() {
                 </div>
               </div>
 
-              <div className="preview-canvas-pane relative overflow-hidden bg-[#060608] border-l border-white/5 flex items-center justify-center min-h-[350px]">
+              <div className="preview-canvas-pane relative overflow-hidden bg-[#060608] border-l border-white/5 flex items-center justify-center min-h-[250px] sm:min-h-[350px]">
 
                 <svg className="w-full h-full absolute inset-0" viewBox="0 0 600 400" preserveAspectRatio="xMidYMid meet">
 
