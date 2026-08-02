@@ -4,6 +4,7 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono, Libre_Baskerville, Inter } from "next/font/google";
 import "./globals.css";
 import { ClerkProvider } from "@clerk/nextjs";
+import { Analytics } from "@vercel/analytics/next"
 import { LayoutWrapper } from "@/components/clientWrapper/layout-wrapper"; 
 
 // export const metadata: Metadata = {
@@ -41,6 +42,7 @@ export default function RootLayout({
           <LayoutWrapper>
             {children}
           </LayoutWrapper>
+          <Analytics />
         </body>
       </html>
     </ClerkProvider>
