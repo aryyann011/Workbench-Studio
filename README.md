@@ -1,124 +1,99 @@
-<p align="center">
-  <img src="https://img.shields.io/badge/Next.js-16-black?style=for-the-badge&logo=next.js" />
-  <img src="https://img.shields.io/badge/TypeScript-5-3178C6?style=for-the-badge&logo=typescript&logoColor=white" />
-  <img src="https://img.shields.io/badge/Prisma-7.6-2D3748?style=for-the-badge&logo=prisma" />
-  <img src="https://img.shields.io/badge/PostgreSQL-Supabase-4169E1?style=for-the-badge&logo=postgresql&logoColor=white" />
-  <img src="https://img.shields.io/badge/Gemini-2.5_Flash-4285F4?style=for-the-badge&logo=google&logoColor=white" />
-</p>
+<div align="center">
 
-# Workbench Studio
+# 🎨 Workbench Studio
 
 **Turn a sentence into a production-ready system architecture diagram — in seconds.**
 
-Workbench Studio is an AI-powered system design workspace that converts natural language prompts into interactive, editable architecture diagrams with real-time collaboration. Describe what you want to build, and watch it materialize as a professionally laid-out flowchart you can drag, edit, share, and export.
+[![Next.js](https://img.shields.io/badge/Next.js-16-black?style=for-the-badge&logo=next.js)](https://nextjs.org/)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5-3178C6?style=for-the-badge&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
+[![Prisma](https://img.shields.io/badge/Prisma-7.6-2D3748?style=for-the-badge&logo=prisma)](https://www.prisma.io/)
+[![Supabase](https://img.shields.io/badge/PostgreSQL-Supabase-4169E1?style=for-the-badge&logo=postgresql&logoColor=white)](https://supabase.com/)
+[![Gemini](https://img.shields.io/badge/Gemini-2.5_Flash-4285F4?style=for-the-badge&logo=google&logoColor=white)](https://deepmind.google/technologies/gemini/)
+
+*An AI-powered system design workspace that translates natural language into mathematically routed, interactive architecture diagrams.*
 
 <p align="center">
   <em>Prompt → AI → Custom DSL → Graph Layout Engine → Interactive Canvas</em>
 </p>
 
+</div>
+
 ---
 
 ## ✨ Features
 
-### 🤖 AI-Powered Compilation
-Describe your system in plain English — "create a backend for an e-commerce platform..." — and our backend engine compiles your intent into a strict custom DSL. We leverage Gemini 2.5 Flash as a translation layer, passing the structured syntax down to our custom parser and layout engine to instantly render a mathematically routed architecture diagram.
-
-### 🎨 Interactive Canvas
-- **Drag-and-drop** nodes with independent child/parent movement
-- **Auto-layout** via ELK.js (Eclipse Layout Kernel) — no manual positioning needed
-- **Dynamic icons** and color-coded categories resolved per node label
-- **Smooth zoom/pan** with minimap navigation
-- **Export to PNG** at 3x resolution with dark background
-
-### ✏️ Dual-Mode Editor
-- **Code View** — Monaco Editor with a custom DSL syntax (`[Node A] -> [Node B]`, `[Node] inside [Phase]`)
-- **Canvas View** — Full ReactFlow canvas with controls
-- **Split View** — Resizable side-by-side editor + canvas
-- **Run** to re-parse and re-layout at any time
-
-### 👥 Real-Time Collaboration
-- **Live cursors** — see collaborator mouse positions in real-time
-- **Node locking** — when someone drags a node, others see a "locked by" indicator
-- **Instant sync** — edge creation, node deletion, and undo/redo propagate to all users
-- Powered by **Supabase Realtime** broadcast channels
-
-### 🔐 Sharing & Access Control
-- **Public share links** with tokenized access (32-char hex tokens)
-- **Direct user invites** by Clerk user ID
-- **Role-based permissions** — Owner / Collaborator (can edit) / Reader (view-only)
-- **Optional expiry** on share links
-- **Revoke access** at any time from the share management panel
-
-### ⚡ Smart Prompt Caching
-- **Two-tier cache** — exact SHA-256 hash match → character-level similarity scoring (70% threshold)
-- **Cache badges** in the AI chat showing `Cached` or `85% match`
-- **"Create New"** button to bypass cache and force a fresh AI generation
-- **Auto-eviction** of stale, single-use entries after 30 days
-
-### ↩️ Undo / Redo
-Full action-based undo/redo stack supporting node deletion and node movement — scoped per user in collaborative sessions.
-
----
+<table>
+  <tr>
+    <td><b>🤖 AI-Powered Compilation</b><br>Describe your system in plain English. Gemini 2.5 Flash acts as a translation layer, compiling your intent into our strict custom DSL.</td>
+    <td><b>🎨 Interactive Canvas</b><br>Full ReactFlow integration. Drag-and-drop nodes, smooth zoom/pan with minimap navigation, and high-res 3x PNG exports.</td>
+  </tr>
+  <tr>
+    <td><b>⚡ Auto-Layout Engine</b><br>No manual positioning required. ELK.js algorithmically computes optimal node placement and orthogonal edge routing instantly.</td>
+    <td><b>👥 Real-Time Collaboration</b><br>Powered by Supabase Realtime. See live cursors, active node locks, and instant syncs as your team architectures together.</td>
+  </tr>
+  <tr>
+    <td><b>✏️ Dual-Mode Editor</b><br>Toggle between Code View (Monaco Editor), Canvas View, or Split View. Hit Run to re-parse and re-layout at any time.</td>
+    <td><b>🔐 Sharing & Access Control</b><br>Generate tokenized public share links or invite users directly via Clerk ID with strict Owner, Collaborator, or Reader permissions.</td>
+  </tr>
+  <tr>
+    <td><b>⚡ Smart Prompt Caching</b><br>Two-tier cache (SHA-256 hash match → 70% character similarity). Includes "Create New" bypass and 30-day auto-eviction.</td>
+    <td><b>↩️ Undo / Redo</b><br>Full action-based undo/redo stack supporting node deletion and movement — scoped per user in collaborative sessions.</td>
+  </tr>
+</table>
 
 ## 🏗️ Architecture
 
-```
-┌─────────────────────────────────────────────────────────┐
-│                     CLIENT (Browser)                     │
-│                                                          │
-│  ┌──────────┐  ┌──────────┐  ┌────────────────────────┐ │
-│  │  Monaco   │  │  AI Chat │  │   ReactFlow Canvas     │ │
-│  │  Editor   │  │  Panel   │  │   + ELK Auto-Layout    │ │
-│  └────┬─────┘  └────┬─────┘  └───────────┬────────────┘ │
-│       │              │                    │               │
-│       └──────────────┴────────────────────┘               │
-│                      │                                    │
-│              ┌───────▼───────┐                            │
-│              │  Zustand Store │ ◄──── Supabase Realtime   │
-│              │  (nodes/edges/ │       (cursors, sync,     │
-│              │   undo/redo)   │        node locking)      │
-│              └───────┬───────┘                            │
-└──────────────────────┼────────────────────────────────────┘
-                       │
-         ┌─────────────┼─────────────┐
-         │             │             │
-    ┌────▼────┐  ┌─────▼─────┐  ┌───▼────┐
-    │  /api/   │  │  Server   │  │  /api/  │
-    │ generate │  │  Actions  │  │ share/  │
-    │(Gemini)  │  │ (Prisma)  │  │validate │
-    └────┬────┘  └─────┬─────┘  └───┬────┘
-         │             │             │
-         └─────────────┼─────────────┘
-                       │
-              ┌────────▼────────┐
-              │   PostgreSQL    │
-              │   (Supabase)    │
-              │                 │
-              │  • Workspace    │
-              │  • WorkspaceShare│
-              │  • PromptCache  │
-              └─────────────────┘
+Workbench Studio utilizes a highly responsive client-side state machine synced over WebSockets to maintain real-time collaborative parity.
+
+```mermaid
+graph TD
+    %% Styling
+    classDef client fill:#1E293B,stroke:#334155,stroke-width:2px,color:#fff;
+    classDef ai fill:#4285F4,stroke:#1A73E8,stroke-width:2px,color:#fff;
+    classDef db fill:#10B981,stroke:#047857,stroke-width:2px,color:#fff;
+    classDef server fill:#0284C7,stroke:#0369A1,stroke-width:2px,color:#fff;
+
+    %% Nodes
+    Client[("💻 Browser<br>Monaco + ReactFlow")]:::client
+    Store["📦 Zustand Store<br>(Nodes/Edges/Undo)"]:::client
+    API["⚡ Next.js API<br>(/api/generate)"]:::server
+    Actions["⚙️ Server Actions<br>(Prisma CRUD)"]:::server
+    Gemini["🧠 Gemini 2.5 Flash"]:::ai
+    DB[("🐘 PostgreSQL<br>(Supabase)")]:::db
+    Socket(("📻 Supabase Realtime<br>(Cursors/Locks)")):::db
+
+    %% Relationships
+    Client <--> Store
+    Client -- "1. Prompt Request" --> API
+    API -- "2. Natural Language" --> Gemini
+    Gemini -- "3. Custom DSL" --> API
+    API -- "4. Parsed Nodes" --> Client
+    Client -- "5. Persist Layout" --> Actions
+    Actions --> DB
+    Client <-->|"6. Broadcast Mutations"| Socket
 ```
 
 ### The Pipeline
 
-```
-User Prompt ──► Gemini 2.5 Flash ──► Custom DSL Code ──► Parser ──► ELK.js Layout ──► ReactFlow Render
-                                          │
-                                    PromptCache
-                                   (SHA-256 hash)
+```mermaid
+flowchart LR
+    classDef core fill:#2D3748,stroke:#4A5568,color:#fff;
+    
+    A([User Prompt]) --> B[Gemini 2.5]:::core
+    B --> C[DSL Code]:::core
+    C --> D[Regex Parser]:::core
+    D --> E[ELK.js Layout]:::core
+    E --> F([ReactFlow Render])
 ```
 
-1. **Input** — User describes a system in the AI chat or writes DSL code directly
-2. **Cache Check** — SHA-256 hash lookup → similarity scan of recent prompts
-3. **AI Generation** — Gemini produces DSL syntax: `[Node] -> [Node]` connections + `[Node] inside [Phase]` groupings
-4. **Parsing** — Custom regex-based parser extracts nodes, edges, and parent-child relationships
-5. **Layout** — ELK.js (layered algorithm) computes optimal positions minimizing edge crossings
-6. **Render** — ReactFlow renders the interactive diagram with dynamic icons, handles, and styling
-7. **Persist** — Auto-saved to PostgreSQL every 2 seconds (debounced)
-8. **Broadcast** — All mutations sync to collaborators via Supabase Realtime
-
----
+1. **Input** — User describes a system in the AI chat or writes DSL code directly.
+2. **Cache Check** — SHA-256 hash lookup → similarity scan of recent prompts.
+3. **AI Generation** — Gemini produces DSL syntax: `[Node] -> [Node]` connections + `[Node] inside [Phase]` groupings.
+4. **Parsing** — Custom regex-based parser extracts nodes, edges, and parent-child relationships.
+5. **Layout** — ELK.js (layered algorithm) computes optimal positions minimizing edge crossings.
+6. **Render** — ReactFlow renders the interactive diagram with dynamic icons, handles, and styling.
+7. **Persist** — Auto-saved to PostgreSQL every 2 seconds (debounced).
+8. **Broadcast** — All mutations sync to collaborators via Supabase Realtime.
 
 ## 🛠️ Tech Stack
 
@@ -138,53 +113,103 @@ User Prompt ──► Gemini 2.5 Flash ──► Custom DSL Code ──► Parse
 | **Styling** | Tailwind CSS 4 + Shadcn UI | Component library with dark mode |
 | **Export** | html-to-image | High-res PNG export (3x pixel ratio) |
 
----
+## 🔑 Key Engineering Decisions
+
+<details>
+<summary><b>Click to expand: Why a Custom DSL instead of JSON?</b></summary>
+<br>
+Most AI-to-diagram tools generate raw JSON coordinates. We deliberately engineered a human-readable DSL:
+
+```text
+[Client App] -> [API Gateway]
+[API Gateway] -> [Auth Service]
+[Auth Service] -> [Data Layer]
+
+[Client App] inside [Frontend Phase]
+[API Gateway] inside [Routing Phase]
+[Auth Service] inside [Processing Phase]
+[Data Layer] inside [Storage Phase]
+```
+**Why:** Users can read, edit, and understand the architecture without touching the canvas. The DSL is the source of truth — the canvas is a derived view.
+</details>
+
+<details>
+<summary><b>Click to expand: Why ELK.js Over Manual Positioning?</b></summary>
+<br>
+LLMs produce arbitrary coordinates that create visual chaos. ELK.js applies the **Sugiyama/layered algorithm** to automatically:
+- Minimize edge crossings
+- Enforce hierarchical flow (top → bottom)
+- Compute optimal node spacing within groups
+- Handle orthogonal edge routing
+
+Result: every generated diagram looks clean on the first render, without any manual adjustment.
+</details>
+
+<details>
+<summary><b>Click to expand: Why Supabase Realtime Over Socket.io/Pusher?</b></summary>
+<br>
+
+- **Zero backend infrastructure** — no WebSocket server to manage
+- **Already using Supabase** for PostgreSQL — no additional service
+- **Broadcast channels** are ephemeral (no persistence overhead for cursors)
+- **Built-in presence** for future online-user indicators
+</details>
 
 ## 📦 Database Schema
 
-Three core tables powering the application:
-
+```mermaid
+erDiagram
+    WORKSPACE ||--o{ WORKSPACE_SHARE : manages
+    WORKSPACE {
+        string id PK
+        string userId
+        string name
+        text code
+        jsonb canvas_nodes
+        jsonb canvas_edges
+        datetime createdAt
+        datetime updatedAt
+    }
+    WORKSPACE_SHARE {
+        string id PK
+        string workspaceId FK
+        string userId
+        string shareToken
+        enum role "OWNER | COLLABORATOR | READER"
+        string createdBy
+        datetime expiresAt
+    }
+    PROMPT_CACHE {
+        string id PK
+        string userId
+        string promptText
+        string promptHash "SHA-256 unique"
+        text generatedCode
+        jsonb canvas_nodes
+        jsonb canvas_edges
+        int usageCount
+        datetime lastUsed
+        datetime createdAt
+    }
 ```
-Workspace (1) ◄────► (N) WorkspaceShare
-    │
-    │  id, userId, name, code,
-    │  canvas_nodes (JSONB), canvas_edges (JSONB),
-    │  createdAt, updatedAt
-    │
-    └──► WorkspaceShare
-            id, workspaceId, userId?, shareToken?,
-            role (OWNER|COLLABORATOR|READER),
-            createdBy, expiresAt
-
-PromptCache (standalone)
-    id, userId, promptText, promptHash (SHA-256 unique),
-    generatedCode, canvas_nodes, canvas_edges,
-    usageCount, lastUsed, createdAt
-```
-
----
 
 ## 🚀 Getting Started
 
 ### Prerequisites
-
 - Node.js 18+
-- PostgreSQL database (or [Supabase](https://supabase.com) free tier)
-- [Clerk](https://clerk.com) account (free tier)
-- [Google AI Studio](https://aistudio.google.com) API key (Gemini access)
+- PostgreSQL database (or Supabase free tier)
+- Clerk account (free tier)
+- Google AI Studio API key (Gemini access)
 
 ### 1. Clone & Install
-
 ```bash
-git clone https://github.com/your-username/workbench-studio.git
+git clone [https://github.com/your-username/workbench-studio.git](https://github.com/your-username/workbench-studio.git)
 cd workbench-studio
 npm install
 ```
 
 ### 2. Environment Variables
-
 Create a `.env` file in the project root:
-
 ```env
 # Database
 DATABASE_URL="postgresql://user:password@host:5432/dbname?sslmode=require"
@@ -198,7 +223,7 @@ CLERK_SECRET_KEY="sk_..."
 GOOGLE_API_KEY="your-gemini-api-key"
 
 # Supabase (for Realtime only)
-NEXT_PUBLIC_SUPABASE_URL="https://your-project.supabase.co"
+NEXT_PUBLIC_SUPABASE_URL="[https://your-project.supabase.co](https://your-project.supabase.co)"
 NEXT_PUBLIC_SUPABASE_ANON_KEY="your-anon-key"
 
 # App
@@ -206,25 +231,20 @@ NEXT_PUBLIC_APP_URL="http://localhost:3000"
 ```
 
 ### 3. Database Setup
-
 ```bash
 npx prisma generate
 npx prisma db push
 ```
 
 ### 4. Run
-
 ```bash
 npm run dev
 ```
-
 Open [http://localhost:3000](http://localhost:3000) — log in via Clerk, create a workspace, and start designing.
-
----
 
 ## 📁 Project Structure
 
-```
+```text
 workbench-studio/
 ├── app/
 │   ├── page.tsx                    # Dashboard (workspace list)
@@ -240,7 +260,7 @@ workbench-studio/
 ├── actions/
 │   ├── workspace.ts                # Workspace CRUD server actions
 │   ├── share.ts                    # Sharing system server actions
-│   └── promptCache.ts             # Cache operations server actions
+│   └── promptCache.ts              # Cache operations server actions
 ├── components/
 │   ├── reactFlow/
 │   │   ├── diagramCanvas.tsx       # Main ReactFlow canvas
@@ -262,52 +282,10 @@ workbench-studio/
     └── schema.prisma               # Database schema
 ```
 
----
-
-## 🔑 Key Engineering Decisions
-
-### Why a Custom DSL Instead of JSON?
-
-Most AI-to-diagram tools generate raw JSON coordinates. We deliberately chose a human-readable DSL:
-
-```
-[Client App] -> [API Gateway]
-[API Gateway] -> [Auth Service]
-[Auth Service] -> [Data Layer]
-
-[Client App] inside [Frontend Phase]
-[API Gateway] inside [Routing Phase]
-[Auth Service] inside [Processing Phase]
-[Data Layer] inside [Storage Phase]
-```
-
-**Why**: Users can read, edit, and understand the architecture without touching the canvas. The DSL is the source of truth — the canvas is a derived view.
-
-### Why ELK.js Over Manual Positioning?
-
-LLMs produce arbitrary coordinates that create visual chaos. ELK.js applies the **Sugiyama/layered algorithm** to automatically:
-- Minimize edge crossings
-- Enforce hierarchical flow (top → bottom)
-- Compute optimal node spacing within groups
-- Handle orthogonal edge routing
-
-Result: every generated diagram looks clean on the first render, without any manual adjustment.
-
-### Why Supabase Realtime Over Socket.io/Pusher?
-
-- **Zero backend infrastructure** — no WebSocket server to manage
-- **Already using Supabase** for PostgreSQL — no additional service
-- **Broadcast channels** are ephemeral (no persistence overhead for cursors)
-- **Built-in presence** for future online-user indicators
-
----
-
 ## 📄 License
 
 This project is licensed under the [MIT License](LICENSE).
 
 ---
 
-<p align="center">
-  Built with obsessive attention to architecture by <a href="https://github.com/your-username">Aryan</a>
-</p>
+*Architected and engineered by Aryan Mishra.*
