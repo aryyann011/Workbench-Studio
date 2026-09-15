@@ -36,6 +36,9 @@ export default function RootLayout({
   return (
     <ClerkProvider>
       <html lang="en" className="dark" suppressHydrationWarning>
+        <head>
+          <meta name="mitgo-verification" content="dae51e34-e629-462c-9092-f7a518d2eaf6" />
+        </head>
         <body
           className={`${geistSans.variable} ${geistMono.variable} ${baskerville.variable} antialiased bg-background text-foreground`}
         >
