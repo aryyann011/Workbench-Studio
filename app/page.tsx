@@ -2,7 +2,6 @@
 
 import React, { useState, useEffect } from "react"
 import Link from "next/link"
-import { Space_Grotesk, Inter } from "next/font/google"
 import {
   ArrowRight,
   Github,
@@ -10,10 +9,6 @@ import {
   Server,
   Shield,
   Layers,
-  Mail,
-  Play,
-  Settings,
-  Database,
   FolderUp,
   Code2,
   Zap,
@@ -24,9 +19,6 @@ import {
 } from "lucide-react"
 import "./landing/landing.css"
 import { ModeToggle } from "@/components/Mode/modeToggle"
-
-const spaceGrotesk = Space_Grotesk({ subsets: ["latin"], weight: ["500", "700"] })
-const inter = Inter({ subsets: ["latin"] })
 
 export default function LandingPage() {
   const [activeTab, setActiveTab] = useState<"collab" | "editor" | "caching">("collab")
@@ -41,13 +33,13 @@ export default function LandingPage() {
   }, [])
 
   return (
-    <div className={`landing-root noise-overlay ${inter.className}`}>
+    <div className={`landing-root noise-overlay font-[family-name:var(--font-inter)]`}>
 
       <header className={`landing-header ${scrolled ? "scrolled" : ""}`}>
         <div className="nav-pill">
           <Link href="/" className="logo-link">
             <div className="logo-symbol">W</div>
-            <span className={`logo-text ${spaceGrotesk.className}`}>Workbench Studio</span>
+            <span className={`logo-text font-[family-name:var(--font-space-grotesk)]`}>Workbench Studio</span>
           </Link>
 
           <nav className="nav-links hidden md:flex">
@@ -73,7 +65,7 @@ export default function LandingPage() {
           <div className="hero-glow-orb hero-orb-emerald" />
         </div>
 
-        <h2 className={`hero-heading ${spaceGrotesk.className}`}>
+        <h2 className={`hero-heading font-[family-name:var(--font-space-grotesk)]`}>
           Architecture diagrams <span className="hero-highlight">at the speed</span> of thoughts
         </h2>
 
@@ -240,7 +232,7 @@ export default function LandingPage() {
 
           <div className="section-header text-center items-center flex flex-col mb-16">
             <span className="section-label text-emerald-400">The Workbench Engine</span>
-            <h2 className={`section-title ${spaceGrotesk.className} max-w-2xl`}>
+            <h2 className={`section-title font-[family-name:var(--font-space-grotesk)] max-w-2xl`}>
               Complex architecture, distilled into a seamless workflow.
             </h2>
           </div>
@@ -250,7 +242,7 @@ export default function LandingPage() {
             <div className="bento-card bento-large border-glow-hover bg-slate-900/40 flex flex-col md:flex-row items-center gap-6">
               <div className="bento-content flex-1 text-left">
                 <Code2 className="w-6 h-6 text-cyan-400 mb-4" />
-                <h3 className={`text-xl text-white mb-2 ${spaceGrotesk.className}`}>Declarative DSL</h3>
+                <h3 className={`text-xl text-white mb-2 font-[family-name:var(--font-space-grotesk)]`}>Declarative DSL</h3>
                 <p className="text-sm text-slate-400 max-w-md">
                   Why drag and drop when you can type? Our custom Domain Specific Language lets you map out complex microservices as fast as you can think.
                 </p>
@@ -278,7 +270,7 @@ export default function LandingPage() {
             <div className="bento-card bento-small border-glow-hover bg-slate-900/40">
               <div className="bento-content text-left">
                 <FolderUp className="w-6 h-6 text-emerald-400 mb-4" />
-                <h3 className={`text-lg text-white mb-2 ${spaceGrotesk.className}`}>High-Res Export</h3>
+                <h3 className={`text-lg text-white mb-2 font-[family-name:var(--font-space-grotesk)]`}>High-Res Export</h3>
                 <p className="text-sm text-slate-400">
                   Export to 3x resolution PNGs instantly. Ready for your documentation, PRs, or presentations.
                 </p>
@@ -299,7 +291,7 @@ export default function LandingPage() {
             <div className="bento-card bento-small border-glow-hover bg-slate-900/40">
               <div className="bento-content text-left">
                 <Layers className="w-6 h-6 text-amber-400 mb-4" />
-                <h3 className={`text-lg text-white mb-2 ${spaceGrotesk.className}`}>ELK.js Routing</h3>
+                <h3 className={`text-lg text-white mb-2 font-[family-name:var(--font-space-grotesk)]`}>ELK.js Routing</h3>
                 <p className="text-sm text-slate-400">
                   Zero overlapping wires. The mathematical layout engine automatically calculates the cleanest possible paths.
                 </p>
@@ -322,7 +314,7 @@ export default function LandingPage() {
             <div className="bento-card bento-large border-glow-hover bg-slate-900/40 flex flex-col md:flex-row items-center gap-6">
               <div className="bento-content flex-1 text-left">
                 <Shield className="w-6 h-6 text-blue-400 mb-4" />
-                <h3 className={`text-xl text-white mb-2 ${spaceGrotesk.className}`}>Enterprise-Grade Access</h3>
+                <h3 className={`text-xl text-white mb-2 font-[family-name:var(--font-space-grotesk)]`}>Enterprise-Grade Access</h3>
                 <p className="text-sm text-slate-400">
                   Secured by Clerk authentication. Generate cryptographic 32-character hex tokens for read-only or collaborative sharing. Revoke access with a single click.
                 </p>
@@ -369,7 +361,7 @@ export default function LandingPage() {
 
           <div className="section-header">
             <span className="section-label text-emerald-400">Capabilities</span>
-            <h2 className={`section-title ${spaceGrotesk.className}`}>Fast. Offline-First. Algorithmic.</h2>
+            <h2 className={`section-title font-[family-name:var(--font-space-grotesk)]`}>Fast. Offline-First. Algorithmic.</h2>
             <p className="section-desc">
               Engineered with modern tools to deliver instant results for software engineers and architects.
             </p>
@@ -380,7 +372,7 @@ export default function LandingPage() {
               <div className="feature-icon-box bg-cyan-500/10 border-cyan-500/20">
                 <Cloud className="w-5 h-5 text-cyan-400" />
               </div>
-              <h3 className={`feature-heading ${spaceGrotesk.className}`}>Cloud stays optional</h3>
+              <h3 className={`feature-heading font-[family-name:var(--font-space-grotesk)]`}>Cloud stays optional</h3>
               <p className="feature-text">
                 Create and edit layouts locally in your browser. Sync up to secured databases whenever you want to collaborate or share publicly.
               </p>
@@ -390,7 +382,7 @@ export default function LandingPage() {
               <div className="feature-icon-box bg-emerald-500/10 border-emerald-500/20">
                 <Zap className="w-5 h-5 text-emerald-400" />
               </div>
-              <h3 className={`feature-heading ${spaceGrotesk.className}`}>Layouts get automated</h3>
+              <h3 className={`feature-heading font-[family-name:var(--font-space-grotesk)]`}>Layouts get automated</h3>
               <p className="feature-text">
                 No more aligning boxes manually. Advanced graph-drawing algorithms eliminate line overlaps instantly, giving you perfect topology.
               </p>
@@ -400,7 +392,7 @@ export default function LandingPage() {
               <div className="feature-icon-box bg-blue-500/10 border-blue-500/20">
                 <Lock className="w-5 h-5 text-blue-400" />
               </div>
-              <h3 className={`feature-heading ${spaceGrotesk.className}`}>Privacy by default</h3>
+              <h3 className={`feature-heading font-[family-name:var(--font-space-grotesk)]`}>Privacy by default</h3>
               <p className="feature-text">
                 Your prompt logs and custom schemas are stored securely. Generate share links with strict owner, collaborator, or read-only tokens.
               </p>
@@ -410,7 +402,7 @@ export default function LandingPage() {
               <div className="feature-icon-box bg-amber-500/10 border-amber-500/20">
                 <Code2 className="w-5 h-5 text-amber-400" />
               </div>
-              <h3 className={`feature-heading ${spaceGrotesk.className}`}>Developer-first DSL</h3>
+              <h3 className={`feature-heading font-[family-name:var(--font-space-grotesk)]`}>Developer-first DSL</h3>
               <p className="feature-text">
                 A highly intuitive domain-specific language represents nodes and connections. Write it directly or let our AI parse it from a single sentence.
               </p>
@@ -425,7 +417,7 @@ export default function LandingPage() {
 
             <div className="tabs-sidebar">
               <span className="section-label text-cyan-400" style={{ alignSelf: "flex-start" }}>Interactive Demo</span>
-              <h2 className={spaceGrotesk.className} style={{ fontSize: "36px", marginBottom: "16px", color: "#fff" }}>
+              <h2 className="font-[family-name:var(--font-space-grotesk)]" style={{ fontSize: "36px", marginBottom: "16px", color: "#fff" }}>
                 Built for active collaboration
               </h2>
 
@@ -529,7 +521,7 @@ export default function LandingPage() {
       <section className="cta-sec">
         <div className="cta-glow-orb hero-orb-cyan opacity-20" />
         <div className="cta-content">
-          <h2 className={`cta-title ${spaceGrotesk.className}`}>Ready to design your next backend?</h2>
+          <h2 className={`cta-title font-[family-name:var(--font-space-grotesk)]`}>Ready to design your next backend?</h2>
           <p className="cta-desc">
             Describe your system architecture in plain English. Get high-quality, auto-formatted diagrams with live collaborative sharing instantly.
           </p>
@@ -543,7 +535,7 @@ export default function LandingPage() {
         <div className="section-inner footer-flex">
           <div className="footer-left">
             <div className="footer-logo">W</div>
-            <span className={`${spaceGrotesk.className}`} style={{ fontWeight: 700, color: "#fff" }}>Workbench Studio</span>
+            <span className={`font-[family-name:var(--font-space-grotesk)]`} style={{ fontWeight: 700, color: "#fff" }}>Workbench Studio</span>
           </div>
 
           <div className="footer-links">

@@ -1,18 +1,35 @@
 import ELK from 'elkjs/lib/elk.bundled.js';
 import { Node, Edge, Position } from 'reactflow';
 
+type ElkEdge = {
+  id: string;
+  sources: string[];
+  targets: string[];
+};
+
+type ElkNodeShape = {
+  id: string;
+  width?: number;
+  height?: number;
+  x?: number;
+  y?: number;
+  children?: ElkNodeShape[];
+  edges?: ElkEdge[];
+  layoutOptions?: Record<string, string>;
+};
+
 const elk = new ELK();
 
-const NODE_WIDTH = 500;  
-const NODE_HEIGHT = 160; 
+const NODE_WIDTH = 500;
+const NODE_HEIGHT = 160;
 
 export const getLayoutedElements = async (nodes: Node[], edges: Edge[]) => {
-  
+
   const nodeParentMap = new Map<string, string | undefined>();
   nodes.forEach(n => nodeParentMap.set(n.id, n.parentNode));
 
-  const groupInternalEdges = new Map<string, any[]>();
-  const rootEdges: any[] = [];
+  const groupInternalEdges = new Map<string, ElkEdge[]>();
+  const rootEdges: ElkEdge[] = [];
 
   edges.forEach(edge => {
     const sourceParent = nodeParentMap.get(edge.source);
@@ -36,14 +53,14 @@ export const getLayoutedElements = async (nodes: Node[], edges: Edge[]) => {
     }
   });
 
-  const buildElkTree = (parentId?: string): any[] => {
-    const currentLevelNodes = nodes.filter(n => 
+  const buildElkTree = (parentId?: string): ElkNodeShape[] => {
+    const currentLevelNodes = nodes.filter(n =>
       parentId ? n.parentNode === parentId : !n.parentNode
     );
 
     return currentLevelNodes.map(node => {
       const isGroup = node.type === 'group';
-      const elkNode: any = { id: node.id };
+      const elkNode: ElkNodeShape = { id: node.id };
 
       if (!isGroup) {
         elkNode.width = NODE_WIDTH;
@@ -72,7 +89,7 @@ export const getLayoutedElements = async (nodes: Node[], edges: Edge[]) => {
 
   const elkChildren = buildElkTree(undefined);
 
-  const graph = {
+  const graph: ElkNodeShape = {
     id: 'root',
     layoutOptions: {
       'elk.algorithm': 'layered',          
@@ -103,7 +120,7 @@ export const getLayoutedElements = async (nodes: Node[], edges: Edge[]) => {
   try {
     const layoutedGraph = await elk.layout(graph);
 
-    const getElkNode = (elkHierarchy: any, targetId: string): any => {
+    const getElkNode = (elkHierarchy: ElkNodeShape, targetId: string): ElkNodeShape | null => {
       if (!elkHierarchy.children) return null;
       for (const child of elkHierarchy.children) {
         if (child.id === targetId) return child;

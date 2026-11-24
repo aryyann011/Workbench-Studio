@@ -41,8 +41,9 @@ export default function SignInPage() {
       } else {
         setError("Additional authentication steps are required.");
       }
-    } catch (err: any) {
-      setError(err.errors?.[0]?.message || "Invalid email or password.");
+    } catch (err) {
+      const message = (err as { errors?: Array<{ message?: string }> })?.errors?.[0]?.message;
+      setError(message || "Invalid email or password.");
     } finally {
       setIsLoading(false);
     }
@@ -56,8 +57,9 @@ export default function SignInPage() {
         redirectUrl: "/sign-in/sso-callback",
         redirectUrlComplete: "/dashboard",
       });
-    } catch (err: any) {
-      setError(err.errors?.[0]?.message || "Failed to sign in with Google.");
+    } catch (err) {
+      const message = (err as { errors?: Array<{ message?: string }> })?.errors?.[0]?.message;
+      setError(message || "Failed to sign in with Google.");
     }
   };
 

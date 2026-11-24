@@ -15,7 +15,6 @@ import { Code2, SquareSplitHorizontal, LayoutDashboard, Save, Sparkles, X } from
 import { WorkspaceShare } from "@/components/WorkspaceShare"
 import PromptBar, { ChatMessage, ArchitectMode } from "@/components/editor/prompt-input"
 import { toast } from "sonner"
-import { Node, Edge } from "reactflow"
 import { broadcastTimelineSync } from "@/hooks/useWorkspaceSocket"
 import {
   Dialog,
@@ -40,11 +39,6 @@ export default function ResizableDemo() {
     setPrevWorkspaceId(workspaceId)
     setIsAIOpen(false)
   }
-
-  const [mounted, setMounted] = useState<boolean>(false)
-  useEffect(() => {
-    setMounted(true)
-  }, [])
 
   const [workspaceName, setWorkspaceName] = useState<string>("Untitled")
   const { code, setCode, generateGraph, SetTheGraph, nodes, edges } = useAppStore()

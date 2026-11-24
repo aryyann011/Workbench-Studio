@@ -1,14 +1,15 @@
 "use client"
 
-import ReactFlow, { 
-  Background, 
-  Controls, 
-  MiniMap, 
+import ReactFlow, {
+  Background,
+  Controls,
+  MiniMap,
   ConnectionMode,
   MarkerType,
   ReactFlowProvider,
   useReactFlow,
   Connection,
+  Node,
   NodeChange,
   Panel
 } from 'reactflow';
@@ -51,7 +52,6 @@ const EditorContent = ({ readOnly = false, workspaceId: propWorkspaceId }: { rea
     start : null,
     end : null
   })
-  const [isInteractive, setIsInteractive] = useState(!readOnly)
   const [isExporting, setIsExporting] = useState(false)
   const [isExported, setIsExported] = useState(false)
 
@@ -61,7 +61,7 @@ const EditorContent = ({ readOnly = false, workspaceId: propWorkspaceId }: { rea
   const {nodes, edges, onNodesChange, onEdgesChange,onConnect, deleteNode, undoTheActiion, RedoTheAction, NodeMovementTracker} = useAppStore()
   
   const {screenToFlowPosition, flowToScreenPosition, fitView} = useReactFlow()
-  const { isConnected, channel, cursors, presence } = useWorkspaceSocket(workspaceId, userId);
+  const { isConnected, channel, cursors } = useWorkspaceSocket(workspaceId, userId);
 
   const lastCursorSend = useRef<number>(0);
 
@@ -80,7 +80,6 @@ const EditorContent = ({ readOnly = false, workspaceId: propWorkspaceId }: { rea
     });
   }, [channel, isConnected, userId, screenToFlowPosition, user]);
 
-  const lastUpdate = useRef<number>(0);
   const prevNodeCount = useRef<number>(nodes.length);
 
   useEffect(() => {
@@ -119,7 +118,7 @@ const EditorContent = ({ readOnly = false, workspaceId: propWorkspaceId }: { rea
     prevNodeCount.current = nodes.length;
   }, [nodes.length, fitView]);
 
-  const handleThePopUpPosition = (e: React.MouseEvent, node: any) => {
+  const handleThePopUpPosition = (e: React.MouseEvent, node: Node) => {
   e.preventDefault();
   setMenuState({
     isOpen: true,
@@ -128,7 +127,7 @@ const EditorContent = ({ readOnly = false, workspaceId: propWorkspaceId }: { rea
     nodeId: node.id,
   });
 };
-  const handleNodeDragStart = (e : React.MouseEvent, node : any) => {
+  const handleNodeDragStart = (e: React.MouseEvent, node: Node) => {
     setDragState(prev => ({
       ...prev, start : {x : node.position.x, y : node.position.y}
     }))
@@ -162,7 +161,7 @@ const EditorContent = ({ readOnly = false, workspaceId: propWorkspaceId }: { rea
     })
   }
 
-  const handleNodeDragStop = (e : React.MouseEvent, node : any) => {
+  const handleNodeDragStop = (e: React.MouseEvent, node: Node) => {
     setDragState(prev => ({
       ...prev, end : {x : node.position.x, y : node.position.y}
     }))
@@ -208,7 +207,7 @@ const EditorContent = ({ readOnly = false, workspaceId: propWorkspaceId }: { rea
     }
   }
   const RedoTheaction = () => {
-    RedoTheAction(userId)
+    RedoTheAction()
 
     if (channel && isConnected) {
       const { nodes, edges } = useAppStore.getState();
@@ -331,11 +330,11 @@ const EditorContent = ({ readOnly = false, workspaceId: propWorkspaceId }: { rea
         zoomOnScroll={true}
         onNodeDragStart={handleNodeDragStart}
         onNodeDragStop={handleNodeDragStop}
-        nodesDraggable={isInteractive && !readOnly}
-        nodesConnectable={isInteractive && !readOnly}
+        nodesDraggable={!readOnly}
+        nodesConnectable={!readOnly}
         panOnDrag={true}
         onPaneClick={handlePaneClick}
-        edgesUpdatable={isInteractive && !readOnly}
+        edgesUpdatable={!readOnly}
         onlyRenderVisibleElements={true}
         defaultEdgeOptions={{
           type : 'smoothstep',

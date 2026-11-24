@@ -1,7 +1,17 @@
 import { memo } from 'react';
 import { useTheme } from 'next-themes';
 
-export const SystemGroupNode = memo(({ data }: any) => {
+type SystemGroupNodeData = {
+  label?: string;
+  lockedBy?: string;
+  lockedby?: string;
+};
+
+type SystemGroupNodeProps = {
+  data: SystemGroupNodeData;
+};
+
+function SystemGroupNodeInner({ data }: SystemGroupNodeProps) {
   const themeColors = ['#3b82f6', '#8b5cf6', '#10b981', '#f59e0b', '#ec4899', '#06b6d4'];
   const { theme } = useTheme();
   const isDark = theme !== 'light';
@@ -63,4 +73,7 @@ export const SystemGroupNode = memo(({ data }: any) => {
       </div>
     </div>
   );
-});
+}
+
+export const SystemGroupNode = memo(SystemGroupNodeInner);
+SystemGroupNode.displayName = "SystemGroupNode";

@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useRef, useEffect } from "react"
-import { MoreVertical, Trash, ExternalLink, Loader2, Share2 } from "lucide-react"
+import { MoreVertical, Trash, ExternalLink, Loader2 } from "lucide-react"
 import { deleteArchitecture } from "@/actions/workspace"
 import { useRouter } from "next/navigation"
 import { WorkspaceShare } from "@/components/WorkspaceShare"

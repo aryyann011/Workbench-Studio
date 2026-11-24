@@ -1,6 +1,6 @@
 "use client"
 
-import { ArrowUp, Loader2, Bot, User, RefreshCw, Database, Zap, Scale, Microscope, CheckCircle2, Sparkles } from "lucide-react"
+import { ArrowUp, Loader2, Bot, User, Database, Zap, Scale, Microscope, CheckCircle2, Sparkles } from "lucide-react"
 import { useEffect, useRef } from "react"
 
 export type ArchitectMode = "minimal" | "balanced" | "detailed";
@@ -59,7 +59,7 @@ const MODE_CONFIG: Record<ArchitectMode, { icon: React.ReactNode; label: string;
   },
 };
 
-export default function PromptBar({ prompt, setPrompt, onPromptRun, onRegenerateNew, onModeSelected, onCacheDecision, isloading, loadingText, messages }: CodeEditorProps) {
+export default function PromptBar({ prompt, setPrompt, onPromptRun, onModeSelected, onCacheDecision, isloading, loadingText, messages }: CodeEditorProps) {
   const scrollContainerRef = useRef<HTMLDivElement>(null)
   const MAX_HEIGHT = 150
 

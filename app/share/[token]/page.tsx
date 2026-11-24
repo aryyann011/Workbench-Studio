@@ -10,8 +10,7 @@ import {
 import { CodeEditor } from "@/components/editor/codeEditor"
 import { BaseEditor } from "@/components/reactFlow/diagramCanvas"
 import { useAppStore } from "@/lib/store"
-import { Code2, Loader2, AlertCircle, Eye, Users, Wifi, WifiOff } from "lucide-react"
-import { Node, Edge } from "reactflow"
+import { Code2, Loader2, AlertCircle, Eye, Users } from "lucide-react"
 
 
 type ViewMode = "code" | "both" | "canvas"

@@ -1,7 +1,7 @@
 "use client"
 
 import { useState } from "react"
-import { Share2, Copy, Trash2, Users, Lock, Eye, Plus, X, Loader2, Link2, AlertCircle } from "lucide-react"
+import { Share2, Copy, Trash2, Users, Lock, Eye, Plus, Loader2, Link2 } from "lucide-react"
 import {
   Dialog,
   DialogContent,
@@ -12,9 +12,16 @@ import {
 } from "@/components/ui/dialog"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { createShareLink, getWorkspaceShares, revokeShare, updateShareRole, inviteUser } from "@/actions/share"
+import { createShareLink, getWorkspaceShares, revokeShare, inviteUser } from "@/actions/share"
 import { WorkspaceRole } from "@prisma/client"
 import { toast } from "sonner"
+
+type ShareEntry = {
+  id: string;
+  userId: string | null;
+  shareToken: string | null;
+  role: WorkspaceRole;
+};
 
 interface ShareOption {
   value: WorkspaceRole
@@ -48,7 +55,7 @@ export function WorkspaceShare({ workspaceId, workspaceName = "Workspace", iconO
   const [isOpen, setIsOpen] = useState(false)
   const [selectedRole, setSelectedRole] = useState<WorkspaceRole>("READER")
   const [inviteeEmail, setInviteeEmail] = useState("")
-  const [shares, setShares] = useState<any[]>([])
+  const [shares, setShares] = useState<ShareEntry[]>([])
   const [isLoadingShares, setIsLoadingShares] = useState(false)
   const [isCreatingLink, setIsCreatingLink] = useState(false)
   const [isDeletingShare, setIsDeletingShare] = useState<string | null>(null)
@@ -161,7 +168,7 @@ export function WorkspaceShare({ workspaceId, workspaceName = "Workspace", iconO
 
       <DialogContent className="max-w-2xl">
         <DialogHeader>
-          <DialogTitle>Share "{workspaceName}"</DialogTitle>
+          <DialogTitle>Share &quot;{workspaceName}&quot;</DialogTitle>
           <DialogDescription>
             Manage access and invite people to collaborate on this workspace
           </DialogDescription>
@@ -332,7 +339,7 @@ export function WorkspaceShare({ workspaceId, workspaceName = "Workspace", iconO
           {/* Info Section */}
           <div className="bg-amber-50 dark:bg-amber-950 border border-amber-200 dark:border-amber-800 rounded-lg p-3">
             <p className="text-xs text-amber-800 dark:text-amber-200">
-              <strong>💡 Tip:</strong> Share links are public and don't require users to sign in. 
+              <strong>💡 Tip:</strong> Share links are public and don&apos;t require users to sign in.
               Invite specific people for better control and audit trails.
             </p>
           </div>

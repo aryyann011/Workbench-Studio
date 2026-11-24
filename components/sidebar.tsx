@@ -1,7 +1,7 @@
 "use client"
 
-import { Home, Settings, PlusCircle, LogOut, Code2 } from "lucide-react"
-import { usePathname, useRouter } from "next/navigation"
+import { Home, Settings, PlusCircle, LogOut } from "lucide-react"
+import { usePathname } from "next/navigation"
 import { useUser, SignOutButton } from "@clerk/nextjs"
 import Link from "next/link"
 
@@ -10,7 +10,6 @@ import {
   SidebarContent,
   SidebarGroup,
   SidebarGroupContent,
-  SidebarGroupLabel,
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
@@ -19,7 +18,7 @@ import {
   SidebarTrigger,
   useSidebar
 } from "@/components/ui/sidebar"
-import { baskerville } from "@/app/layout"
+import { baskerville } from "@/lib/fonts"
 
 const items = [
   {
@@ -41,7 +40,6 @@ const items = [
 
 export function AppSidebar() {
   const pathname = usePathname()
-  const router = useRouter()
   const { user, isLoaded } = useUser()
   const { state, isMobile } = useSidebar()
   const isCollapsed = state === "collapsed" && !isMobile

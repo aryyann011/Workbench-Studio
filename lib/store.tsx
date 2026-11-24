@@ -1,28 +1,26 @@
 "use client"
 
-import { useState } from 'react';
-import { create } from 'zustand'; 
-import { Node, Edge, OnNodesChange, OnEdgesChange, applyEdgeChanges, applyNodeChanges, addEdge } from 'reactflow'; 
+import { create } from 'zustand';
+import { Node, Edge, OnNodesChange, OnEdgesChange, applyEdgeChanges, applyNodeChanges, addEdge, Connection } from 'reactflow';
 import { parseCode } from './parser';
 import { getLayoutedElements } from './layout';
-import { promises } from 'dns';
-import { Connection } from 'reactflow';
 
 type Action = {
-  type: "DELETE_NODE"; 
+  type: "DELETE_NODE";
   userId: string | null | undefined;
-  deletedNode: Node | undefined;   
+  deletedNode: Node | undefined;
   deletedEdges: Edge[];
 } | {
-  type : "MOVE_NODE";
-  userId : string | null;
-  nodeId : string;
-  fromPosition : {x : number, y : number};
-  toPosition : {x : number, y : number};
+  type: "MOVE_NODE";
+  userId: string | null | undefined;
+  nodeId: string;
+  fromPosition: { x: number, y: number };
+  toPosition: { x: number, y: number };
 };
+
 type position = {
-  x : number,
-  y : number
+  x: number,
+  y: number
 }
 
 interface AppState {
@@ -33,7 +31,7 @@ interface AppState {
   
   past : Action[]
   future : Action[]
-  updateNodeData : (id : string, data : any) => void;
+  updateNodeData : (id : string, data : Record<string, unknown>) => void;
   generateGraph: () => Promise<void>;
   SetTheGraph: (
     nodes : Node[],
@@ -60,7 +58,7 @@ interface AppState {
     userId : string
   ) => void;
   undoTheActiion : (userId: string | null | undefined) => void;
-  RedoTheAction : (userId: string | null | undefined) => void;
+  RedoTheAction : () => void;
   NodeMovementTracker : (
     userId: string | null,
     nodeId : string,
@@ -125,7 +123,7 @@ export const useAppStore = create<AppState>((set, get) => ({
     const newPast = past.slice(0, -1);
 
     let nextNodes = [...nodes];
-    let nextEdges = [...edges];
+    const nextEdges = [...edges];
 
     switch (lastAction.type) {
       case "DELETE_NODE":
@@ -134,9 +132,9 @@ export const useAppStore = create<AppState>((set, get) => ({
         break;
 
       case "MOVE_NODE":
-        nextNodes = nextNodes.map(node => 
-          node.id === lastAction.nodeId 
-            ? { ...node, position: lastAction.fromPosition } 
+        nextNodes = nextNodes.map(node =>
+          node.id === lastAction.nodeId
+            ? { ...node, position: lastAction.fromPosition }
             : node
         );
         break;
@@ -174,7 +172,7 @@ export const useAppStore = create<AppState>((set, get) => ({
     });
   },
 
-  RedoTheAction: (userId) => {
+  RedoTheAction: () => {
     const { nodes, edges, past, future } = get();
     if (future.length === 0) return; 
 

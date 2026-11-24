@@ -3,7 +3,6 @@ import { GoogleGenAI } from "@google/genai";
 import { getCachedPromptResult, saveCachePromptResult } from "@/actions/promptCache";
 import { auth } from "@clerk/nextjs/server";
 import Groq from "groq-sdk";
-import { error } from "console";
 
 const ai = new GoogleGenAI({
     apiKey: process.env.GOOGLE_API_KEY
@@ -112,7 +111,7 @@ export async function POST(request: Request) {
                         code: cacheResult.code,
                         cacheType: cacheResult.type,
                         similarity: cacheResult.similarity,
-                        cachedPrompt: (cacheResult as any).originalPrompt,
+                        cachedPrompt: (cacheResult as { originalPrompt?: string }).originalPrompt,
                     });
                 }
             } catch (cacheError) {
@@ -183,7 +182,7 @@ export async function POST(request: Request) {
 
         return NextResponse.json({ code: data, fromCache: false });
 
-    } catch (error: any) {
+    } catch (error: unknown) {
         console.error("GEMINI API ERROR:", error);
 
         return NextResponse.json(

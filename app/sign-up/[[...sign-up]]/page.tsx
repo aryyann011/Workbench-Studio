@@ -39,8 +39,9 @@ export default function SignUpPage() {
 
       await signUp.prepareEmailAddressVerification({ strategy: "email_code" });
       setPendingVerification(true);
-    } catch (err: any) {
-      setError(err.errors?.[0]?.message || "Failed to create account. Please check your credentials.");
+    } catch (err) {
+      const message = (err as { errors?: Array<{ message?: string }> })?.errors?.[0]?.message;
+      setError(message || "Failed to create account. Please check your credentials.");
     } finally {
       setIsLoading(false);
     }
@@ -65,8 +66,9 @@ export default function SignUpPage() {
         console.log("Unhandled verification status:", completeSignUp.status);
         setError("Verification succeeded but additional authentication steps are required.");
       }
-    } catch (err: any) {
-      setError(err.errors?.[0]?.message || "Invalid verification code.");
+    } catch (err) {
+      const message = (err as { errors?: Array<{ message?: string }> })?.errors?.[0]?.message;
+      setError(message || "Invalid verification code.");
     } finally {
       setIsLoading(false);
     }
@@ -80,8 +82,9 @@ export default function SignUpPage() {
         redirectUrl: "/sign-in/sso-callback",
         redirectUrlComplete: "/dashboard",
       });
-    } catch (err: any) {
-      setError(err.errors?.[0]?.message || "Failed to sign up with Google.");
+    } catch (err) {
+      const message = (err as { errors?: Array<{ message?: string }> })?.errors?.[0]?.message;
+      setError(message || "Failed to sign up with Google.");
     }
   };
 

@@ -1,4 +1,4 @@
-import { Node, Edge, NodeResizeControl, MarkerType } from 'reactflow';
+import { Node, Edge, MarkerType } from 'reactflow';
 
 export const parseCode = (input: string) => {
   const nodes: Node[] = [];

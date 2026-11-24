@@ -5,9 +5,9 @@ export default async function SettingsPage() {
   const user = await currentUser();
 
   return (
-    <div className="p-8 w-full max-w-4xl mx-auto text-white">
+    <div className="p-8 w-full max-w-4xl mx-auto text-foreground">
       <div className="mb-8">
-        <h1 className="text-3xl font-bold tracking-tight mb-2 text-white">Settings</h1>
+        <h1 className="text-3xl font-bold tracking-tight mb-2 text-foreground">Settings</h1>
         <p className="text-muted-foreground">Configure your profile, editor defaults, and API keys.</p>
       </div>
 
@@ -23,7 +23,7 @@ export default async function SettingsPage() {
               <img 
                 src={user.imageUrl} 
                 alt={user.fullName || "User Profile"} 
-                className="w-16 h-16 rounded-full border-2 border-neutral-800"
+                className="w-16 h-16 rounded-full border-2 border-border"
               />
               <div className="space-y-1">
                 <h3 className="font-semibold text-lg">{user.fullName || "Developer"}</h3>
@@ -45,8 +45,8 @@ export default async function SettingsPage() {
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="space-y-2">
-              <label className="text-sm font-semibold text-neutral-300">Default Layout Engine</label>
-              <select className="w-full bg-neutral-900 border border-neutral-800 text-white rounded-lg px-4 py-2.5 text-sm focus:border-neutral-500 focus:ring-0 transition-colors">
+              <label className="text-sm font-semibold text-foreground">Default Layout Engine</label>
+              <select className="w-full bg-muted border border-border text-foreground rounded-lg px-4 py-2.5 text-sm focus:border-blue-500 focus:ring-0 transition-colors">
                 <option>ELK.js (Sugiyama Layout)</option>
                 <option>ELK.js (Force Directed)</option>
                 <option>ReactFlow Custom (Spring)</option>
@@ -55,8 +55,8 @@ export default async function SettingsPage() {
             </div>
 
             <div className="space-y-2">
-              <label className="text-sm font-semibold text-neutral-300">Default Diagram Theme</label>
-              <select className="w-full bg-neutral-900 border border-neutral-800 text-white rounded-lg px-4 py-2.5 text-sm focus:border-neutral-500 focus:ring-0 transition-colors" defaultValue="black">
+              <label className="text-sm font-semibold text-foreground">Default Diagram Theme</label>
+              <select className="w-full bg-muted border border-border text-foreground rounded-lg px-4 py-2.5 text-sm focus:border-blue-500 focus:ring-0 transition-colors" defaultValue="black">
                 <option value="slate">Dark Slate (#0f172a)</option>
                 <option value="black">Proper Black (#000000)</option>
                 <option value="zinc">Deep Zinc (#09090b)</option>
@@ -65,8 +65,8 @@ export default async function SettingsPage() {
             </div>
 
             <div className="space-y-2">
-              <label className="text-sm font-semibold text-neutral-300">Image Export Resolution</label>
-              <select className="w-full bg-neutral-900 border border-neutral-800 text-white rounded-lg px-4 py-2.5 text-sm focus:border-neutral-500 focus:ring-0 transition-colors" defaultValue="3x">
+              <label className="text-sm font-semibold text-foreground">Image Export Resolution</label>
+              <select className="w-full bg-muted border border-border text-foreground rounded-lg px-4 py-2.5 text-sm focus:border-blue-500 focus:ring-0 transition-colors" defaultValue="3x">
                 <option>1x (Standard)</option>
                 <option>2x (Retina)</option>
                 <option value="3x">3x (Ultra HD Vector Equivalent)</option>
@@ -75,8 +75,8 @@ export default async function SettingsPage() {
             </div>
 
             <div className="space-y-2">
-              <label className="text-sm font-semibold text-neutral-300">Auto-Save Delay</label>
-              <select className="w-full bg-neutral-900 border border-neutral-800 text-white rounded-lg px-4 py-2.5 text-sm focus:border-neutral-500 focus:ring-0 transition-colors" defaultValue="2s">
+              <label className="text-sm font-semibold text-foreground">Auto-Save Delay</label>
+              <select className="w-full bg-muted border border-border text-foreground rounded-lg px-4 py-2.5 text-sm focus:border-blue-500 focus:ring-0 transition-colors" defaultValue="2s">
                 <option>Instant (500ms)</option>
                 <option value="2s">Default (2 seconds)</option>
                 <option>Manual (Ctrl+S only)</option>
@@ -93,7 +93,7 @@ export default async function SettingsPage() {
           </div>
           
           <div className="space-y-4">
-            <div className="flex items-center justify-between p-4 bg-neutral-950 rounded-lg border border-neutral-900">
+            <div className="flex items-center justify-between p-4 bg-muted rounded-lg border border-border">
               <div className="space-y-1">
                 <h4 className="font-semibold text-sm">Default Model Config</h4>
                 <p className="text-xs text-muted-foreground font-mono">Gemini 2.5 Flash API Key (Shared Tier)</p>
@@ -104,11 +104,11 @@ export default async function SettingsPage() {
             </div>
 
             <div className="space-y-2">
-              <label className="text-sm font-semibold text-neutral-300">Custom API Token (Optional)</label>
+              <label className="text-sm font-semibold text-foreground">Custom API Token (Optional)</label>
               <input 
                 type="password" 
                 placeholder="AIzaSy..." 
-                className="w-full bg-neutral-900 border border-neutral-800 text-white rounded-lg px-4 py-2.5 text-sm focus:border-neutral-500 focus:ring-0 transition-colors font-mono"
+                className="w-full bg-muted border border-border text-foreground rounded-lg px-4 py-2.5 text-sm focus:border-blue-500 focus:ring-0 transition-colors font-mono"
                 disabled
               />
               <p className="text-xs text-muted-foreground">Override the default shared API key with your own Google AI key to bypass limits.</p>

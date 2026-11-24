@@ -122,8 +122,8 @@ export async function getCachedPromptResult(
 export async function saveCachePromptResult(
   promptText: string,
   generatedCode: string,
-  canvas_nodes?: any,
-  canvas_edges?: any
+  canvas_nodes?: unknown,
+  canvas_edges?: unknown
 ) {
   try {
     const { userId } = await auth();
@@ -145,7 +145,7 @@ export async function saveCachePromptResult(
     return { success: true, cached };
   } catch (error) {
     // If duplicate hash, just ignore (exact match already exists)
-    if ((error as any).code === 'P2002') {
+    if ((error as { code?: string }).code === 'P2002') {
       return { success: true, message: "Prompt already cached" };
     }
     console.error('Error saving cache:', error);

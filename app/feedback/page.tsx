@@ -2,12 +2,8 @@
 
 import React, { useState } from "react";
 import Link from "next/link";
-import { Space_Grotesk, Inter } from "next/font/google";
 import { ArrowLeft, Send, CheckCircle2, MessageSquare, Star } from "lucide-react";
 import { ModeToggle } from "@/components/Mode/modeToggle";
-
-const spaceGrotesk = Space_Grotesk({ subsets: ["latin"], weight: ["500", "700"] });
-const inter = Inter({ subsets: ["latin"] });
 
 export default function FeedbackPage() {
   const [email, setEmail] = useState("");
@@ -42,7 +38,7 @@ export default function FeedbackPage() {
       } else {
         setError(data.error || "Failed to submit feedback.");
       }
-    } catch (err) {
+    } catch {
       setError("An unexpected error occurred.");
     } finally {
       setIsSubmitting(false);
@@ -50,7 +46,7 @@ export default function FeedbackPage() {
   };
 
   return (
-    <div className={`min-h-screen bg-background text-foreground ${inter.className}`}>
+    <div className={`min-h-screen bg-background text-foreground font-[family-name:var(--font-inter)]`}>
       {/* Header */}
       <header className="fixed top-0 left-0 right-0 z-50 bg-background/80 backdrop-blur-md border-b border-border">
         <div className="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
@@ -58,7 +54,7 @@ export default function FeedbackPage() {
             <div className="w-8 h-8 rounded-lg bg-foreground text-background flex items-center justify-center font-bold text-sm">
               W
             </div>
-            <span className={`font-bold ${spaceGrotesk.className}`}>Workbench Studio</span>
+            <span className={`font-bold font-[family-name:var(--font-space-grotesk)]`}>Workbench Studio</span>
           </Link>
           <div className="flex items-center gap-4">
             <ModeToggle />
@@ -87,11 +83,11 @@ export default function FeedbackPage() {
               <div className="w-16 h-16 bg-blue-500/10 rounded-2xl flex items-center justify-center mx-auto mb-6 border border-blue-500/20">
                 <MessageSquare className="w-8 h-8 text-blue-500" />
               </div>
-              <h1 className={`text-3xl sm:text-4xl font-bold mb-4 ${spaceGrotesk.className}`}>
+              <h1 className={`text-3xl sm:text-4xl font-bold mb-4 font-[family-name:var(--font-space-grotesk)]`}>
                 We Value Your <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-500 to-cyan-500">Feedback</span>
               </h1>
               <p className="text-muted-foreground">
-                Help us improve Workbench Studio. Whether it's a bug, feature request, or just saying hello!
+                Help us improve Workbench Studio. Whether it&apos;s a bug, feature request, or just saying hello!
               </p>
             </div>
 
@@ -100,7 +96,7 @@ export default function FeedbackPage() {
                 <div className="w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-6 border border-emerald-500/20">
                   <CheckCircle2 className="w-10 h-10" />
                 </div>
-                <h3 className={`text-2xl font-bold mb-3 ${spaceGrotesk.className}`}>Thank You!</h3>
+                <h3 className={`text-2xl font-bold mb-3 font-[family-name:var(--font-space-grotesk)]`}>Thank You!</h3>
                 <p className="text-muted-foreground mb-8">
                   Your feedback has been successfully submitted. We appreciate your input to make Workbench Studio better.
                 </p>

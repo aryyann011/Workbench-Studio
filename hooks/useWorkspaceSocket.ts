@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback } from "react"
 import { supabase } from "@/lib/supabase"
-import { RealtimeChannel } from "@supabase/supabase-js"
+import { RealtimeChannel, RealtimePresenceState } from "@supabase/supabase-js"
 import { useAppStore } from "@/lib/store"
 
 export function broadcastTimelineSync(workspaceId: string) {
@@ -22,7 +22,7 @@ export function useWorkspaceSocket(workspaceId: string, currentUserId?: string |
  
     const [channel, setChannel] = useState<RealtimeChannel | null>(null)
     const [cursors, setCursors] = useState<Record<string, {x : number, y : number, lastUpdated: number}>>({})
-    const [presence, setPresence] = useState<Record<string, any>>({})
+    const [presence, setPresence] = useState<RealtimePresenceState<Record<string, unknown>>>({})
 
     // Broadcast full state to all connected clients (for AI generation, code changes, etc.)
     const broadcastSync = useCallback(() => {
@@ -89,7 +89,7 @@ export function useWorkspaceSocket(workspaceId: string, currentUserId?: string |
             'broadcast',
             {event : 'node-delete'},
             (incoming) => {
-                const {nodeId, userId} = incoming.payload
+                const {nodeId} = incoming.payload
                 useAppStore.getState().removeNodeRemotely(nodeId)
             }
         )

@@ -1,9 +1,9 @@
 "use client"
 
 import { Handle, Position, NodeProps } from 'reactflow';
-import { lazy, Suspense, useMemo } from 'react';
+import { lazy, Suspense, ComponentType, CSSProperties, LazyExoticComponent } from 'react';
 import dynamicIconImports from 'lucide-react/dynamicIconImports';
-import { getIconForLabel } from '@/lib/icon-utils'; 
+import { getIconForLabel } from '@/lib/icon-utils';
 import { useTheme } from 'next-themes';
 
 interface IconProps {
@@ -14,20 +14,27 @@ interface IconProps {
 
 const fallbackIcon = 'server';
 
+type IconComponentType = ComponentType<{ className?: string; style?: CSSProperties }>;
+type LazyIcon = LazyExoticComponent<IconComponentType>;
+
+const iconImporters = dynamicIconImports as unknown as Record<string, () => Promise<{ default: IconComponentType }>>;
+
+const lazyIcons = new Map<string, LazyIcon>();
+for (const [key, importer] of Object.entries(iconImporters)) {
+  lazyIcons.set(key, lazy(importer));
+}
+
 const DynamicIcon = ({ name, color, size = 'w-6 h-6' }: IconProps) => {
   const kebabName = name.replace(/([a-z0-9])([A-Z])/g, '$1-$2').toLowerCase().trim();
 
-  const isValidIcon = kebabName in dynamicIconImports;
-  
-  const iconToLoad = isValidIcon ? kebabName : fallbackIcon;
-  const iconImport = dynamicIconImports[iconToLoad as keyof typeof dynamicIconImports];
+  const isValidIcon = lazyIcons.has(kebabName);
 
-  const IconComponent = useMemo(() => {
-    return lazy(iconImport);
-  }, [iconImport]);
+  const iconToLoad = isValidIcon ? kebabName : fallbackIcon;
+  const IconComponent = lazyIcons.get(iconToLoad) ?? lazyIcons.get(fallbackIcon)!;
 
   return (
     <Suspense fallback={<div className={`${size} bg-white/10 animate-pulse rounded-lg`} />}>
+      {/* eslint-disable-next-line react-hooks/static-components -- component value comes from a static module-level lazy map, not created during render */}
       <IconComponent className={size} style={{ color }} />
     </Suspense>
   );

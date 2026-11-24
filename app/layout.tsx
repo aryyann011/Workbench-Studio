@@ -1,32 +1,39 @@
-"use client"
-
 import type { Metadata } from "next";
-import { Geist, Geist_Mono, Libre_Baskerville, Inter } from "next/font/google";
 import "./globals.css";
 import { ClerkProvider } from "@clerk/nextjs";
-import { Analytics } from "@vercel/analytics/next"
-import { LayoutWrapper } from "@/components/clientWrapper/layout-wrapper"; 
+import { Analytics } from "@vercel/analytics/next";
+import { LayoutWrapper } from "@/components/clientWrapper/layout-wrapper";
+import {
+  geistSans,
+  geistMono,
+  baskerville,
+  inter,
+  spaceGrotesk,
+} from "@/lib/fonts";
 
-// export const metadata: Metadata = {
-//   title: "Workbench Studio",
-//   description: "The Algorithmic System Design Workspace",
-// };
-
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
-
-const baskerville = Libre_Baskerville({
-  weight: ["400", "700"],
-  subsets: ["latin"],
-  variable: "--font-baskerville", 
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
-});
+export const metadata: Metadata = {
+  metadataBase: new URL("https://workbench-studio.vercel.app"),
+  title: {
+    default: "Workbench Studio",
+    template: "%s | Workbench Studio",
+  },
+  description:
+    "Describe your software system in plain text and get clean, interactive architecture diagrams instantly.",
+  applicationName: "Workbench Studio",
+  openGraph: {
+    type: "website",
+    siteName: "Workbench Studio",
+    title: "Workbench Studio — Architecture diagrams at the speed of thoughts",
+    description:
+      "Stop drawing boxes manually. Describe your architecture in plain text and watch a structured interactive diagram build itself.",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Workbench Studio",
+    description:
+      "Describe your architecture in plain text and get an interactive diagram instantly.",
+  },
+};
 
 export default function RootLayout({
   children,
@@ -36,11 +43,8 @@ export default function RootLayout({
   return (
     <ClerkProvider>
       <html lang="en" className="dark" suppressHydrationWarning>
-        <head>
-          <meta name="mitgo-verification" content="dae51e34-e629-462c-9092-f7a518d2eaf6" />
-        </head>
         <body
-          className={`${geistSans.variable} ${geistMono.variable} ${baskerville.variable} antialiased bg-background text-foreground`}
+          className={`${geistSans.variable} ${geistMono.variable} ${baskerville.variable} ${inter.variable} ${spaceGrotesk.variable} antialiased bg-background text-foreground`}
         >
           <LayoutWrapper>
             {children}
@@ -51,5 +55,3 @@ export default function RootLayout({
     </ClerkProvider>
   );
 }
-
-export { baskerville }

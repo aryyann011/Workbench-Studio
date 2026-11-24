@@ -1,6 +1,5 @@
 import { prisma } from '@/lib/db';
 import { auth } from '@clerk/nextjs/server';
-import { Node, Edge } from 'reactflow';
 import { NextRequest, NextResponse } from 'next/server';
 
 /**
